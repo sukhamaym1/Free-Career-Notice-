@@ -1,0 +1,6 @@
+{
+  "name": "Free Career Notice",
+  "description": "A modern job notification and career updates portal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

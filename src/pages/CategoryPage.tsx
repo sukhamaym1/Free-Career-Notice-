@@ -1,0 +1,107 @@
+import { useParams, Navigate, Link } from 'react-router-dom';
+import { JOB_NOTIFICATIONS, ADMIT_CARDS, RESULTS } from '../data';
+
+export default function CategoryPage() {
+  const { categoryId } = useParams();
+
+  let title = '';
+  let items = [] as any[];
+
+  // Map category slugs to titles and data
+  const categoryConfig: Record<string, { title: string; data: any[] }> = {
+    'job-notifications': { title: 'Job Notifications', data: JOB_NOTIFICATIONS },
+    'admit-card': { title: 'Admit Card', data: ADMIT_CARDS },
+    'results': { title: 'Results', data: RESULTS },
+    'answer-keys': { title: 'Answer Keys', data: RESULTS.map(r => ({ ...r, title: r.title.replace('Result', 'Answer Key'), tag: 'ANSWER KEY', tagColor: 'bg-yellow-500' })) },
+    'syllabus': { title: 'Syllabus & Exam Pattern', data: JOB_NOTIFICATIONS.map(j => ({ ...j, title: j.title.replace('Recruitment', 'Syllabus'), tag: 'SYLLABUS', tagColor: 'bg-purple-500' })) },
+    'ssc-exams': { title: 'SSC Exams', data: JOB_NOTIFICATIONS.filter(j => j.title.includes('SSC') || j.title.includes('SSB') || j.title.includes('SSF')) },
+    'railway': { title: 'Railway (RRB)', data: ADMIT_CARDS.filter(a => a.title.includes('RRB')) },
+    'banking': { title: 'Banking (IBPS/SBI)', data: ADMIT_CARDS.filter(a => a.title.includes('SBI') || a.title.includes('RBI')) },
+    'upsc': { title: 'UPSC / State PSC', data: JOB_NOTIFICATIONS.filter(j => j.title.includes('PSC')) },
+    'defence': { title: 'Defence / Police Jobs', data: JOB_NOTIFICATIONS.filter(j => j.title.includes('Army') || j.title.includes('Navy') || j.title.includes('Police')) },
+    'teaching': { title: 'Teaching Jobs', data: [] },
+  };
+
+  if (categoryId && categoryConfig[categoryId]) {
+    title = categoryConfig[categoryId].title;
+    items = categoryConfig[categoryId].data;
+  } else {
+    // If not found, display a fallback empty category
+    title = categoryId ? categoryId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Category';
+  }
+
+  return (
+    <main className="container mx-auto px-4 py-8 pb-20 animate-in fade-in duration-500">
+      <div className="mb-12 text-center max-w-3xl mx-auto">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 text-sm font-semibold uppercase tracking-wider mb-4">
+          <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400"></span>
+          Category
+        </div>
+        <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight mb-4">
+          {title}
+        </h1>
+        <div className="h-1 w-24 bg-gradient-to-r from-blue-600 to-green-500 mx-auto rounded-full"></div>
+      </div>
+
+      {items.length === 0 ? (
+        <div className="text-center py-20 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
+          <p className="text-gray-500 dark:text-gray-400 text-lg">No updates available in this category currently.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {items.map((item, idx) => (
+            <div key={idx} className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow group flex flex-col">
+              {/* Thumbnail Placeholder */}
+              <div className={`relative h-48 md:h-64 bg-gradient-to-br ${item.imgGradient || 'from-gray-700 to-gray-900'} p-6 flex flex-col justify-center items-center text-center overflow-hidden`}>
+                <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500"></div>
+                
+                {/* Tag */}
+                {item.tag && (
+                  <div className={`absolute top-4 right-4 ${item.tagColor || 'bg-green-500'} text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide z-10 shadow-sm`}>
+                    {item.tag}
+                  </div>
+                )}
+                
+                {/* Decorative background elements */}
+                <div className="absolute top-0 left-0 w-32 h-32 bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl"></div>
+                <div className="absolute bottom-0 right-0 w-48 h-48 bg-black/10 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl"></div>
+                
+                {/* Mock content for the thumbnail */}
+                <div className="relative z-10 max-w-[80%]">
+                  <h3 className="text-white font-bold text-xl md:text-2xl drop-shadow-md leading-tight mb-2 uppercase">
+                    {item.tag || title}
+                  </h3>
+                  <p className="text-white/90 text-sm md:text-base font-medium drop-shadow-sm">
+                    {item.title.substring(0, 45)}...
+                  </p>
+                  <div className="mt-4 inline-block bg-yellow-400 text-yellow-900 font-bold px-4 py-1.5 rounded-full text-sm">
+                    Click Here!!!
+                  </div>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 flex-1 flex flex-col">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white leading-snug mb-4 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <Link to="/post/wbpsc-recruitment-2026">{item.title}</Link>
+                </h2>
+                
+                <div className="mt-auto">
+                  <Link to="/post/wbpsc-recruitment-2026" className="inline-block text-green-600 dark:text-green-500 font-semibold text-sm uppercase tracking-wider mb-4 hover:text-green-700 dark:hover:text-green-400">
+                    READ MORE »
+                  </Link>
+                  
+                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-800 pt-4">
+                    <span>{item.author || 'Sukhamay'}</span>
+                    <span className="mx-2">/</span>
+                    <span>{item.date || 'March 2026'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </main>
+  );
+}
