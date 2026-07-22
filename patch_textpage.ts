@@ -1,4 +1,9 @@
-import { useParams } from 'react-router-dom';
+import fs from 'fs';
+
+let content = fs.readFileSync('src/pages/TextPage.tsx', 'utf-8');
+
+if (!content.includes('import { SITE_SETTINGS }')) {
+  content = `import { useParams } from 'react-router-dom';
 import { SITE_SETTINGS } from '../data';
 
 export default function TextPage() {
@@ -34,3 +39,7 @@ export default function TextPage() {
     </main>
   );
 }
+`;
+}
+
+fs.writeFileSync('src/pages/TextPage.tsx', content);

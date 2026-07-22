@@ -1,3 +1,5 @@
+import settingsData from '../content/settings.json';
+
 const postsModules = import.meta.glob('../content/posts/*.json', { eager: true });
 const rawPosts = Object.values(postsModules).map((mod: any) => mod.default || mod);
 const publishedPosts = rawPosts.filter((p: any) => p.status !== 'draft');
@@ -52,3 +54,5 @@ export const RESULTS = publishedPosts
 // Also export the full list for admin dashboard
 export const ALL_POSTS = rawPosts;
 export const PUBLISHED_POSTS = publishedPosts;
+
+export const SITE_SETTINGS = settingsData;

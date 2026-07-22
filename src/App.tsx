@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useTheme } from './hooks/useTheme';
+import { SITE_SETTINGS } from './data';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
@@ -25,6 +26,51 @@ export default function App() {
   const isAdmin = location.pathname.startsWith('/admin');
 
   const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Dynamic Favicon
+    if ((SITE_SETTINGS as any).faviconUrl) {
+      const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+      if (link) {
+        link.href = (SITE_SETTINGS as any).faviconUrl;
+      } else {
+        const newLink = document.createElement('link');
+        newLink.rel = 'icon';
+        newLink.href = (SITE_SETTINGS as any).faviconUrl;
+        document.head.appendChild(newLink);
+      }
+    }
+    
+    
+    // Dynamic SEO
+    if ((SITE_SETTINGS as any).seoTitle) {
+      document.title = (SITE_SETTINGS as any).seoTitle;
+    } else if ((SITE_SETTINGS as any).siteName) {
+      document.title = (SITE_SETTINGS as any).siteName;
+    }
+
+    if ((SITE_SETTINGS as any).seoDescription) {
+      let metaDesc = document.querySelector("meta[name='description']");
+      if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.setAttribute('name', 'description');
+        document.head.appendChild(metaDesc);
+      }
+      metaDesc.setAttribute('content', (SITE_SETTINGS as any).seoDescription);
+    }
+
+    if ((SITE_SETTINGS as any).seoKeywords) {
+      let metaKeywords = document.querySelector("meta[name='keywords']");
+      if (!metaKeywords) {
+        metaKeywords = document.createElement('meta');
+        metaKeywords.setAttribute('name', 'keywords');
+        document.head.appendChild(metaKeywords);
+      }
+      metaKeywords.setAttribute('content', (SITE_SETTINGS as any).seoKeywords);
+    }
+
+  }, []);
+  
 
   useEffect(() => {
     // Handle mock link clicks for the demo

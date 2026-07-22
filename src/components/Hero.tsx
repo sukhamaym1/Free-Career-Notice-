@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTypingPlaceholder } from '../hooks/useTypingPlaceholder';
+import { SITE_SETTINGS } from '../data';
 
 const HERO_PLACEHOLDERS = [
   "Search SBI PO...",
@@ -35,8 +36,13 @@ export default function Hero() {
       </div>
 
       <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-8 max-w-3xl">
-        Search Latest Jobs, Admit Card & Results
+        { (SITE_SETTINGS as any).heroTitle || 'Search Latest Jobs, Admit Card & Results' }
       </h1>
+      {(SITE_SETTINGS as any).heroDescription && (
+        <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl">
+          {(SITE_SETTINGS as any).heroDescription}
+        </p>
+      )}
 
       {/* Search Bar */}
       <form onSubmit={handleSearch} className="w-full max-w-2xl relative mb-8 group">

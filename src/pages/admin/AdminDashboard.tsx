@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../../lib/utils';
 import RichTextEditor from '../../components/admin/RichTextEditor';
 import { GitHubClient } from '../../lib/github';
+import WebsiteSettings from '../../components/admin/WebsiteSettings';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -79,7 +80,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
         setTagsSha(tagRes.sha);
       }
       
-      const setRes = await client.getFile('website/settings.json');
+      const setRes = await client.getFile('content/settings.json');
       if (setRes) {
         setSiteSettings(JSON.parse(setRes.content));
         setSettingsSha(setRes.sha);
@@ -304,7 +305,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     { name: 'Categories', icon: Folder },
     { name: 'Tags', icon: Tags },
     { name: 'Media Library', icon: ImageIcon },
-    { name: 'Settings', icon: Settings },
+    { name: 'Website Settings', icon: Settings },
   ];
 
   const filteredPosts = rawPosts.filter(p => 
@@ -678,35 +679,16 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
       );
     }
 
-    if (activeTab === 'Settings') {
+    if (activeTab === 'Website Settings') {
       return (
-        <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm p-6 animate-in fade-in duration-300">
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Site Settings</h3>
-          <form onSubmit={handleSaveSettings} className="space-y-4 max-w-2xl">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Site Name</label>
-              <input name="siteName" defaultValue={siteSettings.siteName || ''} required className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
-              <textarea name="description" defaultValue={siteSettings.description || ''} rows={3} className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">SEO Title</label>
-              <input name="seoTitle" defaultValue={siteSettings.seoTitle || ''} className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Keywords</label>
-              <input name="keywords" defaultValue={siteSettings.keywords || ''} className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            </div>
-            
-            <div className="pt-4">
-              <button type="submit" className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
-                Save Settings
-              </button>
-            </div>
-          </form>
-        </div>
+        <WebsiteSettings 
+          siteSettings={siteSettings}
+          setSiteSettings={setSiteSettings}
+          settingsSha={settingsSha}
+          setSettingsSha={setSettingsSha}
+          client={client}
+          setSyncStatus={setSyncStatus}
+        />
       );
     }
 

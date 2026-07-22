@@ -1,32 +1,7 @@
 [
-  {
-    "id": "tag_1",
-    "name": "NEW UPDATE",
-    "slug": "new-update"
-  },
-  {
-    "id": "tag_2",
-    "name": "ADMIT CARD",
-    "slug": "admit-card"
-  },
-  {
-    "id": "tag_3",
-    "name": "RESULTS",
-    "slug": "results"
-  },
-  {
-    "id": "tag_4",
-    "name": "RRB",
-    "slug": "rrb"
-  },
-  {
-    "id": "tag_5",
-    "name": "JOB NOTIFICATIONS",
-    "slug": "job-notifications"
-  },
-  {
-    "id": "tag_1784745426517",
-    "name": "SSC",
-    "slug": "ssc"
-  }
+  { "id": "tag_1", "name": "NEW UPDATE", "slug": "new-update" },
+  { "id": "tag_2", "name": "ADMIT CARD", "slug": "admit-card" },
+  { "id": "tag_3", "name": "RESULTS", "slug": "results" },
+  { "id": "tag_4", "name": "RRB", "slug": "rrb" },
+  { "id": "tag_5", "name": "JOB NOTIFICATIONS", "slug": "job-notifications" }
 ]

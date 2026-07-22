@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Moon, Sun, GraduationCap, ChevronDown, Search, Menu, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { SITE_SETTINGS } from '../data';
 import { useTypingPlaceholder } from '../hooks/useTypingPlaceholder';
 import { AnimatePresence, motion } from 'motion/react';
 
@@ -55,12 +56,15 @@ export default function Header({ theme, toggleTheme }: HeaderProps) {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2" onClick={closeMobileMenu}>
-          <div className="bg-blue-600 p-2 rounded-lg text-white">
-            <GraduationCap className="w-6 h-6" />
-          </div>
+          {(SITE_SETTINGS as any).logoUrl ? (
+            <img src={(SITE_SETTINGS as any).logoUrl} alt="Logo" className="w-10 h-10 object-contain" />
+          ) : (
+            <div className="bg-blue-600 p-2 rounded-lg text-white">
+              <GraduationCap className="w-6 h-6" />
+            </div>
+          )}
           <div className="font-bold text-xl leading-none tracking-tight text-gray-900 dark:text-white">
-            Free Career <br />
-            <span className="text-green-600 dark:text-green-500">Notice</span>
+            {SITE_SETTINGS.siteName || 'Free Career Notice'}
           </div>
         </Link>
 

@@ -1,5 +1,6 @@
 import { GraduationCap, Facebook, Twitter, Instagram, Linkedin, Mail, MapPin, Phone, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { SITE_SETTINGS } from '../data';
 
 export default function Footer() {
   return (
@@ -9,16 +10,19 @@ export default function Footer() {
           {/* Brand & About */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-6">
-              <div className="bg-blue-600 p-2 rounded-lg text-white">
-                <GraduationCap className="w-6 h-6" />
-              </div>
+              {(SITE_SETTINGS as any).footerLogo ? (
+                <img src={(SITE_SETTINGS as any).footerLogo} alt="Logo" className="w-10 h-10 object-contain" />
+              ) : (
+                <div className="bg-blue-600 p-2 rounded-lg text-white">
+                  <GraduationCap className="w-6 h-6" />
+                </div>
+              )}
               <div className="font-bold text-xl leading-none tracking-tight text-white">
-                Free Career <br />
-                <span className="text-green-500">Notice</span>
+                {SITE_SETTINGS.siteName || 'Free Career Notice'}
               </div>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Your trusted portal for the latest job notifications, admit cards, exam results, and career updates across India. Stay ahead in your career journey with real-time alerts.
+              {SITE_SETTINGS.footerDescription || 'Your trusted portal for the latest job notifications.'}
             </p>
             <div className="flex gap-4 pt-2">
               <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all text-slate-400">
@@ -69,15 +73,15 @@ export default function Footer() {
             <ul className="space-y-4 text-sm text-slate-400">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-blue-500 shrink-0" />
-                <span>123 Career Avenue, Tech Park, Block B, New Delhi, India 110001</span>
+                <span>{SITE_SETTINGS.contactAddress || '123 Career Avenue, New Delhi, India'}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-green-500 shrink-0" />
-                <span>+91 98765 43210</span>
+                <span>{SITE_SETTINGS.contactPhone || '+91 98765 43210'}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-rose-500 shrink-0" />
-                <a href="mailto:support@freecareernotice.com" className="hover:text-white transition-colors">
+                <a href="mailto:{SITE_SETTINGS.contactEmail || '{SITE_SETTINGS.contactEmail || 'support@freecareernotice.com'}'}" className="hover:text-white transition-colors">
                   support@freecareernotice.com
                 </a>
               </li>
@@ -87,10 +91,10 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500">
-          <p>© {new Date().getFullYear()} Free Career Notice. All rights reserved.</p>
+          <p>{SITE_SETTINGS.footerCopyrightText || `© ${new Date().getFullYear()} Free Career Notice. All rights reserved.`}</p>
           <div className="flex items-center gap-6">
             <Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link to="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link>
+            <Link to="/terms-and-conditions" className="hover:text-white transition-colors">Terms & Conditions</Link>
             <Link to="/disclaimer" className="hover:text-white transition-colors">Disclaimer</Link>
           </div>
         </div>
