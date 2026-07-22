@@ -4,9 +4,7 @@ const postsModules = import.meta.glob('../content/posts/*.json', { eager: true }
 const rawPosts = Object.values(postsModules).map((mod: any) => mod.default || mod);
 const publishedPosts = rawPosts.filter((p: any) => p.status !== 'draft');
 
-export const NEW_UPDATES = publishedPosts
-  .filter(p => p.categorySlug === 'new-updates')
-  .map(p => ({ title: p.title, id: p.id }));
+
 
 export const COLOR_BLOCKS = publishedPosts
   .filter(p => p.categorySlug === 'color-blocks')
@@ -19,7 +17,7 @@ export const JOB_NOTIFICATIONS = publishedPosts
     title: p.title,
     author: p.author,
     date: p.date,
-    tag: p.tags?.[0] || '',
+    tag: p.tags?.[0] || '', tags: p.tags || [],
     tagColor: p.tagColor,
     imgGradient: p.imgGradient,
     salary: p.salary,
@@ -34,7 +32,7 @@ export const ADMIT_CARDS = publishedPosts
     title: p.title,
     author: p.author,
     date: p.date,
-    tag: p.tags?.[0] || '',
+    tag: p.tags?.[0] || '', tags: p.tags || [],
     tagColor: p.tagColor,
     imgGradient: p.imgGradient,
   }));
@@ -46,7 +44,7 @@ export const RESULTS = publishedPosts
     title: p.title,
     author: p.author,
     date: p.date,
-    tag: p.tags?.[0] || '',
+    tag: p.tags?.[0] || '', tags: p.tags || [],
     tagColor: p.tagColor,
     imgGradient: p.imgGradient,
   }));

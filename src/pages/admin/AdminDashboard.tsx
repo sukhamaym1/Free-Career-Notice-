@@ -115,7 +115,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
         content: formData.get('content') || `<p>${formData.get('title')}</p>`,
         author: formData.get('author'),
         date: formData.get('date'),
-        tags: [formData.get('tag')].filter(Boolean),
+        tags: formData.getAll('tag').filter(Boolean) as string[],
         tagColor: formData.get('tagColor') || 'bg-green-500', 
         imgGradient: formData.get('imgGradient') || 'from-blue-500 to-indigo-600',
         salary: formData.get('salary'),
@@ -339,10 +339,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                 <div className="text-4xl font-bold text-blue-600 dark:text-[#38bdf8] mb-2">{parsedData.RESULTS.length}</div>
                 <div className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">Results</div>
               </div>
-              <div className="bg-white dark:bg-[#1e293b] rounded-xl p-6 border border-slate-200 dark:border-slate-700/50 shadow-sm">
-                <div className="text-4xl font-bold text-blue-600 dark:text-[#38bdf8] mb-2">{parsedData.NEW_UPDATES.length}</div>
-                <div className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">New Updates</div>
-              </div>
+              
             </div>
           </div>
 
@@ -487,7 +484,6 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                     <option key={c.id} value={c.slug}>{c.name}</option>
                   )) : (
                     <>
-                      <option value="new-updates">New Updates</option>
                       <option value="job-notifications">Job Notifications</option>
                       <option value="admit-cards">Admit Cards</option>
                       <option value="results">Results</option>
@@ -505,8 +501,8 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tag (Optional)</label>
-                <select name="tag" defaultValue={editingPost?.tags?.[0] || ''} className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option value="">None</option>
+                <select name="tag" multiple defaultValue={editingPost?.tags || []} className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 h-32">
+                  <option disabled value="">Select tags (Ctrl/Cmd + click for multiple)</option>
                   {tags.map(t => (
                     <option key={t.id} value={t.slug}>{t.name}</option>
                   ))}

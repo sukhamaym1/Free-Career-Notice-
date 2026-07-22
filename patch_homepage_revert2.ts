@@ -1,4 +1,6 @@
-import { motion } from 'motion/react';
+import fs from 'fs';
+
+const content = `import { motion } from 'motion/react';
 import Hero from '../components/Hero';
 import ActionGroup from '../components/ActionGroup';
 import ColorfulGrid from '../components/ColorfulGrid';
@@ -49,3 +51,6 @@ export default function HomePage() {
     </motion.main>
   );
 }
+`;
+
+fs.writeFileSync('src/pages/HomePage.tsx', content);

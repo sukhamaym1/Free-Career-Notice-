@@ -39,28 +39,7 @@ export default function ListSection({ title, items, viewAllLink = "#" }: ListSec
                     <span className="text-sm font-medium text-blue-700 dark:text-blue-400 group-hover:text-blue-800 dark:group-hover:text-blue-300">
                       {itemTitle}
                     </span>
-                    {isObj && (item.salary || item.jobType || item.location) && (
-                      <div className="flex flex-wrap gap-3 mt-1">
-                        {item.jobType && (
-                          <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
-                            <Briefcase className="w-3 h-3" />
-                            {item.jobType}
-                          </span>
-                        )}
-                        {item.salary && (
-                          <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
-                            <DollarSign className="w-3 h-3" />
-                            {item.salary}
-                          </span>
-                        )}
-                        {item.location && (
-                          <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
-                            <MapPin className="w-3 h-3" />
-                            {item.location}
-                          </span>
-                        )}
-                      </div>
-                    )}
+                    
                   </div>
                 </Link>
               </li>
