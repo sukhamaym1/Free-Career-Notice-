@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../../lib/utils';
+import RichTextEditor from '../../components/admin/RichTextEditor';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -246,6 +247,115 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
       );
     }
 
+    if (activeTab === 'Categories' || activeTab === 'Tags') {
+      const items = activeTab === 'Categories' 
+        ? ['JOB NOTIFICATIONS', 'ADMIT CARDS', 'RESULTS', 'NEW UPDATES']
+        : ['SSC', 'UPSC', 'Banking', 'Railway', 'Defense', 'State Govt'];
+
+      return (
+        <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden flex flex-col animate-in fade-in duration-300">
+          <div className="p-6 border-b border-slate-200 dark:border-slate-700/50 flex justify-between items-center">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Manage {activeTab}</h3>
+            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm">
+              + Add New {activeTab === 'Categories' ? 'Category' : 'Tag'}
+            </button>
+          </div>
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-slate-50 dark:bg-[#0f172a] p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+              <h4 className="font-bold text-slate-800 dark:text-slate-200 mb-4">Add New</h4>
+              <form className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Name</label>
+                  <input required className="w-full bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Slug</label>
+                  <input required className="w-full bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
+                  <textarea rows={3} className="w-full bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <button type="button" className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
+                  Add {activeTab === 'Categories' ? 'Category' : 'Tag'}
+                </button>
+              </form>
+            </div>
+            
+            <div>
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="text-sm font-semibold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700/50">
+                    <th className="pb-4 pr-4">Name</th>
+                    <th className="pb-4 px-4">Count</th>
+                    <th className="pb-4 px-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((item, i) => (
+                    <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                      <td className="py-4 pr-4 border-b border-slate-100 dark:border-slate-800/50 font-medium text-slate-800 dark:text-slate-200">
+                        {item}
+                      </td>
+                      <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400">
+                        {Math.floor(Math.random() * 50) + 1}
+                      </td>
+                      <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-right">
+                        <button className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium mr-3">Edit</button>
+                        <button className="text-red-600 dark:text-red-400 hover:underline text-sm font-medium">Delete</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (activeTab === 'Media Library') {
+      return (
+        <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm p-6 animate-in fade-in duration-300">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Media Library</h3>
+            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm">
+              <ImageIcon className="w-4 h-4" />
+              Upload New
+            </button>
+          </div>
+          
+          <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-12 text-center bg-slate-50 dark:bg-slate-800/20 mb-8">
+            <ImageIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+            <h4 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-2">Drag and drop your files here</h4>
+            <p className="text-sm text-slate-500 mb-4">or click to browse from your computer</p>
+            <button className="px-6 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 rounded-lg transition-colors font-medium text-sm">
+              Select Files
+            </button>
+            <p className="text-xs text-slate-400 mt-4">Supported formats: JPG, PNG, WEBP, PDF (Max 10MB)</p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="group relative aspect-square rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                <div className="absolute inset-0 flex items-center justify-center text-slate-400">
+                  <ImageIcon className="w-8 h-8 opacity-50" />
+                </div>
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <button className="p-2 bg-white text-slate-900 rounded-lg text-sm font-medium shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all">
+                    Copy URL
+                  </button>
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
+                  <p className="text-xs text-white truncate">image-{i}.jpg</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
     if (activeTab === 'All Posts') {
       return (
         <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden flex flex-col animate-in fade-in duration-300">
@@ -351,10 +461,13 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
               </div>
             </div>
             
-            {/* Rich Text Editor Placeholder for Phase 2 */}
+            {/* Rich Text Editor */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Content (WYSIWYG Coming Soon)</label>
-              <textarea rows={8} placeholder="Enter post content here..." className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"></textarea>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Content</label>
+              <RichTextEditor 
+                content=""
+                onChange={(html) => console.log(html)}
+              />
             </div>
 
             <div className="pt-4 flex gap-4">
