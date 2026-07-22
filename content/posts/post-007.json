@@ -1,16 +1,15 @@
 {
   "id": "post-007",
   "title": "RRB 22000 Group D Online form 2026",
-  "categorySlug": "color-blocks",
+  "categorySlug": "highlight-updates",
   "content": "<p>RRB 22000 Group D Online form 2026</p>",
   "author": "Sukhamay",
   "date": "2026-07-22T18:01:47.191Z",
   "tags": [],
-  "tagColor": "",
-  "imgGradient": "",
+  "tagColor": "bg-green-500",
+  "imgGradient": "from-blue-500 to-indigo-600",
   "salary": "",
   "jobType": "",
-  "location": "",
-  "bgClass": "bg-orange-600 dark:bg-orange-700",
+  "location": null,
   "status": "published"
 }
