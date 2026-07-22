@@ -487,7 +487,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                       <option value="job-notifications">Job Notifications</option>
                       <option value="admit-cards">Admit Cards</option>
                       <option value="results">Results</option>
-                      <option value="color-blocks">Color Blocks (Hero)</option>
+                      <option value="color-blocks">Highlight Updates</option>
                     </>
                   )}
                 </select>

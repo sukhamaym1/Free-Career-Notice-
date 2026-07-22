@@ -1,17 +1,22 @@
 [
   {
     "id": "cat_1",
-    "name": "JOB NOTIFICATIONS",
+    "name": "Job Notifications",
     "slug": "job-notifications"
   },
   {
     "id": "cat_2",
-    "name": "ADMIT CARDS",
+    "name": "Admit Cards",
     "slug": "admit-cards"
   },
   {
     "id": "cat_3",
-    "name": "RESULTS",
+    "name": "Results",
     "slug": "results"
+  },
+  {
+    "id": "cat_4",
+    "name": "Highlight Updates",
+    "slug": "color-blocks"
   }
 ]
