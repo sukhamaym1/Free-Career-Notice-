@@ -1,8 +1,15 @@
 import { useParams, Link } from 'react-router-dom';
 import { Calendar, User, Clock, Share2, Facebook, Twitter, ChevronRight, FileText, CheckCircle2, AlertCircle, Copy } from 'lucide-react';
+import { motion, useScroll, useSpring } from 'motion/react';
 
 export default function PostPage() {
   const { postId } = useParams();
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(window.location.href).then(() => {
@@ -25,7 +32,12 @@ export default function PostPage() {
   };
 
   return (
-    <main className="container mx-auto px-4 py-8 pb-20 animate-in fade-in duration-500 max-w-5xl">
+    <>
+      <motion.div 
+        className="fixed top-0 left-0 right-0 h-1 bg-blue-600 origin-left z-[60]" 
+        style={{ scaleX }} 
+      />
+      <main className="container mx-auto px-4 py-8 pb-20 animate-in fade-in duration-500 max-w-5xl">
       {/* Breadcrumbs */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6 overflow-x-auto whitespace-nowrap pb-2">
         <Link to="/" className="hover:text-blue-600 dark:hover:text-blue-400">Home</Link>
@@ -215,5 +227,6 @@ export default function PostPage() {
         </div>
       </article>
     </main>
+    </>
   );
 }

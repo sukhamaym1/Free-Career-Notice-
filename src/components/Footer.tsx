@@ -46,6 +46,7 @@ export default function Footer() {
               <li><Link to="/category/results" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Exam Results</Link></li>
               <li><Link to="/category/answer-keys" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Answer Keys</Link></li>
               <li><Link to="/category/syllabus" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Syllabus & Exam Pattern</Link></li>
+              <li><Link to="/admin" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Admin Panel</Link></li>
             </ul>
           </div>
 

@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { useTheme } from './hooks/useTheme';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -13,6 +13,7 @@ import CategoryPage from './pages/CategoryPage';
 import TextPage from './pages/TextPage';
 import SearchPage from './pages/SearchPage';
 import QuizPage from './pages/QuizPage';
+import AdminPage from './pages/AdminPage';
 
 import PostPage from './pages/PostPage';
 import BackToTop from './components/BackToTop';
@@ -20,6 +21,8 @@ import ScrollToTop from './components/ScrollToTop';
 
 export default function App() {
   const { theme, toggleTheme } = useTheme();
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith('/admin');
 
   const [toast, setToast] = useState<string | null>(null);
 
@@ -54,22 +57,23 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 font-sans transition-colors duration-200">
+    <div className={`min-h-screen font-sans transition-colors duration-200 ${isAdmin ? 'bg-[#0f172a] text-white' : 'bg-gray-50 dark:bg-slate-950'}`}>
       <ScrollToTop />
-      <Header theme={theme} toggleTheme={toggleTheme} />
+      {!isAdmin && <Header theme={theme} toggleTheme={toggleTheme} />}
       
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/quiz" element={<QuizPage />} />
+        <Route path="/admin" element={<AdminPage />} />
         <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route path="/post/:postId" element={<PostPage />} />
         <Route path="/:pageId" element={<TextPage />} />
       </Routes>
 
-      <Footer />
+      {!isAdmin && <Footer />}
 
-      <BackToTop />
+      {!isAdmin && <BackToTop />}
 
       {/* Global Toast Notification for Demo */}
       {toast && (
