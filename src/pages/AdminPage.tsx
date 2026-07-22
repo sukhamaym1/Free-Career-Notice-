@@ -9,42 +9,39 @@ interface AdminPageProps {
 
 export default function AdminPage({ theme, toggleTheme }: AdminPageProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [githubConfig, setGithubConfig] = useState({
-    pat: '',
-    repo: '',
-    branch: ''
-  });
+  const [jwtToken, setJwtToken] = useState<string | null>(null);
 
-  // Basic session persistence
+  // Check for existing session token
   useEffect(() => {
-    const savedSession = sessionStorage.getItem('admin_session');
-    if (savedSession) {
-      try {
-        const parsed = JSON.parse(savedSession);
-        setGithubConfig(parsed);
-        setIsLoggedIn(true);
-      } catch (e) {
-        // Ignored
-      }
+    const savedToken = localStorage.getItem('cf_jwt_token');
+    if (savedToken) {
+      setJwtToken(savedToken);
+      setIsLoggedIn(true);
     }
   }, []);
 
-  const handleLogin = (pat: string, repo: string, branch: string) => {
-    const config = { pat, repo, branch };
-    setGithubConfig(config);
-    sessionStorage.setItem('admin_session', JSON.stringify(config));
+  const handleLogin = (token: string) => {
+    setJwtToken(token);
+    localStorage.setItem('cf_jwt_token', token);
     setIsLoggedIn(true);
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    setGithubConfig({ pat: '', repo: '', branch: '' });
-    sessionStorage.removeItem('admin_session');
+    setJwtToken(null);
+    localStorage.removeItem('cf_jwt_token');
   };
 
   if (!isLoggedIn) {
-    return <AdminLogin onLogin={handleLogin} />;
+    return <AdminLogin onLogin={handleLogin} theme={theme} />;
   }
 
-  return <AdminDashboard onLogout={handleLogout} githubConfig={githubConfig} theme={theme} toggleTheme={toggleTheme} />;
+  // We no longer pass githubConfig, the backend handles deployment/storage
+  return (
+    <AdminDashboard 
+      onLogout={handleLogout} 
+      theme={theme} 
+      toggleTheme={toggleTheme} 
+    />
+  );
 }

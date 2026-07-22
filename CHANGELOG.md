@@ -1,17 +1,23 @@
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] - Enterprise CMS Upgrade Phase 2
+## [Unreleased] - Enterprise CMS Upgrade Phase 3 (Security & APIs)
+### Added
+- **API Documentation**: Generated `API_DOCUMENTATION.md` detailing the REST endpoints for Cloudflare Workers.
+- **Deployment Guide**: Generated `DEPLOYMENT_GUIDE.md` outlining the 100% free Cloudflare deployment architecture.
+
+### Changed
+- **Security Enhancements**: Completely removed the insecure GitHub PAT (Personal Access Token) storage from the browser in `AdminLogin.tsx`.
+- **Authentication**: Replaced the GitHub authentication flow with a JWT-based login scaffold designed to communicate with the Cloudflare Worker.
+- **Admin Dashboard**: Decoupled the `AdminDashboard.tsx` from direct GitHub API commits, setting up a mock `fetchData` and `handleSync` function targeting the future Cloudflare API.
+
+## [Previous] - Enterprise CMS Upgrade Phase 2
 ### Added
 - **Admin Dashboard Redesign**: Fully implemented WordPress-style collapsible sidebar, dark/light mode integration, and comprehensive dashboard widgets.
 - **Post Management**: Added Rich Text Editor using Tiptap for full WYSIWYG capabilities during post creation. Added UI scaffolds for Categories and Tags management.
 - **Media Library**: Implemented Media Library grid view and drag-and-drop UI placeholder for Cloudflare R2 bucket integration.
 - **API Service Layer**: Created `src/lib/api.ts` and `src/types.ts` to establish the Cloudflare D1 CRUD connection layer, paving the way for the full Phase 3 backend integration.
-
-### Planned (Next Phases - Phase 3)
-- **API Migration**: Deprecate GitHub PAT client-side commits in favor of Cloudflare Worker REST endpoints.
-- **Database Integration**: Bind the Cloudflare D1 database to the Admin CRUD interfaces.
-- **Media Storage**: Wire the Media Library UI to the Cloudflare R2 bucket APIs.
 
 ## [Previous] - Enterprise CMS Upgrade Phase 1
 ### Added

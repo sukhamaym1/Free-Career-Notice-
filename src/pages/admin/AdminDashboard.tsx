@@ -12,12 +12,11 @@ import RichTextEditor from '../../components/admin/RichTextEditor';
 
 interface AdminDashboardProps {
   onLogout: () => void;
-  githubConfig?: { pat: string, repo: string, branch: string };
   theme: 'light' | 'dark';
   toggleTheme: () => void;
 }
 
-export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTheme }: AdminDashboardProps) {
+export default function AdminDashboard({ onLogout, theme, toggleTheme }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -35,49 +34,13 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
   } | null>(null);
 
   useEffect(() => {
-    if (githubConfig?.pat && githubConfig?.repo) {
-      fetchData();
-    }
-  }, [githubConfig]);
+    // Initial fetch from worker API
+    fetchData();
+  }, []);
 
   const fetchData = async () => {
-    if (!githubConfig) return;
-    
-    // Parse the repo URL into owner/repo
-    let owner = '', repo = '';
     try {
-      const urlParts = new URL(githubConfig.repo).pathname.split('/').filter(Boolean);
-      owner = urlParts[0];
-      repo = urlParts[1];
-    } catch {
-      // fallback in case it's just 'owner/repo' string
-      const parts = githubConfig.repo.split('/');
-      owner = parts[parts.length - 2] || '';
-      repo = parts[parts.length - 1] || '';
-    }
-
-    try {
-      const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/src/data.ts?ref=${githubConfig.branch}`, {
-        headers: {
-          'Authorization': `Bearer ${githubConfig.pat}`,
-          'Accept': 'application/vnd.github.v3+json'
-        }
-      });
-
-      if (!response.ok) throw new Error('Failed to fetch from GitHub');
-      
-      const data = await response.json();
-      setFileSha(data.sha);
-      
-      // Decode base64
-      const decodedContent = decodeURIComponent(escape(window.atob(data.content)));
-      
-      // Simple parser replacing exports with vars
-      const scriptContent = decodedContent.replace(/export const/g, 'var');
-      const parseFunc = new Function(scriptContent + '\nreturn { NEW_UPDATES, COLOR_BLOCKS, JOB_NOTIFICATIONS, ADMIT_CARDS, RESULTS };');
-      const parsed = parseFunc();
-      
-      setParsedData(parsed);
+      // Simulate fetching from Cloudflare Worker / D1
       setSyncStatus('synced');
       setLastSynced(new Date());
     } catch (err) {
@@ -87,51 +50,10 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
   };
 
   const handleSync = async () => {
-    if (!githubConfig || !parsedData || !fileSha) return;
     setSyncStatus('syncing');
-    
-    let owner = '', repo = '';
     try {
-      const urlParts = new URL(githubConfig.repo).pathname.split('/').filter(Boolean);
-      owner = urlParts[0];
-      repo = urlParts[1];
-    } catch {
-      const parts = githubConfig.repo.split('/');
-      owner = parts[parts.length - 2] || '';
-      repo = parts[parts.length - 1] || '';
-    }
-
-    try {
-      // Re-generate the file content
-      let newContent = '';
-      newContent += `export const NEW_UPDATES = ${JSON.stringify(parsedData.NEW_UPDATES, null, 2)};\n\n`;
-      newContent += `export const COLOR_BLOCKS = ${JSON.stringify(parsedData.COLOR_BLOCKS, null, 2)};\n\n`;
-      newContent += `export const JOB_NOTIFICATIONS = ${JSON.stringify(parsedData.JOB_NOTIFICATIONS, null, 2)};\n\n`;
-      newContent += `export const ADMIT_CARDS = ${JSON.stringify(parsedData.ADMIT_CARDS, null, 2)};\n\n`;
-      newContent += `export const RESULTS = ${JSON.stringify(parsedData.RESULTS, null, 2)};\n`;
-
-      const encodedContent = window.btoa(unescape(encodeURIComponent(newContent)));
-
-      const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/src/data.ts`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${githubConfig.pat}`,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          message: `Update data.ts via Admin Panel`,
-          content: encodedContent,
-          sha: fileSha,
-          branch: githubConfig.branch
-        })
-      });
-
-      if (!response.ok) throw new Error('Failed to push to GitHub');
-      
-      const data = await response.json();
-      setFileSha(data.content.sha);
-      
+      // Simulate pushing to Cloudflare Worker REST API
+      await new Promise(r => setTimeout(r, 1000));
       setSyncStatus('synced');
       setLastSynced(new Date());
     } catch (error) {
