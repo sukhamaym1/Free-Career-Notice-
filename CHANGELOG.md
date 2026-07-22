@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 - **Admin Dashboard Redesign**: Fully implemented WordPress-style collapsible sidebar, dark/light mode integration, and comprehensive dashboard widgets.
 - **Post Management**: Added Rich Text Editor using Tiptap for full WYSIWYG capabilities during post creation. Added UI scaffolds for Categories and Tags management.
 - **Media Library**: Implemented Media Library grid view and drag-and-drop UI placeholder for Cloudflare R2 bucket integration.
+- **API Service Layer**: Created `src/lib/api.ts` and `src/types.ts` to establish the Cloudflare D1 CRUD connection layer, paving the way for the full Phase 3 backend integration.
 
 ### Planned (Next Phases - Phase 3)
 - **API Migration**: Deprecate GitHub PAT client-side commits in favor of Cloudflare Worker REST endpoints.
