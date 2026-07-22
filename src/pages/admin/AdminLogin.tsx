@@ -5,43 +5,19 @@ import { KeyRound, Mail, Loader2, Info } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 interface AdminLoginProps {
-  onLogin: (token: string) => void;
+  onLogin: (pat: string, repo: string, branch: string) => void;
   theme: 'light' | 'dark';
 }
 
 export default function AdminLogin({ onLogin, theme }: AdminLoginProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [pat, setPat] = useState('');
+  const [repo, setRepo] = useState('username/repo');
+  const [branch, setBranch] = useState('main');
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setError('');
-    
-    if (!email || !password) {
-      setError('Please enter both email and password.');
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      // Simulate API call to Cloudflare Worker
-      // In production, this will hit POST /api/auth/login
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // Mock validation for demo
-      if (email === 'admin@example.com' && password === 'admin') {
-        const mockJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mock_token';
-        onLogin(mockJwt);
-      } else {
-        setError('Invalid email or password. Use admin@example.com / admin');
-      }
-    } catch (err) {
-      setError('An error occurred during login. Please try again.');
-    } finally {
-      setIsLoading(false);
+    if (pat && repo && branch) {
+      onLogin(pat, repo, branch);
     }
   };
 
@@ -70,78 +46,76 @@ export default function AdminLogin({ onLogin, theme }: AdminLoginProps) {
               Free Career Notice
             </h1>
             <h2 className={cn("text-lg font-medium", theme === 'dark' ? "text-slate-300" : "text-slate-600")}>
-              Admin Portal
+              GitHub CMS Admin
             </h2>
             <p className={cn("text-sm text-center mt-2", theme === 'dark' ? "text-slate-400" : "text-slate-500")}>
-              Sign in securely to manage content
+              Login using your GitHub Personal Access Token (PAT). Token is stored only in session storage.
             </p>
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-5">
-            {error && (
-              <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-sm px-4 py-3 rounded-lg flex items-start gap-2">
-                <Info className="w-5 h-5 shrink-0 mt-0.5" />
-                <p>{error}</p>
-              </div>
-            )}
-            
             <div>
               <label className={cn("block text-sm font-medium mb-1.5", theme === 'dark' ? "text-slate-200" : "text-slate-700")}>
-                Email Address
+                GitHub PAT
               </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@example.com"
-                  className={cn(
-                    "w-full border rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all",
-                    theme === 'dark' 
-                      ? "bg-[#0f172a] border-slate-700 text-slate-200 placeholder:text-slate-500" 
-                      : "bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-blue-500"
-                  )}
-                  disabled={isLoading}
-                />
-              </div>
+              <input
+                type="password"
+                value={pat}
+                onChange={(e) => setPat(e.target.value)}
+                placeholder="ghp_xxxxxxxxxxxx"
+                className={cn(
+                  "w-full border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all",
+                  theme === 'dark' 
+                    ? "bg-[#0f172a] border-slate-700 text-slate-200 placeholder:text-slate-500" 
+                    : "bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-blue-500"
+                )}
+                required
+              />
             </div>
             
             <div>
               <label className={cn("block text-sm font-medium mb-1.5", theme === 'dark' ? "text-slate-200" : "text-slate-700")}>
-                Password
+                Repository (owner/repo)
               </label>
-              <div className="relative">
-                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className={cn(
-                    "w-full border rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all",
-                    theme === 'dark' 
-                      ? "bg-[#0f172a] border-slate-700 text-slate-200 placeholder:text-slate-500" 
-                      : "bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-blue-500"
-                  )}
-                  disabled={isLoading}
-                />
-              </div>
+              <input
+                type="text"
+                value={repo}
+                onChange={(e) => setRepo(e.target.value)}
+                placeholder="username/free-career-notice"
+                className={cn(
+                  "w-full border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all",
+                  theme === 'dark' 
+                    ? "bg-[#0f172a] border-slate-700 text-slate-200 placeholder:text-slate-500" 
+                    : "bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-blue-500"
+                )}
+                required
+              />
+            </div>
+
+            <div>
+              <label className={cn("block text-sm font-medium mb-1.5", theme === 'dark' ? "text-slate-200" : "text-slate-700")}>
+                Branch
+              </label>
+              <input
+                type="text"
+                value={branch}
+                onChange={(e) => setBranch(e.target.value)}
+                placeholder="main"
+                className={cn(
+                  "w-full border rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all",
+                  theme === 'dark' 
+                    ? "bg-[#0f172a] border-slate-700 text-slate-200 placeholder:text-slate-500" 
+                    : "bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-blue-500"
+                )}
+                required
+              />
             </div>
             
             <button
               type="submit"
-              disabled={isLoading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 mt-2"
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Signing In...
-                </>
-              ) : (
-                'Sign In'
-              )}
+              Sign In
             </button>
           </form>
         </div>

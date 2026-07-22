@@ -1,0 +1,8 @@
+[
+  { "title": "Home", "link": "/" },
+  { "title": "Admit Card", "link": "/category/admit-cards" },
+  { "title": "Result", "link": "/category/results" },
+  { "title": "Answer Key", "link": "/category/answer-key" },
+  { "title": "Syllabus", "link": "/category/syllabus" },
+  { "title": "Search", "link": "/search" }
+]

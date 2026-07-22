@@ -1,0 +1,6 @@
+[
+  { "id": "cat_1", "name": "JOB NOTIFICATIONS", "slug": "job-notifications" },
+  { "id": "cat_2", "name": "ADMIT CARDS", "slug": "admit-cards" },
+  { "id": "cat_3", "name": "RESULTS", "slug": "results" },
+  { "id": "cat_4", "name": "NEW UPDATES", "slug": "new-updates" }
+]

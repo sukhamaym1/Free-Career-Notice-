@@ -9,38 +9,51 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../../lib/utils';
 import RichTextEditor from '../../components/admin/RichTextEditor';
+import { GitHubClient } from '../../lib/github';
 
 interface AdminDashboardProps {
   onLogout: () => void;
+  githubConfig: { pat: string, repo: string, branch: string };
   theme: 'light' | 'dark';
   toggleTheme: () => void;
 }
 
-export default function AdminDashboard({ onLogout, theme, toggleTheme }: AdminDashboardProps) {
+export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTheme }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [syncStatus, setSyncStatus] = useState<'synced' | 'unsynced' | 'syncing' | 'error'>('synced');
   const [lastSynced, setLastSynced] = useState<Date | null>(new Date());
-  const [fileSha, setFileSha] = useState('');
   
-  const [parsedData, setParsedData] = useState<{
-    NEW_UPDATES: string[];
-    COLOR_BLOCKS: any[];
-    JOB_NOTIFICATIONS: any[];
-    ADMIT_CARDS: any[];
-    RESULTS: any[];
-  } | null>(null);
+  const [rawPosts, setRawPosts] = useState<any[]>([]);
+
+  const parsedData = {
+    NEW_UPDATES: rawPosts.filter(p => p.categorySlug === 'new-updates'),
+    COLOR_BLOCKS: rawPosts.filter(p => p.categorySlug === 'color-blocks'),
+    JOB_NOTIFICATIONS: rawPosts.filter(p => p.categorySlug === 'job-notifications'),
+    ADMIT_CARDS: rawPosts.filter(p => p.categorySlug === 'admit-cards'),
+    RESULTS: rawPosts.filter(p => p.categorySlug === 'results'),
+  };
+
+  const client = new GitHubClient(githubConfig.pat, githubConfig.repo, githubConfig.branch);
 
   useEffect(() => {
-    // Initial fetch from worker API
     fetchData();
-  }, []);
+  }, [githubConfig]);
 
   const fetchData = async () => {
+    setSyncStatus('syncing');
     try {
-      // Simulate fetching from Cloudflare Worker / D1
+      const files = await client.listDirectory('content/posts');
+      const postPromises = files.map((f: any) => client.getFile(f.path));
+      const postResults = await Promise.all(postPromises);
+      const posts = postResults.filter(Boolean).map(r => JSON.parse(r!.content));
+      
+      // Sort posts descending by ID
+      posts.sort((a, b) => (b.id > a.id ? 1 : -1));
+      
+      setRawPosts(posts);
       setSyncStatus('synced');
       setLastSynced(new Date());
     } catch (err) {
@@ -49,20 +62,44 @@ export default function AdminDashboard({ onLogout, theme, toggleTheme }: AdminDa
     }
   };
 
-  const handleSync = async () => {
+  const handleCreate = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
     setSyncStatus('syncing');
+    
     try {
-      // Simulate pushing to Cloudflare Worker REST API
-      await new Promise(r => setTimeout(r, 1000));
+      const nextIdNumber = rawPosts.length > 0 ? Math.max(...rawPosts.map(p => parseInt(p.id.replace('post-', '')))) + 1 : 1;
+      const newPost = {
+        id: `post-${String(nextIdNumber).padStart(3, '0')}`,
+        title: formData.get('title'),
+        categorySlug: formData.get('tag'), // Using tag as category for now
+        content: formData.get('content') || `<p>${formData.get('title')}</p>`,
+        author: formData.get('author'),
+        date: formData.get('date'),
+        tags: [formData.get('tag')].filter(Boolean),
+        tagColor: 'bg-green-500', 
+        imgGradient: 'from-blue-500 to-indigo-600',
+        salary: formData.get('salary'),
+        jobType: formData.get('jobType'),
+        location: formData.get('location'),
+        status: 'published'
+      };
+
+      await client.putFile(
+        `content/posts/${newPost.id}.json`,
+        JSON.stringify(newPost, null, 2),
+        `Create post ${newPost.id}`
+      );
+
+      setRawPosts([newPost, ...rawPosts]);
       setSyncStatus('synced');
       setLastSynced(new Date());
+      setActiveTab('All Posts');
     } catch (error) {
       console.error(error);
       setSyncStatus('error');
     }
   };
-
-  // Rest of the component remains the same, we'll update the button next
 
 
   const navItems = [
@@ -72,17 +109,14 @@ export default function AdminDashboard({ onLogout, theme, toggleTheme }: AdminDa
     { name: 'Categories', icon: Folder },
     { name: 'Tags', icon: Tags },
     { name: 'Media Library', icon: ImageIcon },
-    { name: 'Appearance', icon: LayoutTemplate },
-    { name: 'Users', icon: Users },
-    { name: 'Analytics', icon: Activity },
     { name: 'Settings', icon: Settings },
   ];
 
   const renderContent = () => {
-    if (!parsedData) {
+    if (syncStatus === 'syncing' && rawPosts.length === 0) {
       return (
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#0ea5e9]"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
         </div>
       );
     }
@@ -114,7 +148,7 @@ export default function AdminDashboard({ onLogout, theme, toggleTheme }: AdminDa
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden flex flex-col">
               <div className="p-6 border-b border-slate-200 dark:border-slate-700/50 flex justify-between items-center">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Recent Job Notifications</h3>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Recent Posts</h3>
                 <button onClick={() => setActiveTab('All Posts')} className="px-4 py-1.5 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-sm font-medium rounded-md transition-colors text-slate-700 dark:text-slate-200">
                   View All
                 </button>
@@ -129,13 +163,13 @@ export default function AdminDashboard({ onLogout, theme, toggleTheme }: AdminDa
                     </tr>
                   </thead>
                   <tbody>
-                    {parsedData.JOB_NOTIFICATIONS.slice(0, 5).map((job, i) => (
+                    {rawPosts.slice(0, 5).map((job, i) => (
                       <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
                         <td className="py-4 pr-4 border-b border-slate-100 dark:border-slate-800/50 font-medium text-slate-800 dark:text-slate-200 max-w-[200px] truncate">
                           {job.title}
                         </td>
                         <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400">
-                          {job.tag}
+                          {job.categorySlug}
                         </td>
                         <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400 text-sm whitespace-nowrap">
                           {job.date}
@@ -152,127 +186,18 @@ export default function AdminDashboard({ onLogout, theme, toggleTheme }: AdminDa
               <div className="space-y-3">
                 <button onClick={() => setActiveTab('Create Post')} className="w-full flex items-center gap-3 px-4 py-3 bg-blue-600 dark:bg-[#0ea5e9] hover:bg-blue-700 dark:hover:bg-[#0284c7] text-white rounded-lg transition-colors font-medium text-sm">
                   <Edit3 className="w-5 h-5 text-blue-100 dark:text-yellow-300" />
-                  Write a New Article
+                  Write a New Post
                 </button>
                 <button 
-                  onClick={handleSync}
+                  onClick={fetchData}
                   disabled={syncStatus === 'syncing'}
                   className="w-full flex items-center gap-3 px-4 py-3 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed border border-slate-200 dark:border-transparent"
                 >
-                  <Database className={`w-5 h-5 text-blue-600 dark:text-sky-400 ${syncStatus === 'syncing' ? 'animate-pulse' : ''}`} />
-                  {syncStatus === 'syncing' ? 'Syncing...' : 'Sync with GitHub'}
+                  <RefreshCw className={`w-5 h-5 text-blue-600 dark:text-sky-400 ${syncStatus === 'syncing' ? 'animate-spin' : ''}`} />
+                  {syncStatus === 'syncing' ? 'Fetching...' : 'Refresh from GitHub'}
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      );
-    }
-
-    if (activeTab === 'Categories' || activeTab === 'Tags') {
-      const items = activeTab === 'Categories' 
-        ? ['JOB NOTIFICATIONS', 'ADMIT CARDS', 'RESULTS', 'NEW UPDATES']
-        : ['SSC', 'UPSC', 'Banking', 'Railway', 'Defense', 'State Govt'];
-
-      return (
-        <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden flex flex-col animate-in fade-in duration-300">
-          <div className="p-6 border-b border-slate-200 dark:border-slate-700/50 flex justify-between items-center">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Manage {activeTab}</h3>
-            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm">
-              + Add New {activeTab === 'Categories' ? 'Category' : 'Tag'}
-            </button>
-          </div>
-          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-slate-50 dark:bg-[#0f172a] p-4 rounded-xl border border-slate-200 dark:border-slate-700">
-              <h4 className="font-bold text-slate-800 dark:text-slate-200 mb-4">Add New</h4>
-              <form className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Name</label>
-                  <input required className="w-full bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Slug</label>
-                  <input required className="w-full bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
-                  <textarea rows={3} className="w-full bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                </div>
-                <button type="button" className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
-                  Add {activeTab === 'Categories' ? 'Category' : 'Tag'}
-                </button>
-              </form>
-            </div>
-            
-            <div>
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="text-sm font-semibold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700/50">
-                    <th className="pb-4 pr-4">Name</th>
-                    <th className="pb-4 px-4">Count</th>
-                    <th className="pb-4 px-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((item, i) => (
-                    <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                      <td className="py-4 pr-4 border-b border-slate-100 dark:border-slate-800/50 font-medium text-slate-800 dark:text-slate-200">
-                        {item}
-                      </td>
-                      <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400">
-                        {Math.floor(Math.random() * 50) + 1}
-                      </td>
-                      <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-right">
-                        <button className="text-blue-600 dark:text-blue-400 hover:underline text-sm font-medium mr-3">Edit</button>
-                        <button className="text-red-600 dark:text-red-400 hover:underline text-sm font-medium">Delete</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    if (activeTab === 'Media Library') {
-      return (
-        <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm p-6 animate-in fade-in duration-300">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Media Library</h3>
-            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm">
-              <ImageIcon className="w-4 h-4" />
-              Upload New
-            </button>
-          </div>
-          
-          <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-12 text-center bg-slate-50 dark:bg-slate-800/20 mb-8">
-            <ImageIcon className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-            <h4 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-2">Drag and drop your files here</h4>
-            <p className="text-sm text-slate-500 mb-4">or click to browse from your computer</p>
-            <button className="px-6 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 rounded-lg transition-colors font-medium text-sm">
-              Select Files
-            </button>
-            <p className="text-xs text-slate-400 mt-4">Supported formats: JPG, PNG, WEBP, PDF (Max 10MB)</p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="group relative aspect-square rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                <div className="absolute inset-0 flex items-center justify-center text-slate-400">
-                  <ImageIcon className="w-8 h-8 opacity-50" />
-                </div>
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                  <button className="p-2 bg-white text-slate-900 rounded-lg text-sm font-medium shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all">
-                    Copy URL
-                  </button>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
-                  <p className="text-xs text-white truncate">image-{i}.jpg</p>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       );
@@ -282,7 +207,10 @@ export default function AdminDashboard({ onLogout, theme, toggleTheme }: AdminDa
       return (
         <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden flex flex-col animate-in fade-in duration-300">
           <div className="p-6 border-b border-slate-200 dark:border-slate-700/50 flex justify-between items-center">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">All Job Notifications</h3>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">All Posts</h3>
+            <button onClick={() => setActiveTab('Create Post')} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm">
+              + Add New
+            </button>
           </div>
           <div className="p-6 overflow-x-auto flex-1">
             <table className="w-full text-left border-collapse">
@@ -291,25 +219,26 @@ export default function AdminDashboard({ onLogout, theme, toggleTheme }: AdminDa
                   <th className="pb-4 pr-4">Title</th>
                   <th className="pb-4 px-4">Category</th>
                   <th className="pb-4 px-4">Date</th>
-                  <th className="pb-4 px-4">Author</th>
+                  <th className="pb-4 px-4">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {parsedData.JOB_NOTIFICATIONS.map((job, i) => (
+                {rawPosts.map((job, i) => (
                   <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
                     <td className="py-4 pr-4 border-b border-slate-100 dark:border-slate-800/50 font-medium text-slate-800 dark:text-slate-200">
                       {job.title}
                     </td>
                     <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400">
-                      <span className={`px-2 py-1 rounded text-xs text-white ${job.tagColor}`}>
-                        {job.tag}
+                      <span className={`px-2 py-1 rounded text-xs text-white bg-slate-600`}>
+                        {job.categorySlug}
                       </span>
                     </td>
                     <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400 text-sm whitespace-nowrap">
                       {job.date}
                     </td>
                     <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400 text-sm">
-                      {job.author}
+                      <button className="text-blue-600 hover:underline mr-3">Edit</button>
+                      <button className="text-red-600 hover:underline">Delete</button>
                     </td>
                   </tr>
                 ))}
@@ -321,33 +250,10 @@ export default function AdminDashboard({ onLogout, theme, toggleTheme }: AdminDa
     }
 
     if (activeTab === 'Create Post') {
-      const handleCreate = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget);
-        const newPost = {
-          title: formData.get('title'),
-          author: formData.get('author'),
-          date: formData.get('date'),
-          tag: formData.get('tag'),
-          tagColor: 'bg-green-500', // Default
-          imgGradient: 'from-blue-500 to-indigo-600', // Default
-          salary: formData.get('salary'),
-          jobType: formData.get('jobType'),
-          location: formData.get('location'),
-        };
-
-        setParsedData({
-          ...parsedData,
-          JOB_NOTIFICATIONS: [newPost, ...parsedData.JOB_NOTIFICATIONS]
-        });
-        setSyncStatus('unsynced');
-        setActiveTab('All Posts');
-      };
-
       return (
         <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm p-6 animate-in fade-in duration-300">
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Create New Job Notification</h3>
-          <form onSubmit={handleCreate} className="space-y-4 max-w-2xl">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Create New Post</h3>
+          <form onSubmit={handleCreate} className="space-y-4 max-w-4xl">
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Title</label>
               <input name="title" required className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
@@ -355,40 +261,40 @@ export default function AdminDashboard({ onLogout, theme, toggleTheme }: AdminDa
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Author</label>
-                <input name="author" defaultValue="Sukhamay" required className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <input name="author" defaultValue="Admin" required className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Date</label>
-                <input name="date" type="text" placeholder="e.g. May 15, 2026" required className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <input name="date" type="text" defaultValue={new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} required className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Tag (Category)</label>
-                <input name="tag" defaultValue="JOB NOTIFICATIONS" required className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Category (Slug)</label>
+                <select name="tag" required className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option value="new-updates">New Updates</option>
+                  <option value="job-notifications">Job Notifications</option>
+                  <option value="admit-cards">Admit Cards</option>
+                  <option value="results">Results</option>
+                  <option value="color-blocks">Color Blocks (Hero)</option>
+                </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Job Type</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Job Type (Optional)</label>
                 <input name="jobType" defaultValue="Full-Time" className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Salary</label>
-                <input name="salary" placeholder="e.g. $40k - $60k" className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Location</label>
-                <input name="location" placeholder="e.g. All India" className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
             </div>
             
             {/* Rich Text Editor */}
-            <div>
+            <div className="min-h-[400px]">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Content</label>
+              <input type="hidden" name="content" id="editor-content" />
               <RichTextEditor 
                 content=""
-                onChange={(html) => console.log(html)}
+                onChange={(html) => {
+                  const input = document.getElementById('editor-content') as HTMLInputElement;
+                  if (input) input.value = html;
+                }}
               />
             </div>
 
