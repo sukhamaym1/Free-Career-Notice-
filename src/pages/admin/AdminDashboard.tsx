@@ -25,6 +25,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
   const [syncStatus, setSyncStatus] = useState<'synced' | 'unsynced' | 'syncing' | 'error'>('synced');
   const [lastSynced, setLastSynced] = useState<Date | null>(new Date());
   
@@ -308,10 +309,11 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     { name: 'Website Settings', icon: Settings },
   ];
 
-  const filteredPosts = rawPosts.filter(p => 
-    p.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.categorySlug?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredPosts = rawPosts.filter(p => {
+    const matchesSearch = p.title?.toLowerCase().includes(searchQuery.toLowerCase()) || p.categorySlug?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = categoryFilter ? p.categorySlug === categoryFilter : true;
+    return matchesSearch && matchesCategory;
+  });
 
   const renderContent = () => {
     if (syncStatus === 'syncing' && rawPosts.length === 0) {
@@ -404,11 +406,30 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     if (activeTab === 'All Posts') {
       return (
         <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden flex flex-col animate-in fade-in duration-300">
-          <div className="p-6 border-b border-slate-200 dark:border-slate-700/50 flex justify-between items-center">
+          <div className="p-6 border-b border-slate-200 dark:border-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">All Posts</h3>
-            <button onClick={() => { setEditingPost(null); setActiveTab('Create Post'); }} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm">
-              + Add New
-            </button>
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <select 
+                value={categoryFilter} 
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Categories</option>
+                {categories.length > 0 ? categories.map(c => (
+                  <option key={c.id} value={c.slug}>{c.name}</option>
+                )) : (
+                  <>
+                    <option value="job-notifications">Job Notifications</option>
+                    <option value="admit-cards">Admit Cards</option>
+                    <option value="results">Results</option>
+                    <option value="color-blocks">Highlight Updates</option>
+                  </>
+                )}
+              </select>
+              <button onClick={() => { setEditingPost(null); setActiveTab('Create Post'); }} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm whitespace-nowrap">
+                + Add New
+              </button>
+            </div>
           </div>
           <div className="p-6 overflow-x-auto flex-1">
             <table className="w-full text-left border-collapse">
