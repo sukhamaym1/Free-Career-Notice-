@@ -31,7 +31,7 @@ function HeaderSearch({ className = "" }: { className?: string }) {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={placeholder}
-        className="w-full xl:w-72 h-10 pl-10 pr-4 rounded-full border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 group-hover:border-gray-300 dark:group-hover:border-gray-700"
+        className="w-full h-10 pl-10 pr-4 rounded-full border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 group-hover:border-gray-300 dark:group-hover:border-gray-700"
       />
       <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-0 bottom-0 my-auto" />
     </form>
@@ -76,12 +76,12 @@ export default function Header({ theme, toggleTheme }: HeaderProps) {
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center gap-3">
-          <HeaderSearch className="hidden lg:block w-56" />
+        <div className="flex items-center gap-3 shrink-0">
+          <HeaderSearch className="hidden lg:block w-48 xl:w-72" />
           
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 shrink-0 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             aria-label="Toggle theme"
           >
             {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -89,7 +89,7 @@ export default function Header({ theme, toggleTheme }: HeaderProps) {
 
           {/* Mobile Menu Toggle */}
           <button 
-            className="md:hidden p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="md:hidden p-2 shrink-0 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle mobile menu"
           >
