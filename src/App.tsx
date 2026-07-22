@@ -57,7 +57,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className={`min-h-screen font-sans transition-colors duration-200 ${isAdmin ? 'bg-[#0f172a] text-white' : 'bg-gray-50 dark:bg-slate-950'}`}>
+    <div className={`min-h-screen font-sans transition-colors duration-200 ${isAdmin ? 'bg-slate-50 dark:bg-[#0f172a] text-slate-900 dark:text-white' : 'bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-gray-100'}`}>
       <ScrollToTop />
       {!isAdmin && <Header theme={theme} toggleTheme={toggleTheme} />}
       
@@ -65,7 +65,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/quiz" element={<QuizPage />} />
-        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/admin" element={<AdminPage theme={theme} toggleTheme={toggleTheme} />} />
         <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route path="/post/:postId" element={<PostPage />} />
         <Route path="/:pageId" element={<TextPage />} />

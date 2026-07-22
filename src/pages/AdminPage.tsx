@@ -2,7 +2,12 @@ import { useState, useEffect } from 'react';
 import AdminLogin from './admin/AdminLogin';
 import AdminDashboard from './admin/AdminDashboard';
 
-export default function AdminPage() {
+interface AdminPageProps {
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
+}
+
+export default function AdminPage({ theme, toggleTheme }: AdminPageProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [githubConfig, setGithubConfig] = useState({
     pat: '',
@@ -41,5 +46,5 @@ export default function AdminPage() {
     return <AdminLogin onLogin={handleLogin} />;
   }
 
-  return <AdminDashboard onLogout={handleLogout} githubConfig={githubConfig} />;
+  return <AdminDashboard onLogout={handleLogout} githubConfig={githubConfig} theme={theme} toggleTheme={toggleTheme} />;
 }
