@@ -1,17 +1,19 @@
 const postsModules = import.meta.glob('../content/posts/*.json', { eager: true });
 const rawPosts = Object.values(postsModules).map((mod: any) => mod.default || mod);
+const publishedPosts = rawPosts.filter((p: any) => p.status !== 'draft');
 
-export const NEW_UPDATES = rawPosts
+export const NEW_UPDATES = publishedPosts
   .filter(p => p.categorySlug === 'new-updates')
-  .map(p => p.title);
+  .map(p => ({ title: p.title, id: p.id }));
 
-export const COLOR_BLOCKS = rawPosts
+export const COLOR_BLOCKS = publishedPosts
   .filter(p => p.categorySlug === 'color-blocks')
-  .map(p => ({ title: p.title, bgClass: p.bgClass }));
+  .map(p => ({ title: p.title, bgClass: p.bgClass, id: p.id }));
 
-export const JOB_NOTIFICATIONS = rawPosts
+export const JOB_NOTIFICATIONS = publishedPosts
   .filter(p => p.categorySlug === 'job-notifications')
   .map(p => ({
+    id: p.id,
     title: p.title,
     author: p.author,
     date: p.date,
@@ -23,9 +25,10 @@ export const JOB_NOTIFICATIONS = rawPosts
     location: p.location,
   }));
 
-export const ADMIT_CARDS = rawPosts
+export const ADMIT_CARDS = publishedPosts
   .filter(p => p.categorySlug === 'admit-cards')
   .map(p => ({
+    id: p.id,
     title: p.title,
     author: p.author,
     date: p.date,
@@ -34,9 +37,10 @@ export const ADMIT_CARDS = rawPosts
     imgGradient: p.imgGradient,
   }));
 
-export const RESULTS = rawPosts
+export const RESULTS = publishedPosts
   .filter(p => p.categorySlug === 'results')
   .map(p => ({
+    id: p.id,
     title: p.title,
     author: p.author,
     date: p.date,
@@ -47,3 +51,4 @@ export const RESULTS = rawPosts
 
 // Also export the full list for admin dashboard
 export const ALL_POSTS = rawPosts;
+export const PUBLISHED_POSTS = publishedPosts;

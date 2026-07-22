@@ -47,6 +47,21 @@ export class GitHubClient {
     }
   }
 
+  async getRawFile(path: string) {
+    try {
+      const data = await this.request(`/contents/${path}?ref=${this.branch}`);
+      if (data.content) {
+        return {
+          sha: data.sha,
+          content: data.content // keep base64 string
+        };
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
   async listDirectory(path: string) {
     try {
       const data = await this.request(`/contents/${path}?ref=${this.branch}`);
@@ -66,6 +81,18 @@ export class GitHubClient {
       body: JSON.stringify({
         message,
         content: encodedContent,
+        branch: this.branch,
+        ...(sha ? { sha } : {})
+      })
+    });
+  }
+
+  async putBinaryFile(path: string, base64Content: string, message: string, sha?: string) {
+    return this.request(`/contents/${path}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        message,
+        content: base64Content,
         branch: this.branch,
         ...(sha ? { sha } : {})
       })

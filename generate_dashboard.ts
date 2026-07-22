@@ -1,4 +1,6 @@
+import fs from 'fs';
 
+const content = `
 import { useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
 import { 
@@ -105,13 +107,13 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     try {
       const isEdit = !!editingPost;
       const nextIdNumber = rawPosts.length > 0 ? Math.max(...rawPosts.map(p => parseInt(p.id.replace('post-', '') || '0'))) + 1 : 1;
-      const postId = isEdit ? editingPost.id : `post-${String(nextIdNumber).padStart(3, '0')}`;
+      const postId = isEdit ? editingPost.id : \`post-\${String(nextIdNumber).padStart(3, '0')}\`;
       
       const newPost = {
         id: postId,
         title: formData.get('title'),
         categorySlug: formData.get('categorySlug'),
-        content: formData.get('content') || `<p>${formData.get('title')}</p>`,
+        content: formData.get('content') || \`<p>\${formData.get('title')}</p>\`,
         author: formData.get('author'),
         date: formData.get('date'),
         tags: [formData.get('tag')].filter(Boolean),
@@ -124,9 +126,9 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
       };
 
       await client.putFile(
-        `content/posts/${newPost.id}.json`,
+        \`content/posts/\${newPost.id}.json\`,
         JSON.stringify(newPost, null, 2),
-        isEdit ? `Update post ${newPost.id}` : `Create post ${newPost.id}`,
+        isEdit ? \`Update post \${newPost.id}\` : \`Create post \${newPost.id}\`,
         isEdit ? editingPost._sha : undefined
       );
 
@@ -143,7 +145,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     if (!confirm('Delete this post?')) return;
     setSyncStatus('syncing');
     try {
-      await client.deleteFile(post._path, `Delete post ${post.id}`, post._sha);
+      await client.deleteFile(post._path, \`Delete post \${post.id}\`, post._sha);
       await fetchData();
     } catch (err) {
       setSyncStatus('error');
@@ -155,7 +157,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     setSyncStatus('syncing');
     try {
       const slug = newCatName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      const updated = [...categories, { id: `cat_${Date.now()}`, name: newCatName, slug }];
+      const updated = [...categories, { id: \`cat_\${Date.now()}\`, name: newCatName, slug }];
       const res = await client.putFile('content/categories.json', JSON.stringify(updated, null, 2), 'Update categories', categoriesSha || undefined);
       setCategoriesSha(res.content?.sha);
       setCategories(updated);
@@ -175,26 +177,12 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     } catch (err) { setSyncStatus('error'); }
   };
 
-  const handleEditCategory = async (cat: any) => {
-    const newName = prompt('Enter new category name:', cat.name);
-    if (!newName || newName === cat.name) return;
-    setSyncStatus('syncing');
-    try {
-      const slug = newName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      const updated = categories.map(c => c.id === cat.id ? { ...c, name: newName, slug } : c);
-      const res = await client.putFile('content/categories.json', JSON.stringify(updated, null, 2), 'Edit category', categoriesSha || undefined);
-      setCategoriesSha(res.content?.sha);
-      setCategories(updated);
-      setSyncStatus('synced');
-    } catch (err) { setSyncStatus('error'); }
-  };
-
   const handleAddTag = async () => {
     if (!newTagName) return;
     setSyncStatus('syncing');
     try {
       const slug = newTagName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      const updated = [...tags, { id: `tag_${Date.now()}`, name: newTagName, slug }];
+      const updated = [...tags, { id: \`tag_\${Date.now()}\`, name: newTagName, slug }];
       const res = await client.putFile('content/tags.json', JSON.stringify(updated, null, 2), 'Update tags', tagsSha || undefined);
       setTagsSha(res.content?.sha);
       setTags(updated);
@@ -214,20 +202,6 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     } catch (err) { setSyncStatus('error'); }
   };
 
-  const handleEditTag = async (tag: any) => {
-    const newName = prompt('Enter new tag name:', tag.name);
-    if (!newName || newName === tag.name) return;
-    setSyncStatus('syncing');
-    try {
-      const slug = newName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      const updated = tags.map(c => c.id === tag.id ? { ...c, name: newName, slug } : c);
-      const res = await client.putFile('content/tags.json', JSON.stringify(updated, null, 2), 'Edit tag', tagsSha || undefined);
-      setTagsSha(res.content?.sha);
-      setTags(updated);
-      setSyncStatus('synced');
-    } catch (err) { setSyncStatus('error'); }
-  };
-
   const handleUploadMedia = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -237,7 +211,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
       reader.onloadend = async () => {
         const base64Content = (reader.result as string).split(',')[1];
         const fileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-        await client.putBinaryFile(`public/uploads/${fileName}`, base64Content, `Upload ${fileName}`);
+        await client.putBinaryFile(\`public/uploads/\${fileName}\`, base64Content, \`Upload \${fileName}\`);
         await fetchData();
       };
       reader.readAsDataURL(file);
@@ -250,26 +224,8 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     if (!confirm('Delete this media file?')) return;
     setSyncStatus('syncing');
     try {
-      await client.deleteFile(file.path, `Delete ${file.name}`, file.sha);
+      await client.deleteFile(file.path, \`Delete \${file.name}\`, file.sha);
       await fetchData();
-    } catch (err) {
-      setSyncStatus('error');
-    }
-  };
-
-  const handleRenameMedia = async (file: any) => {
-    const newName = prompt('Enter new file name:', file.name);
-    if (!newName || newName === file.name) return;
-    setSyncStatus('syncing');
-    try {
-      const fileData = await client.getRawFile(file.path);
-      if (fileData) {
-        await client.putBinaryFile(`public/uploads/${newName}`, fileData.content, `Rename to ${newName}`);
-        await client.deleteFile(file.path, `Delete old ${file.name}`, file.sha);
-        await fetchData();
-      } else {
-        setSyncStatus('error');
-      }
     } catch (err) {
       setSyncStatus('error');
     }
@@ -393,7 +349,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                   disabled={syncStatus === 'syncing'}
                   className="w-full flex items-center gap-3 px-4 py-3 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed border border-slate-200 dark:border-transparent"
                 >
-                  <RefreshCw className={`w-5 h-5 text-blue-600 dark:text-sky-400 ${syncStatus === 'syncing' ? 'animate-spin' : ''}`} />
+                  <RefreshCw className={\`w-5 h-5 text-blue-600 dark:text-sky-400 \${syncStatus === 'syncing' ? 'animate-spin' : ''}\`} />
                   {syncStatus === 'syncing' ? 'Fetching...' : 'Refresh from GitHub'}
                 </button>
               </div>
@@ -577,7 +533,6 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                   <td className="py-4 pr-4 font-medium text-slate-800 dark:text-slate-200">{cat.name}</td>
                   <td className="py-4 px-4 text-slate-500 dark:text-slate-400">{cat.slug}</td>
                   <td className="py-4 px-4 text-right">
-                    <button onClick={() => handleEditCategory(cat)} className="text-blue-600 hover:underline mr-3">Edit</button>
                     <button onClick={() => handleDeleteCategory(cat.id)} className="text-red-600 hover:underline">Delete</button>
                   </td>
                 </tr>
@@ -620,7 +575,6 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                   <td className="py-4 pr-4 font-medium text-slate-800 dark:text-slate-200">{tag.name}</td>
                   <td className="py-4 px-4 text-slate-500 dark:text-slate-400">{tag.slug}</td>
                   <td className="py-4 px-4 text-right">
-                    <button onClick={() => handleEditTag(tag)} className="text-blue-600 hover:underline mr-3">Edit</button>
                     <button onClick={() => handleDeleteTag(tag.id)} className="text-red-600 hover:underline">Delete</button>
                   </td>
                 </tr>
@@ -646,21 +600,18 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {mediaFiles.map((f, i) => (
               <div key={i} className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden group relative bg-slate-50 dark:bg-slate-800">
-                <img src={`/uploads/${f.name}`} alt={f.name} className="w-full h-32 object-cover" />
+                <img src={\`/uploads/\${f.name}\`} alt={f.name} className="w-full h-32 object-cover" />
                 <div className="p-2 truncate text-xs text-slate-600 dark:text-slate-400 text-center bg-white dark:bg-[#1e293b]">
                   {f.name}
                 </div>
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                   <button 
                     onClick={() => {
-                      navigator.clipboard.writeText(`/uploads/${f.name}`);
+                      navigator.clipboard.writeText(\`/uploads/\${f.name}\`);
                       alert('Copied to clipboard!');
                     }} 
                     className="p-2 bg-white rounded-full text-slate-900 hover:bg-slate-200" title="Copy URL">
                     <LinkIcon className="w-4 h-4" />
-                  </button>
-                  <button onClick={() => handleRenameMedia(f)} className="p-2 bg-blue-500 rounded-full text-white hover:bg-blue-600" title="Rename">
-                    <Edit3 className="w-4 h-4" />
                   </button>
                   <button onClick={() => handleDeleteMedia(f)} className="p-2 bg-red-500 rounded-full text-white hover:bg-red-600" title="Delete">
                     <Trash2 className="w-4 h-4" />
@@ -896,3 +847,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     </div>
   );
 }
+`
+
+fs.writeFileSync('src/pages/admin/AdminDashboard.tsx', content);
+

@@ -12,12 +12,12 @@ export default function NewUpdates() {
           {NEW_UPDATES.map((update, idx) => (
             <Link
               key={idx}
-              to="/post/wbpsc-recruitment-2026"
+              to={update.id ? `/post/${update.id}` : "/post/wbpsc-recruitment-2026"}
               className="flex items-start gap-3 group"
             >
               <div className="mt-1.5 flex-shrink-0 w-2 h-2 rounded-full border-2 border-gray-800 dark:border-gray-200 bg-transparent group-hover:bg-blue-600 group-hover:border-blue-600 transition-colors"></div>
               <span className="text-sm font-medium text-blue-700 dark:text-blue-400 group-hover:text-blue-800 dark:group-hover:text-blue-300 leading-snug">
-                {update}
+                {update.title}
               </span>
             </Link>
           ))}

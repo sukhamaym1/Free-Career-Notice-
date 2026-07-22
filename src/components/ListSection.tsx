@@ -31,7 +31,7 @@ export default function ListSection({ title, items, viewAllLink = "#" }: ListSec
             return (
               <li key={idx}>
                 <Link
-                  to="/post/wbpsc-recruitment-2026"
+                  to={isObj && (item as any).id ? `/post/${(item as any).id}` : "/post/wbpsc-recruitment-2026"}
                   className="flex items-start gap-3 p-5 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group"
                 >
                   <div className="mt-1 flex-shrink-0 w-2 h-2 rounded-full bg-blue-500 ring-4 ring-blue-100 dark:ring-blue-900/30"></div>

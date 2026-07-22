@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { JOB_NOTIFICATIONS, ADMIT_CARDS, RESULTS } from '../data';
+import { PUBLISHED_POSTS } from '../data';
 import JobFilterSidebar, { FilterState } from '../components/JobFilterSidebar';
 
 export default function CategoryPage() {
@@ -17,37 +17,19 @@ export default function CategoryPage() {
   let items = [] as any[];
 
   // Map category slugs to titles and data
-  const categoryConfig: Record<string, { title: string; data: any[] }> = {
-    'job-notifications': { title: 'Job Notifications', data: JOB_NOTIFICATIONS },
-    'admit-card': { title: 'Admit Card', data: ADMIT_CARDS },
-    'results': { title: 'Results', data: RESULTS },
-    'answer-keys': { title: 'Answer Keys', data: RESULTS.map(r => ({ ...r, title: r.title.replace('Result', 'Answer Key'), tag: 'ANSWER KEY', tagColor: 'bg-yellow-500' })) },
-    'syllabus': { title: 'Syllabus & Exam Pattern', data: JOB_NOTIFICATIONS.map(j => ({ ...j, title: j.title.replace('Recruitment', 'Syllabus'), tag: 'SYLLABUS', tagColor: 'bg-purple-500' })) },
-    'ssc-exams': { title: 'SSC Exams', data: JOB_NOTIFICATIONS.filter(j => j.title.includes('SSC') || j.title.includes('SSB') || j.title.includes('SSF')) },
-    'railway': { title: 'Railway (RRB)', data: ADMIT_CARDS.filter(a => a.title.includes('RRB')) },
-    'banking': { title: 'Banking (IBPS/SBI)', data: ADMIT_CARDS.filter(a => a.title.includes('SBI') || a.title.includes('RBI')) },
-    'upsc': { title: 'UPSC / State PSC', data: JOB_NOTIFICATIONS.filter(j => j.title.includes('PSC')) },
-    'defence': { title: 'Defence / Police Jobs', data: JOB_NOTIFICATIONS.filter(j => j.title.includes('Army') || j.title.includes('Navy') || j.title.includes('Police')) },
-    'teaching': { title: 'Teaching Jobs', data: [] },
-  };
-
-  if (categoryId && categoryConfig[categoryId]) {
-    title = categoryConfig[categoryId].title;
-    let baseItems = categoryConfig[categoryId].data;
-    
-    if (categoryId === 'job-notifications') {
-      items = baseItems.filter((job) => {
-        if (filters.salary && job.salary !== filters.salary) return false;
-        if (filters.jobType && job.jobType !== filters.jobType) return false;
-        if (filters.location && job.location !== filters.location) return false;
-        return true;
-      });
-    } else {
-      items = baseItems;
-    }
+  
+  title = categoryId ? categoryId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Category';
+  let baseItems = PUBLISHED_POSTS.filter(p => p.categorySlug === categoryId);
+  
+  if (categoryId === 'job-notifications') {
+    items = baseItems.filter((job) => {
+      if (filters.salary && job.salary !== filters.salary) return false;
+      if (filters.jobType && job.jobType !== filters.jobType) return false;
+      if (filters.location && job.location !== filters.location) return false;
+      return true;
+    });
   } else {
-    // If not found, display a fallback empty category
-    title = categoryId ? categoryId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Category';
+    items = baseItems;
   }
 
   return (

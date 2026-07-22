@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
+import { ALL_POSTS } from '../data';
 import { Calendar, User, Clock, Share2, Facebook, Twitter, ChevronRight, FileText, CheckCircle2, AlertCircle, Copy } from 'lucide-react';
 import { motion, useScroll, useSpring } from 'motion/react';
 
@@ -19,17 +20,23 @@ export default function PostPage() {
     });
   };
 
-  // Mock data for the post
-  const post = {
-    title: "WBPSC Miscellaneous Services Recruitment 2026 – Apply Online, Eligibility, Dates",
-    category: "Job Notifications",
-    categorySlug: "job-notifications",
-    date: "April 25, 2026",
-    author: "Sukhamay",
-    readTime: "5 min read",
+  const foundPost = ALL_POSTS.find((p: any) => p.id === postId);
+  
+  const post = foundPost || {
+    title: "Post Not Found",
+    category: "Unknown",
+    categorySlug: "unknown",
+    date: "",
+    author: "",
+    readTime: "",
     imgGradient: "from-blue-600 to-indigo-800",
-    tags: ["WBPSC", "Govt Jobs", "West Bengal", "Miscellaneous"],
+    tags: [],
+    content: "<p>The requested post could not be found.</p>"
   };
+  
+  const categoryName = post.categorySlug ? post.categorySlug.split('-').map((s:string) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ') : post.category || '';
+  post.category = categoryName;
+  
 
   return (
     <>
@@ -84,104 +91,8 @@ export default function PostPage() {
         <div className="p-6 md:p-10 lg:p-12 flex flex-col lg:flex-row gap-12">
           {/* Main Content */}
           <div className="flex-1 min-w-0">
-            <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-a:text-blue-600 dark:prose-a:text-blue-400 hover:prose-a:text-blue-500">
-              
-              <p className="lead text-xl text-gray-600 dark:text-gray-300 mb-8 font-medium">
-                West Bengal Public Service Commission (WBPSC) has released the official notification for the Miscellaneous Services Recruitment Examination 2026. Eligible and interested candidates can apply online through the official website.
-              </p>
-
-              <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-6 rounded-r-xl mb-8">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mt-0 mb-2 flex items-center gap-2">
-                  <AlertCircle className="w-6 h-6 text-blue-500" />
-                  Brief Information
-                </h3>
-                <p className="text-gray-700 dark:text-gray-300 mb-0">
-                  Candidates who are looking for government jobs in West Bengal can apply for various posts under the Miscellaneous Services. Please read the full notification before applying online.
-                </p>
-              </div>
-
-              <h2 className="text-2xl font-bold mt-10 mb-4 border-b pb-2 dark:border-gray-800">Important Dates</h2>
-              <div className="overflow-x-auto mb-8">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-gray-100 dark:bg-gray-800">
-                      <th className="p-4 border dark:border-gray-700 font-bold">Event</th>
-                      <th className="p-4 border dark:border-gray-700 font-bold">Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="p-4 border dark:border-gray-700">Starting Date for Online Application</td>
-                      <td className="p-4 border dark:border-gray-700 font-semibold text-green-600 dark:text-green-400">01-05-2026</td>
-                    </tr>
-                    <tr className="bg-gray-50 dark:bg-gray-800/30">
-                      <td className="p-4 border dark:border-gray-700">Last Date for Online Application</td>
-                      <td className="p-4 border dark:border-gray-700 font-semibold text-red-600 dark:text-red-400">20-05-2026</td>
-                    </tr>
-                    <tr>
-                      <td className="p-4 border dark:border-gray-700">Last Date for Payment of Fee</td>
-                      <td className="p-4 border dark:border-gray-700">20-05-2026</td>
-                    </tr>
-                    <tr className="bg-gray-50 dark:bg-gray-800/30">
-                      <td className="p-4 border dark:border-gray-700">Date of Preliminary Examination</td>
-                      <td className="p-4 border dark:border-gray-700">To be notified</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <h2 className="text-2xl font-bold mt-10 mb-4 border-b pb-2 dark:border-gray-800">Application Fee</h2>
-              <ul className="space-y-3 mb-8 list-none pl-0">
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
-                  <span>For General/OBC Candidates: <strong>₹160/- + Service Charges</strong></span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
-                  <span>For SC/ST/PWD of West Bengal: <strong>Nil</strong></span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
-                  <span>Payment Mode: Online through Debit/Credit Card/Net Banking or Offline at bank counter.</span>
-                </li>
-              </ul>
-
-              <h2 className="text-2xl font-bold mt-10 mb-4 border-b pb-2 dark:border-gray-800">Age Limit</h2>
-              <p className="mb-4">As on 01-01-2026:</p>
-              <ul className="mb-8 space-y-2">
-                <li>Minimum Age: <strong>20 Years</strong></li>
-                <li>Maximum Age: <strong>39 Years</strong></li>
-                <li>Age relaxation is applicable as per government rules.</li>
-              </ul>
-
-              <h2 className="text-2xl font-bold mt-10 mb-4 border-b pb-2 dark:border-gray-800">Important Links</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                <a href="#" className="flex items-center justify-between p-4 rounded-xl border-2 border-blue-100 dark:border-blue-900/30 bg-blue-50 dark:bg-blue-900/10 hover:bg-blue-100 dark:hover:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-bold transition-colors no-underline group">
-                  <span className="flex items-center gap-2">
-                    <FileText className="w-5 h-5" />
-                    Apply Online
-                  </span>
-                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </a>
-                <a href="#" className="flex items-center justify-between p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold transition-colors no-underline group">
-                  <span className="flex items-center gap-2">
-                    <FileText className="w-5 h-5" />
-                    Official Notification
-                  </span>
-                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </a>
-                <a href="#" className="flex items-center justify-between p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold transition-colors no-underline group md:col-span-2">
-                  <span className="flex items-center gap-2">
-                    <FileText className="w-5 h-5" />
-                    Official Website
-                  </span>
-                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </a>
-              </div>
-
-            </div>
+            <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-a:text-blue-600 dark:prose-a:text-blue-400 hover:prose-a:text-blue-500" dangerouslySetInnerHTML={{ __html: post.content || '' }} />
           </div>
-
           {/* Sidebar */}
           <aside className="w-full lg:w-80 shrink-0 space-y-8">
             {/* Share Widget */}
