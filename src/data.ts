@@ -36,6 +36,17 @@ export const COLOR_BLOCKS = [
 
 export const JOB_NOTIFICATIONS = [
   {
+    "title": "RRB NTPC Graduate Level Admit Card 2026 Out – Download Here",
+    "author": "Sukhamay",
+    "date": "22/07/2026",
+    "tag": "Admit Card",
+    "tagColor": "bg-green-500",
+    "imgGradient": "from-blue-500 to-indigo-600",
+    "salary": "",
+    "jobType": "Full-Time",
+    "location": ""
+  },
+  {
     "title": "WBPSC Miscellaneous Services Recruitment 2026 – Apply Online, Eligibility, Dates",
     "author": "Sukhamay",
     "date": "April 25, 2026",
