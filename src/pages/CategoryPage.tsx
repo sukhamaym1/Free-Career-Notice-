@@ -1,8 +1,17 @@
+import { useState } from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
 import { JOB_NOTIFICATIONS, ADMIT_CARDS, RESULTS } from '../data';
+import JobFilterSidebar, { FilterState } from '../components/JobFilterSidebar';
 
 export default function CategoryPage() {
   const { categoryId } = useParams();
+
+  const [filters, setFilters] = useState<FilterState>({
+    salary: '',
+    jobType: '',
+    location: ''
+  });
 
   let title = '';
   let items = [] as any[];
@@ -24,7 +33,18 @@ export default function CategoryPage() {
 
   if (categoryId && categoryConfig[categoryId]) {
     title = categoryConfig[categoryId].title;
-    items = categoryConfig[categoryId].data;
+    let baseItems = categoryConfig[categoryId].data;
+    
+    if (categoryId === 'job-notifications') {
+      items = baseItems.filter((job) => {
+        if (filters.salary && job.salary !== filters.salary) return false;
+        if (filters.jobType && job.jobType !== filters.jobType) return false;
+        if (filters.location && job.location !== filters.location) return false;
+        return true;
+      });
+    } else {
+      items = baseItems;
+    }
   } else {
     // If not found, display a fallback empty category
     title = categoryId ? categoryId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Category';
@@ -43,17 +63,34 @@ export default function CategoryPage() {
         <div className="h-1 w-24 bg-gradient-to-r from-blue-600 to-green-500 mx-auto rounded-full"></div>
       </div>
 
-      {items.length === 0 ? (
-        <div className="text-center py-20 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
-          <p className="text-gray-500 dark:text-gray-400 text-lg">No updates available in this category currently.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {items.map((item, idx) => (
-            <div key={idx} className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow group flex flex-col">
-              {/* Thumbnail Placeholder */}
-              <div className={`relative h-48 md:h-64 bg-gradient-to-br ${item.imgGradient || 'from-gray-700 to-gray-900'} p-6 flex flex-col justify-center items-center text-center overflow-hidden`}>
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500"></div>
+      <div className={categoryId === 'job-notifications' ? "flex flex-col lg:flex-row gap-8" : ""}>
+        {categoryId === 'job-notifications' && (
+          <aside className="w-full lg:w-1/4">
+            <JobFilterSidebar filters={filters} setFilters={setFilters} />
+          </aside>
+        )}
+        
+        <div className={categoryId === 'job-notifications' ? "w-full lg:w-3/4" : "w-full"}>
+          {items.length === 0 ? (
+            <div className="text-center py-20 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
+              <p className="text-gray-500 dark:text-gray-400 text-lg">No updates available matching the criteria.</p>
+            </div>
+          ) : (
+            <div className={`grid grid-cols-1 md:grid-cols-2 ${categoryId === 'job-notifications' ? 'lg:grid-cols-2 xl:grid-cols-3' : 'lg:grid-cols-3'} gap-8`}>
+              <AnimatePresence mode="popLayout">
+                {items.map((item, idx) => (
+                  <motion.div
+                    key={item.title + idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.3, delay: idx * 0.05 }}
+                    layout
+                    className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow group flex flex-col"
+                  >
+                    {/* Thumbnail Placeholder */}
+                    <div className={`relative h-48 md:h-64 bg-gradient-to-br ${item.imgGradient || 'from-gray-700 to-gray-900'} p-6 flex flex-col justify-center items-center text-center overflow-hidden`}>
+                      <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500"></div>
                 
                 {/* Tag */}
                 {item.tag && (
@@ -86,6 +123,26 @@ export default function CategoryPage() {
                   <Link to="/post/wbpsc-recruitment-2026">{item.title}</Link>
                 </h2>
                 
+                {(item.salary || item.jobType || item.location) && (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {item.jobType && (
+                      <span className="text-xs text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                        {item.jobType}
+                      </span>
+                    )}
+                    {item.salary && (
+                      <span className="text-xs text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                        {item.salary}
+                      </span>
+                    )}
+                    {item.location && (
+                      <span className="text-xs text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                        {item.location}
+                      </span>
+                    )}
+                  </div>
+                )}
+                
                 <div className="mt-auto">
                   <Link to="/post/wbpsc-recruitment-2026" className="inline-block text-green-600 dark:text-green-500 font-semibold text-sm uppercase tracking-wider mb-4 hover:text-green-700 dark:hover:text-green-400">
                     READ MORE »
@@ -98,10 +155,13 @@ export default function CategoryPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </main>
   );
 }

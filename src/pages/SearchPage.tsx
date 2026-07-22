@@ -1,4 +1,5 @@
 import { useSearchParams, Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
 import { JOB_NOTIFICATIONS, ADMIT_CARDS, RESULTS } from '../data';
 import { Search } from 'lucide-react';
 
@@ -18,8 +19,13 @@ export default function SearchPage() {
   );
 
   return (
-    <main className="container mx-auto px-4 py-8 pb-20 animate-in fade-in duration-500">
-      <div className="mb-12 text-center max-w-3xl mx-auto">
+    <main className="container mx-auto px-4 py-8 pb-20">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="mb-12 text-center max-w-3xl mx-auto"
+      >
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 text-sm font-semibold uppercase tracking-wider mb-4">
           <Search className="w-4 h-4" />
           Search Results
@@ -28,16 +34,29 @@ export default function SearchPage() {
           {query ? `Results for "${query}"` : 'All Search Results'}
         </h1>
         <div className="h-1 w-24 bg-gradient-to-r from-blue-600 to-green-500 mx-auto rounded-full"></div>
-      </div>
+      </motion.div>
 
       {searchResults.length === 0 ? (
-        <div className="text-center py-20 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center py-20 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800"
+        >
           <p className="text-gray-500 dark:text-gray-400 text-lg">No results found for "{query}". Try a different keyword.</p>
-        </div>
+        </motion.div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {searchResults.map((item, idx) => (
-            <div key={idx} className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow group flex flex-col">
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <AnimatePresence mode="popLayout">
+            {searchResults.map((item, idx) => (
+              <motion.div 
+                key={item.title + idx}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3, delay: idx * 0.05 }}
+                layout
+                className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow group flex flex-col"
+              >
               {/* Thumbnail Placeholder */}
               <div className={`relative h-48 md:h-64 bg-gradient-to-br ${item.imgGradient || 'from-gray-700 to-gray-900'} p-6 flex flex-col justify-center items-center text-center overflow-hidden`}>
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500"></div>
@@ -86,9 +105,10 @@ export default function SearchPage() {
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       )}
     </main>
   );

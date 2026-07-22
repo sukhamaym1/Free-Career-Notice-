@@ -1,8 +1,16 @@
 import { useParams, Link } from 'react-router-dom';
-import { Calendar, User, Clock, Share2, Facebook, Twitter, ChevronRight, FileText, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Calendar, User, Clock, Share2, Facebook, Twitter, ChevronRight, FileText, CheckCircle2, AlertCircle, Copy } from 'lucide-react';
 
 export default function PostPage() {
   const { postId } = useParams();
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      document.dispatchEvent(new CustomEvent('show-toast', {
+        detail: { message: 'Link copied to clipboard!' }
+      }));
+    });
+  };
 
   // Mock data for the post
   const post = {
@@ -170,7 +178,7 @@ export default function PostPage() {
                 <Share2 className="w-5 h-5" />
                 Share this Post
               </h3>
-              <div className="flex gap-2">
+              <div className="flex gap-2 mb-3">
                 <button className="flex-1 bg-[#1877F2] text-white p-2.5 rounded-lg flex justify-center hover:bg-[#1877F2]/90 transition-colors">
                   <Facebook className="w-5 h-5" />
                 </button>
@@ -183,6 +191,13 @@ export default function PostPage() {
                   </svg>
                 </button>
               </div>
+              <button 
+                onClick={copyToClipboard}
+                className="w-full flex items-center justify-center gap-2 bg-gray-200 dark:bg-slate-700 hover:bg-gray-300 dark:hover:bg-slate-600 text-gray-800 dark:text-gray-200 p-2.5 rounded-lg transition-colors font-medium text-sm"
+              >
+                <Copy className="w-4 h-4" />
+                Copy Share Link
+              </button>
             </div>
 
             {/* Tags */}

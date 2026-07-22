@@ -24,6 +24,9 @@ export const JOB_NOTIFICATIONS = [
     tag: "NEW UPDATE",
     tagColor: "bg-green-500",
     imgGradient: "from-blue-500 to-indigo-600",
+    salary: "$40k - $60k",
+    jobType: "Full-Time",
+    location: "Kolkata, WB",
   },
   {
     title: "Indian Army Nursing Assistant Recruitment 2026 – Apply Online for Sepoy Pharma Posts",
@@ -32,6 +35,9 @@ export const JOB_NOTIFICATIONS = [
     tag: "JOB NOTIFICATIONS",
     tagColor: "bg-green-500",
     imgGradient: "from-emerald-500 to-teal-700",
+    salary: "$30k - $50k",
+    jobType: "Contract",
+    location: "All India",
   },
   {
     title: "SSB Head Constable Recruitment 2026 Notification Out – Apply Online for 233 Posts",
@@ -40,6 +46,9 @@ export const JOB_NOTIFICATIONS = [
     tag: "JOB NOTIFICATIONS",
     tagColor: "bg-green-500",
     imgGradient: "from-orange-400 to-red-600",
+    salary: "$40k - $60k",
+    jobType: "Full-Time",
+    location: "New Delhi",
   },
   {
     title: "SSF Constable Recruitment 2026 Apply Online for 10 Posts – Check Eligibility & Dates",
@@ -48,6 +57,9 @@ export const JOB_NOTIFICATIONS = [
     tag: "NEW UPDATE",
     tagColor: "bg-green-500",
     imgGradient: "from-slate-600 to-slate-800",
+    salary: "$20k - $40k",
+    jobType: "Part-Time",
+    location: "All India",
   },
   {
     title: "Indian Navy Agniveer MR Recruitment 2026 Apply Online – Check Eligibility & Dates",
@@ -56,6 +68,9 @@ export const JOB_NOTIFICATIONS = [
     tag: "NEW UPDATE",
     tagColor: "bg-green-500",
     imgGradient: "from-cyan-500 to-blue-700",
+    salary: "$30k - $50k",
+    jobType: "Contract",
+    location: "Coastal Regions",
   },
 ];
 

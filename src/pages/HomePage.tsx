@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { motion } from 'motion/react';
 import Hero from '../components/Hero';
 import ActionGroup from '../components/ActionGroup';
 import NewUpdates from '../components/NewUpdates';
@@ -7,24 +7,50 @@ import ListSection from '../components/ListSection';
 import { JOB_NOTIFICATIONS, ADMIT_CARDS, RESULTS } from '../data';
 
 export default function HomePage() {
-  return (
-    <main className="container mx-auto px-4 pb-20 animate-in fade-in duration-500">
-      <Hero />
-      
-      <div className="mb-12">
-        <ActionGroup />
-      </div>
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
 
-      <NewUpdates />
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+  };
+
+  return (
+    <motion.main 
+      className="container mx-auto px-4 pb-20"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.div variants={itemVariants}>
+        <Hero />
+      </motion.div>
       
-      <ColorfulGrid />
+      <motion.div variants={itemVariants} className="mb-12">
+        <ActionGroup />
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <NewUpdates />
+      </motion.div>
+      
+      <motion.div variants={itemVariants}>
+        <ColorfulGrid />
+      </motion.div>
 
       {/* Three Columns Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <ListSection title="Job Notifications" items={JOB_NOTIFICATIONS} viewAllLink="/category/job-notifications" />
         <ListSection title="Admit Card" items={ADMIT_CARDS} viewAllLink="/category/admit-card" />
         <ListSection title="Results" items={RESULTS} viewAllLink="/category/results" />
-      </div>
-    </main>
+      </motion.div>
+    </motion.main>
   );
 }

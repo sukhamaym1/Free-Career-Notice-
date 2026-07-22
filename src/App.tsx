@@ -15,6 +15,8 @@ import SearchPage from './pages/SearchPage';
 import QuizPage from './pages/QuizPage';
 
 import PostPage from './pages/PostPage';
+import BackToTop from './components/BackToTop';
+import ScrollToTop from './components/ScrollToTop';
 
 export default function App() {
   const { theme, toggleTheme } = useTheme();
@@ -37,12 +39,23 @@ export default function App() {
       }
     };
     
+    const handleCustomToast = (e: Event) => {
+      const customEvent = e as CustomEvent<{ message: string }>;
+      setToast(customEvent.detail.message);
+      setTimeout(() => setToast(null), 3000);
+    };
+
     document.addEventListener('click', handleGlobalClick);
-    return () => document.removeEventListener('click', handleGlobalClick);
+    document.addEventListener('show-toast', handleCustomToast);
+    return () => {
+      document.removeEventListener('click', handleGlobalClick);
+      document.removeEventListener('show-toast', handleCustomToast);
+    };
   }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950 font-sans transition-colors duration-200">
+      <ScrollToTop />
       <Header theme={theme} toggleTheme={toggleTheme} />
       
       <Routes>
@@ -55,6 +68,8 @@ export default function App() {
       </Routes>
 
       <Footer />
+
+      <BackToTop />
 
       {/* Global Toast Notification for Demo */}
       {toast && (
