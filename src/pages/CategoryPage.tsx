@@ -93,16 +93,16 @@ export default function CategoryPage() {
                   <p className="text-white/90 text-sm md:text-base font-medium drop-shadow-sm">
                     {item.title.substring(0, 45)}...
                   </p>
-                  <div className="mt-4 inline-block bg-yellow-400 text-yellow-900 font-bold px-4 py-1.5 rounded-full text-sm">
+                  <Link to={`/post/${item.id}`} className="mt-4 inline-block bg-yellow-400 text-yellow-900 font-bold px-4 py-1.5 rounded-full text-sm">
                     Click Here!!!
-                  </div>
+                  </Link>
                 </div>
               </div>
 
               {/* Content */}
               <div className="p-6 flex-1 flex flex-col">
                 <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white leading-snug mb-4 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                  <Link to="/post/wbpsc-recruitment-2026">{item.title}</Link>
+                  <Link to={`/post/${item.id}`}>{item.title}</Link>
                 </h2>
                 
                 {(item.salary || item.jobType || item.location) && (
@@ -126,7 +126,7 @@ export default function CategoryPage() {
                 )}
                 
                 <div className="mt-auto">
-                  <Link to="/post/wbpsc-recruitment-2026" className="inline-block text-green-600 dark:text-green-500 font-semibold text-sm uppercase tracking-wider mb-4 hover:text-green-700 dark:hover:text-green-400">
+                  <Link to={`/post/${item.id}`} className="inline-block text-green-600 dark:text-green-500 font-semibold text-sm uppercase tracking-wider mb-4 hover:text-green-700 dark:hover:text-green-400">
                     READ MORE »
                   </Link>
                   

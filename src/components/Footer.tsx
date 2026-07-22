@@ -18,11 +18,11 @@ export default function Footer() {
                 </div>
               )}
               <div className="font-bold text-xl leading-none tracking-tight text-white">
-                {SITE_SETTINGS.siteName || 'Free Career Notice'}
+                {(SITE_SETTINGS as any).siteName || 'Free Career Notice'}
               </div>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed">
-              {SITE_SETTINGS.footerDescription || 'Your trusted portal for the latest job notifications.'}
+              {(SITE_SETTINGS as any).footerDescription || 'Your trusted portal for the latest job notifications.'}
             </p>
             <div className="flex gap-4 pt-2">
               <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all text-slate-400">
@@ -46,7 +46,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li><Link to="/" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Home</Link></li>
               <li><Link to="/category/job-notifications" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Latest Job Notifications</Link></li>
-              <li><Link to="/category/admit-card" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Admit Cards Download</Link></li>
+              <li><Link to="/category/admit-cards" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Admit Cards Download</Link></li>
               <li><Link to="/category/results" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Exam Results</Link></li>
               <li><Link to="/category/answer-keys" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Answer Keys</Link></li>
               <li><Link to="/category/syllabus" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Syllabus & Exam Pattern</Link></li>
@@ -73,15 +73,15 @@ export default function Footer() {
             <ul className="space-y-4 text-sm text-slate-400">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-blue-500 shrink-0" />
-                <span>{SITE_SETTINGS.contactAddress || '123 Career Avenue, New Delhi, India'}</span>
+                <span>{(SITE_SETTINGS as any).contactAddress || '123 Career Avenue, New Delhi, India'}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-green-500 shrink-0" />
-                <span>{SITE_SETTINGS.contactPhone || '+91 98765 43210'}</span>
+                <span>{(SITE_SETTINGS as any).contactPhone || '+91 98765 43210'}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-rose-500 shrink-0" />
-                <a href="mailto:{SITE_SETTINGS.contactEmail || '{SITE_SETTINGS.contactEmail || 'support@freecareernotice.com'}'}" className="hover:text-white transition-colors">
+                <a href="mailto:{(SITE_SETTINGS as any).contactEmail || '{(SITE_SETTINGS as any).contactEmail || 'support@freecareernotice.com'}'}" className="hover:text-white transition-colors">
                   support@freecareernotice.com
                 </a>
               </li>
@@ -91,7 +91,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500">
-          <p>{SITE_SETTINGS.footerCopyrightText || `© ${new Date().getFullYear()} Free Career Notice. All rights reserved.`}</p>
+          <p>{(SITE_SETTINGS as any).footerCopyrightText || `© ${new Date().getFullYear()} Free Career Notice. All rights reserved.`}</p>
           <div className="flex items-center gap-6">
             <Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link to="/terms-and-conditions" className="hover:text-white transition-colors">Terms & Conditions</Link>

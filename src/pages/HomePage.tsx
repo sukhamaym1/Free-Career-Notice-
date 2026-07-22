@@ -48,7 +48,7 @@ export default function HomePage() {
       {/* Three Columns Section */}
       <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <ListSection title="Job Notifications" items={JOB_NOTIFICATIONS} viewAllLink="/category/job-notifications" />
-        <ListSection title="Admit Card" items={ADMIT_CARDS} viewAllLink="/category/admit-card" />
+        <ListSection title="Admit Card" items={ADMIT_CARDS} viewAllLink="/category/admit-cards" />
         <ListSection title="Results" items={RESULTS} viewAllLink="/category/results" />
       </motion.div>
     </motion.main>
