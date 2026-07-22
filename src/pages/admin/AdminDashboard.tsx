@@ -309,6 +309,16 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     { name: 'Website Settings', icon: Settings },
   ];
 
+  
+  const filterOptions = [...categories];
+  Array.from(new Set(rawPosts.map(p => p.categorySlug).filter(Boolean))).forEach((slug: any) => {
+    if (!filterOptions.find(c => c.slug === slug)) {
+      const name = slug.split('-').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+      filterOptions.push({ id: slug, slug, name });
+    }
+  });
+
+
   const filteredPosts = rawPosts.filter(p => {
     const matchesSearch = p.title?.toLowerCase().includes(searchQuery.toLowerCase()) || p.categorySlug?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = categoryFilter ? p.categorySlug === categoryFilter : true;
@@ -415,7 +425,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                 className="bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">All Categories</option>
-                {categories.length > 0 ? categories.map(c => (
+                {filterOptions.length > 0 ? filterOptions.map(c => (
                   <option key={c.id} value={c.slug}>{c.name}</option>
                 )) : (
                   <>
@@ -501,7 +511,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Category (Slug)</label>
                 <select name="categorySlug" defaultValue={editingPost?.categorySlug || 'new-updates'} required className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  {categories.length > 0 ? categories.map(c => (
+                  {filterOptions.length > 0 ? filterOptions.map(c => (
                     <option key={c.id} value={c.slug}>{c.name}</option>
                   )) : (
                     <>
