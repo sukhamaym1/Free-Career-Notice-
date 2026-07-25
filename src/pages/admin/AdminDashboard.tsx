@@ -25,6 +25,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [mediaSearchQuery, setMediaSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [syncStatus, setSyncStatus] = useState<'synced' | 'unsynced' | 'syncing' | 'error'>('synced');
   const [lastSynced, setLastSynced] = useState<Date | null>(new Date());
@@ -47,7 +48,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
 
   const parsedData = {
     NEW_UPDATES: rawPosts.filter(p => p.categorySlug === 'new-updates'),
-    COLOR_BLOCKS: rawPosts.filter(p => p.categorySlug === 'color-blocks'),
+    COLOR_BLOCKS: rawPosts.filter(p => p.categorySlug === 'highlight-updates'),
     JOB_NOTIFICATIONS: rawPosts.filter(p => p.categorySlug === 'job-notifications'),
     ADMIT_CARDS: rawPosts.filter(p => p.categorySlug === 'admit-cards'),
     RESULTS: rawPosts.filter(p => p.categorySlug === 'results'),
@@ -451,7 +452,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                     <option value="job-notifications">Job Notifications</option>
                     <option value="admit-cards">Admit Cards</option>
                     <option value="results">Results</option>
-                    <option value="color-blocks">Highlight Updates</option>
+                    <option value="highlight-updates">Highlight Updates</option>
                   </>
                 )}
               </select>
@@ -537,7 +538,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                       <option value="job-notifications">Job Notifications</option>
                       <option value="admit-cards">Admit Cards</option>
                       <option value="results">Results</option>
-                      <option value="color-blocks">Highlight Updates</option>
+                      <option value="highlight-updates">Highlight Updates</option>
                     </>
                   )}
                 </select>
@@ -681,23 +682,37 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     if (activeTab === 'Media Library') {
       return (
         <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden animate-in fade-in duration-300 p-6">
-          <div className="flex justify-between items-center mb-6">
+          
+          {/* Top Actions & Search */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">Media Library</h3>
-            <div className="flex items-center gap-3">
-              {selectedMedia.length > 0 && (
-                <button 
-                  onClick={handleBulkDeleteMedia}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors text-sm"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Delete ({selectedMedia.length})
-                </button>
-              )}
-              <label className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm">
-                <DownloadCloud className="w-4 h-4" />
-                Upload Image
-                <input type="file" className="hidden" accept="image/*" onChange={handleUploadMedia} />
-              </label>
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+              <div className="relative w-full sm:w-64">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search media..."
+                  value={mediaSearchQuery}
+                  onChange={(e) => setMediaSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                />
+              </div>
+              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                {selectedMedia.length > 0 && (
+                  <button 
+                    onClick={handleBulkDeleteMedia}
+                    className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors text-sm whitespace-nowrap"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete ({selectedMedia.length})
+                  </button>
+                )}
+                <label className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm whitespace-nowrap">
+                  <DownloadCloud className="w-4 h-4" />
+                  Upload
+                  <input type="file" className="hidden" accept="image/*" onChange={handleUploadMedia} />
+                </label>
+              </div>
             </div>
           </div>
           
@@ -708,10 +723,11 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                   <th className="pb-4 pl-4 w-12">
                     <input 
                       type="checkbox" 
-                      checked={mediaFiles.length > 0 && selectedMedia.length === mediaFiles.length}
+                      checked={mediaFiles.filter(f => f.name.toLowerCase().includes(mediaSearchQuery.toLowerCase())).length > 0 && selectedMedia.length === mediaFiles.filter(f => f.name.toLowerCase().includes(mediaSearchQuery.toLowerCase())).length}
                       onChange={(e) => {
+                        const filtered = mediaFiles.filter(f => f.name.toLowerCase().includes(mediaSearchQuery.toLowerCase()));
                         if (e.target.checked) {
-                          setSelectedMedia(mediaFiles.map(f => f.name));
+                          setSelectedMedia(filtered.map(f => f.name));
                         } else {
                           setSelectedMedia([]);
                         }
@@ -725,7 +741,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                 </tr>
               </thead>
               <tbody>
-                {mediaFiles.map((f, i) => (
+                {mediaFiles.filter(f => f.name.toLowerCase().includes(mediaSearchQuery.toLowerCase())).map((f, i) => (
                   <tr key={i} className={`border-b border-slate-100 dark:border-slate-800/50 transition-colors ${selectedMedia.includes(f.name) ? 'bg-blue-50/50 dark:bg-blue-900/10' : 'hover:bg-slate-50 dark:hover:bg-slate-800/30'}`}>
                     <td className="py-3 pl-4">
                       <input 
@@ -770,10 +786,10 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                     </td>
                   </tr>
                 ))}
-                {mediaFiles.length === 0 && (
+                {mediaFiles.filter(f => f.name.toLowerCase().includes(mediaSearchQuery.toLowerCase())).length === 0 && (
                   <tr>
                     <td colSpan={4} className="py-12 text-center text-slate-500">
-                      No media files found in public/uploads/
+                      {mediaFiles.length === 0 ? 'No media files found in public/uploads/' : 'No media files match your search.'}
                     </td>
                   </tr>
                 )}

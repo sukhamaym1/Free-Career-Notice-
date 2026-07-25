@@ -7,7 +7,7 @@ const publishedPosts = rawPosts.filter((p: any) => p.status !== 'draft');
 
 
 export const COLOR_BLOCKS = publishedPosts
-  .filter(p => p.categorySlug === 'color-blocks')
+  .filter(p => p.categorySlug === 'highlight-updates')
   .map(p => ({ title: p.title, bgClass: p.bgClass, id: p.id }));
 
 export const JOB_NOTIFICATIONS = publishedPosts
