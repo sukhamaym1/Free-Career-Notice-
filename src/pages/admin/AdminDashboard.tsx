@@ -628,7 +628,19 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
             <div className="flex-1 space-y-6 min-w-0">
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Title</label>
-                <input name="title" defaultValue={editingPost?.title || ''} required className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <input 
+                  name="title" 
+                  defaultValue={editingPost?.title || ''} 
+                  required 
+                  onChange={(e) => {
+                    const title = e.target.value;
+                    const slugInput = document.querySelector('input[name="slug"]') as HTMLInputElement;
+                    if (!editingPost && slugInput && slugInput.getAttribute('data-user-edited') !== 'true') {
+                      slugInput.value = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                    }
+                  }}
+                  className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                />
               </div>
               
               <div className="min-h-[400px]">
@@ -715,7 +727,20 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">URL Slug</label>
-                  <input name="slug" defaultValue={editingPost?.id || ''} disabled={!!editingPost} placeholder="e.g. my-seo-post" className="w-full bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 text-sm" />
+                  <input 
+                    name="slug" 
+                    defaultValue={editingPost?.id || ''} 
+                    disabled={!!editingPost} 
+                    placeholder="e.g. my-seo-post" 
+                    onChange={(e) => {
+                      if (e.target.value === '') {
+                        e.target.removeAttribute('data-user-edited');
+                      } else {
+                        e.target.setAttribute('data-user-edited', 'true');
+                      }
+                    }}
+                    className="w-full bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 text-sm" 
+                  />
                   <p className="text-xs text-slate-500 mt-1">Leave empty to auto-generate.</p>
                 </div>
                 <div>
