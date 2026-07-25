@@ -1,0 +1,17 @@
+{
+  "id": "post-024",
+  "title": "Heee",
+  "categorySlug": "admit-cards",
+  "content": "<p>Heee</p>",
+  "author": "Admin",
+  "date": "July 25, 2026",
+  "tags": [
+    "admit-card"
+  ],
+  "tagColor": "bg-green-500",
+  "imgGradient": "from-blue-500 to-indigo-600",
+  "salary": "",
+  "jobType": "",
+  "location": null,
+  "status": "draft"
+}
