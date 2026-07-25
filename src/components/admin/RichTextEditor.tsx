@@ -33,7 +33,7 @@ const MenuBar = ({ editor, isRawMode, setIsRawMode }: { editor: any, isRawMode: 
 
   if (isRawMode) {
     return (
-      <div className="border-b border-slate-200 dark:border-slate-700 p-2 flex flex-wrap gap-1 bg-slate-50 dark:bg-slate-800/50 rounded-t-lg justify-end">
+      <div className="border-b border-slate-200 dark:border-slate-800 p-2 flex flex-wrap gap-1 bg-white dark:bg-transparent rounded-t-lg justify-end">
         <button
           type="button"
           onClick={() => setIsRawMode(false)}
@@ -89,7 +89,7 @@ const MenuBar = ({ editor, isRawMode, setIsRawMode }: { editor: any, isRawMode: 
   );
 
   return (
-    <div className="border-b border-slate-200 dark:border-slate-700 p-2 flex flex-wrap gap-1 bg-slate-50 dark:bg-slate-800/50 rounded-t-lg">
+    <div className="border border-slate-200 dark:border-slate-800 p-2 flex flex-wrap gap-1 bg-slate-50/50 dark:bg-slate-800/30 rounded-lg shadow-sm">
       <Button
         onClick={() => editor.chain().focus().toggleBold().run()}
         disabled={!editor.can().chain().focus().toggleBold().run()}
@@ -247,7 +247,7 @@ export default function RichTextEditor({ content, onChange, placeholder }: RichT
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none dark:prose-invert max-w-none p-4 min-h-[250px]',
+        class: 'prose prose-slate sm:prose lg:prose-lg xl:prose-xl mx-auto focus:outline-none dark:prose-invert max-w-none min-h-[500px]',
       },
     },
   });
@@ -279,9 +279,11 @@ export default function RichTextEditor({ content, onChange, placeholder }: RichT
   }, [content]);
 
   return (
-    <div className="border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-[#0f172a] overflow-hidden flex flex-col">
-      <MenuBar editor={editor} isRawMode={isRawMode} setIsRawMode={setIsRawMode} />
-      <div className="flex-1 overflow-y-auto bg-slate-50 dark:bg-[#0f172a] text-slate-900 dark:text-slate-200 min-h-[250px] relative">
+    <div className="rounded-lg bg-white dark:bg-transparent flex flex-col">
+      <div className="sticky top-0 z-10">
+        <MenuBar editor={editor} isRawMode={isRawMode} setIsRawMode={setIsRawMode} />
+      </div>
+      <div className="flex-1 overflow-y-auto bg-white dark:bg-transparent text-slate-900 dark:text-slate-200 min-h-[500px] relative mt-4">
         {isRawMode ? (
           <textarea
             value={rawContent}
