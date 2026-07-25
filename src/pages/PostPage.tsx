@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ALL_POSTS } from '../data';
 import { Calendar, User, Clock, Share2, Facebook, Twitter, ChevronRight, FileText, CheckCircle2, AlertCircle, Copy } from 'lucide-react';
 import { motion, useScroll, useSpring } from 'motion/react';
+import { Helmet } from 'react-helmet-async';
 
 export default function PostPage() {
   const { postId } = useParams();
@@ -38,8 +39,26 @@ export default function PostPage() {
   post.category = categoryName;
   
 
+  const displayTitle = post.seoTitle || `${post.title} - Career Notice`;
+  const displayDescription = post.seoDescription || post.title;
+  const displayImage = post.featuredImage || (window.location.origin + '/default-og.jpg');
+  const postUrl = window.location.href;
+
   return (
     <>
+      <Helmet>
+        <title>{displayTitle}</title>
+        <meta name="description" content={displayDescription} />
+        <meta property="og:title" content={displayTitle} />
+        <meta property="og:description" content={displayDescription} />
+        <meta property="og:image" content={displayImage} />
+        <meta property="og:url" content={postUrl} />
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={displayTitle} />
+        <meta name="twitter:description" content={displayDescription} />
+        <meta name="twitter:image" content={displayImage} />
+      </Helmet>
       <motion.div 
         className="fixed top-0 left-0 right-0 h-1 bg-blue-600 origin-left z-[60]" 
         style={{ scaleX }} 
