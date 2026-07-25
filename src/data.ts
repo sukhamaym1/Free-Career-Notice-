@@ -2,7 +2,16 @@ import settingsData from '../content/settings.json';
 
 const postsModules = import.meta.glob('../content/posts/*.json', { eager: true });
 const rawPosts = Object.values(postsModules).map((mod: any) => mod.default || mod);
-const publishedPosts = rawPosts.filter((p: any) => p.status !== 'draft');
+const publishedPosts = rawPosts.filter((p: any) => {
+  if (p.status === 'draft') return false;
+  if (p.date) {
+    const d = new Date(p.date);
+    if (!isNaN(d.getTime()) && d > new Date()) {
+      return false; // Scheduled for future
+    }
+  }
+  return true;
+});
 
 
 

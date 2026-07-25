@@ -96,7 +96,7 @@ export default function PostPage() {
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                <span>{post.date}</span>
+                <span>{new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />

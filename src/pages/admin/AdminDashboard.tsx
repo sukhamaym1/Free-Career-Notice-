@@ -123,7 +123,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
         categorySlug: formData.get('categorySlug'),
         content: formData.get('content') || `<p>${formData.get('title')}</p>`,
         author: formData.get('author'),
-        date: formData.get('date'),
+        date: formData.get('date') ? new Date(formData.get('date') as string).toISOString() : new Date().toISOString(),
         tags: formData.getAll('tag').filter(Boolean) as string[],
         tagColor: formData.get('tagColor') || 'bg-green-500', 
         imgGradient: formData.get('imgGradient') || 'from-blue-500 to-indigo-600',
@@ -408,7 +408,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                           {job.categorySlug}
                         </td>
                         <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400 text-sm whitespace-nowrap">
-                          {job.date}
+                          {new Date(job.date).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}
                         </td>
                       </tr>
                     ))}
@@ -490,12 +490,15 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                       </span>
                     </td>
                     <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400">
-                      <span className={cn("px-2 py-1 rounded text-xs text-white", job.status === 'draft' ? "bg-amber-500" : "bg-emerald-500")}>
-                        {job.status === 'draft' ? 'Draft' : 'Published'}
+                      <span className={cn("px-2 py-1 rounded text-xs text-white", 
+                        job.status === 'draft' ? "bg-amber-500" : 
+                        (job.date && new Date(job.date) > new Date() ? "bg-blue-500" : "bg-emerald-500")
+                      )}>
+                        {job.status === 'draft' ? 'Draft' : (job.date && new Date(job.date) > new Date() ? 'Scheduled' : 'Published')}
                       </span>
                     </td>
                     <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400 text-sm whitespace-nowrap">
-                      {job.date}
+                      {new Date(job.date).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}
                     </td>
                     <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400 text-sm">
                       <button onClick={() => { setEditingPost(job); setActiveTab('Create Post'); }} className="text-blue-600 hover:underline mr-3">Edit</button>
@@ -555,8 +558,25 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                 <input name="author" defaultValue={editingPost?.author || 'Admin'} required className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Date</label>
-                <input name="date" type="text" defaultValue={editingPost?.date || new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} required className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Publish Date & Time (Schedule)</label>
+                <input 
+                  name="date" 
+                  type="datetime-local" 
+                  defaultValue={(() => {
+                    if (editingPost?.date) {
+                      const d = new Date(editingPost.date);
+                      if (!isNaN(d.getTime())) {
+                        const tzOffset = d.getTimezoneOffset() * 60000;
+                        return new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
+                      }
+                    }
+                    const d = new Date();
+                    const tzOffset = d.getTimezoneOffset() * 60000;
+                    return new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
+                  })()} 
+                  required 
+                  className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&::-webkit-calendar-picker-indicator]:dark:invert" 
+                />
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
