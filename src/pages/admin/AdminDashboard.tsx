@@ -144,9 +144,19 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     try {
       const isEdit = !!editingPost;
       const nextIdNumber = rawPosts.length > 0 ? Math.max(...rawPosts.map(p => parseInt(p.id.replace('post-', '') || '0'))) + 1 : 1;
-            const customSlug = formData.get('slug') as string;
-      const slugId = customSlug ? customSlug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '';
-      const postId = isEdit ? editingPost.id : (slugId || `post-${String(nextIdNumber).padStart(3, '0')}`);
+      
+      const title = formData.get('title') as string;
+      const customSlug = formData.get('slug') as string;
+      
+      let slugId = customSlug ? customSlug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '';
+      if (!slugId && title) {
+        slugId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      }
+      if (!slugId) {
+        slugId = `post-${String(nextIdNumber).padStart(3, '0')}`;
+      }
+      
+      const postId = isEdit ? editingPost.id : slugId;
       
       const newPost = {
         ...editingPost,
@@ -741,7 +751,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                     }}
                     className="w-full bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 text-sm" 
                   />
-                  <p className="text-xs text-slate-500 mt-1">Leave empty to auto-generate.</p>
+                  <p className="text-xs text-slate-500 mt-1">Leave empty to auto-generate from title.</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Meta Title</label>
