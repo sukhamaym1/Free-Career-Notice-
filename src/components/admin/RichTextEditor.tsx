@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
@@ -60,6 +60,16 @@ const MenuBar = ({ editor }: { editor: any }) => {
       {children}
     </button>
   );
+
+  useEffect(() => {
+    const handleRestore = (e: any) => {
+      if (editor) {
+        editor.commands.setContent(e.detail);
+      }
+    };
+    window.addEventListener('restore-editor-content', handleRestore);
+    return () => window.removeEventListener('restore-editor-content', handleRestore);
+  }, [editor]);
 
   return (
     <div className="border-b border-slate-200 dark:border-slate-700 p-2 flex flex-wrap gap-1 bg-slate-50 dark:bg-slate-800/50 rounded-t-lg">

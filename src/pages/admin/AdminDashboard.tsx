@@ -12,6 +12,7 @@ import { cn } from '../../lib/utils';
 import RichTextEditor from '../../components/admin/RichTextEditor';
 import { GitHubClient } from '../../lib/github';
 import WebsiteSettings from '../../components/admin/WebsiteSettings';
+import SEOCalculator from '../../components/admin/SEOCalculator';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -59,6 +60,40 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
   useEffect(() => {
     fetchData();
   }, [githubConfig]);
+
+  useEffect(() => {
+    let interval: any;
+    if (activeTab === 'Create Post') {
+      const saveKey = editingPost ? `draftPost-${editingPost.id}` : 'draftPost-new';
+      if (localStorage.getItem(saveKey)) {
+        setTimeout(() => {
+          const btn = document.getElementById('restore-draft-btn');
+          if (btn) btn.classList.remove('hidden');
+        }, 100);
+      }
+      
+      interval = setInterval(() => {
+        const form = document.getElementById('post-editor-form') as HTMLFormElement;
+        if (form) {
+          const formData = new FormData(form);
+          const data: any = Object.fromEntries(formData.entries());
+          data.tags = formData.getAll('tag');
+          
+          const saveKey = editingPost ? `draftPost-${editingPost.id}` : 'draftPost-new';
+          localStorage.setItem(saveKey, JSON.stringify(data));
+          
+          const indicator = document.getElementById('autosave-indicator');
+          if (indicator) {
+            indicator.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg> Saved at ${new Date().toLocaleTimeString()}`;
+            setTimeout(() => {
+              if (indicator) indicator.innerHTML = '';
+            }, 5000);
+          }
+        }
+      }, 30000);
+    }
+    return () => clearInterval(interval);
+  }, [activeTab, editingPost]);
 
   const fetchData = async () => {
     setSyncStatus('syncing');
@@ -119,6 +154,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
         title: formData.get('title'),
         seoTitle: formData.get('seoTitle'),
         seoDescription: formData.get('seoDescription'),
+        focusKeyword: formData.get('focusKeyword'),
         featuredImage: formData.get('featuredImage'),
         categorySlug: formData.get('categorySlug'),
         content: formData.get('content') || `<p>${formData.get('title')}</p>`,
@@ -140,6 +176,10 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
         isEdit ? editingPost._sha : undefined
       );
 
+      
+      // Clear draft after successful save
+      localStorage.removeItem(isEdit ? `draftPost-${editingPost.id}` : 'draftPost-new');
+      
       await fetchData();
       setActiveTab('All Posts');
       setEditingPost(null);
@@ -520,8 +560,70 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
       const isEdit = !!editingPost;
       return (
         <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm p-6 animate-in fade-in duration-300">
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">{isEdit ? 'Edit Post' : 'Create New Post'}</h3>
-          <form onSubmit={handleSavePost} className="flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto">
+          
+          {/* We will inject local state for drafts */}
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">{isEdit ? 'Edit Post' : 'Create New Post'}</h3>
+            <div className="flex items-center gap-4">
+              <button 
+                type="button" 
+                id="restore-draft-btn" 
+                className="hidden text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1"
+                onClick={() => {
+                  const saveKey = editingPost ? `draftPost-${editingPost.id}` : 'draftPost-new';
+                  const draft = localStorage.getItem(saveKey);
+                  if (draft) {
+                    try {
+                      const data = JSON.parse(draft);
+                      const form = document.getElementById('post-editor-form') as HTMLFormElement;
+                      if (form) {
+                        // Restore basic inputs
+                        Object.keys(data).forEach(key => {
+                          const input = form.elements.namedItem(key);
+                          if (input) {
+                            if (input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement || input instanceof HTMLSelectElement) {
+                              // Skip multiple select for simple restore, or handle specifically
+                              if (input instanceof HTMLSelectElement && input.multiple) {
+                                Array.from(input.options).forEach(opt => {
+                                  opt.selected = data[key].includes(opt.value);
+                                });
+                              } else {
+                                input.value = data[key];
+                              }
+                            }
+                          }
+                        });
+                        
+                        // Handle RichTextEditor
+                        const rtfInput = document.getElementById('editor-content') as HTMLInputElement;
+                        if (rtfInput && data.content) {
+                          rtfInput.value = data.content;
+                          // trigger an event to update the visual editor if necessary
+                          // Since RichTextEditor is controlled/uncontrolled via defaultValue, 
+                          // a clean way is just re-rendering, but we'll dispatch a custom event.
+                          window.dispatchEvent(new CustomEvent('restore-editor-content', { detail: data.content }));
+                        }
+                        
+                        const indicator = document.getElementById('autosave-indicator');
+                        if (indicator) {
+                          indicator.innerHTML = 'Draft restored';
+                          setTimeout(() => {
+                            if (indicator) indicator.innerHTML = '';
+                          }, 3000);
+                        }
+                      }
+                    } catch (e) {
+                      console.error('Failed to restore draft', e);
+                    }
+                  }
+                }}
+              >
+                <RefreshCw className="w-4 h-4" /> Restore Draft
+              </button>
+              <span id="autosave-indicator" className="text-sm text-slate-500 flex items-center gap-1"></span>
+            </div>
+          </div>
+          <form id="post-editor-form" onSubmit={handleSavePost} className="flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto">
             {/* Main Content Area */}
             <div className="flex-1 space-y-6 min-w-0">
               <div>
@@ -608,6 +710,10 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                   <Settings className="w-4 h-4" /> SEO Settings
                 </h4>
                 <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Focus Keyword</label>
+                  <input name="focusKeyword" defaultValue={editingPost?.focusKeyword || ''} placeholder="e.g. software engineer jobs" className="w-full bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+                </div>
+                <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">URL Slug</label>
                   <input name="slug" defaultValue={editingPost?.id || ''} disabled={!!editingPost} placeholder="e.g. my-seo-post" className="w-full bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 text-sm" />
                   <p className="text-xs text-slate-500 mt-1">Leave empty to auto-generate.</p>
@@ -621,6 +727,9 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
                   <textarea name="seoDescription" defaultValue={editingPost?.seoDescription || ''} rows={3} placeholder="Brief description for search results" className="w-full bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
                 </div>
               </div>
+
+              {/* SEO Calculator */}
+              <SEOCalculator />
 
               {/* Organization */}
               <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700 space-y-4">
