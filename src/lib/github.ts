@@ -75,6 +75,17 @@ export class GitHubClient {
   }
 
   async putFile(path: string, content: string, message: string, sha?: string) {
+    // Also write locally so AI Studio export doesn't delete it
+    try {
+      await fetch('/api/fs/write', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filePath: path, content })
+      });
+    } catch (e) {
+      console.error('Failed to write locally', e);
+    }
+
     const encodedContent = window.btoa(unescape(encodeURIComponent(content)));
     return this.request(`/contents/${path}`, {
       method: 'PUT',
@@ -88,6 +99,17 @@ export class GitHubClient {
   }
 
   async putBinaryFile(path: string, base64Content: string, message: string, sha?: string) {
+    // Also write locally so AI Studio export doesn't delete it
+    try {
+      await fetch('/api/fs/write', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filePath: path, content: base64Content, encoding: 'base64' })
+      });
+    } catch (e) {
+      console.error('Failed to write locally', e);
+    }
+
     return this.request(`/contents/${path}`, {
       method: 'PUT',
       body: JSON.stringify({
@@ -100,6 +122,17 @@ export class GitHubClient {
   }
 
   async deleteFile(path: string, message: string, sha: string) {
+    // Also delete locally
+    try {
+      await fetch('/api/fs/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filePath: path })
+      });
+    } catch (e) {
+      console.error('Failed to delete locally', e);
+    }
+
     return this.request(`/contents/${path}`, {
       method: 'DELETE',
       body: JSON.stringify({
