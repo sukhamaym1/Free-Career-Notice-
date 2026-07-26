@@ -1,4 +1,6 @@
-import { useEffect, useState, useRef } from 'react';
+import fs from 'fs';
+
+const content = `import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ALL_POSTS } from '../data';
 import { 
@@ -26,7 +28,7 @@ export default function PostPage() {
       const elements = Array.from(contentRef.current.querySelectorAll('h2, h3'));
       const parsedHeadings = elements.map((el, index) => {
         if (!el.id) {
-          el.id = `heading-${index}`;
+          el.id = \\\`heading-\\\${index}\\\`;
         }
         return {
           id: el.id,
@@ -80,7 +82,7 @@ export default function PostPage() {
   const categoryName = post.categorySlug ? post.categorySlug.split('-').map((s:string) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ') : post.category || '';
   post.category = categoryName;
   
-  const displayTitle = post.seoTitle || `${post.title} - Career Notice`;
+  const displayTitle = post.seoTitle || \\\`\\\${post.title} - Career Notice\\\`;
   const displayDescription = post.seoDescription || post.title;
   const displayImage = post.featuredImage || (window.location.origin + '/default-og.jpg');
   const postUrl = window.location.href;
@@ -121,7 +123,7 @@ export default function PostPage() {
       "@type": "ListItem",
       "position": 2,
       "name": post.category,
-      "item": `${window.location.origin}/category/${post.categorySlug}`
+      "item": \\\`\\\${window.location.origin}/category/\\\${post.categorySlug}\\\`
     },{
       "@type": "ListItem",
       "position": 3,
@@ -175,7 +177,7 @@ export default function PostPage() {
             <nav className="flex items-center gap-2 text-sm text-slate-400 mb-6 font-medium">
               <Link to="/" className="hover:text-white transition-colors">Home</Link>
               <ChevronRight className="w-4 h-4 shrink-0 opacity-60" />
-              <Link to={`/category/${post.categorySlug}`} className="hover:text-white transition-colors">{post.category}</Link>
+              <Link to={\`/category/\\\${post.categorySlug}\`} className="hover:text-white transition-colors">{post.category}</Link>
               <ChevronRight className="w-4 h-4 shrink-0 opacity-60" />
               <span className="text-slate-200 truncate">{post.title.substring(0, 40)}...</span>
             </nav>
@@ -215,11 +217,11 @@ export default function PostPage() {
                       <button
                         key={heading.id}
                         onClick={() => scrollToHeading(heading.id)}
-                        className={`text-left text-sm transition-all duration-200 leading-snug flex items-start gap-2 ${
+                        className={\`text-left text-sm transition-all duration-200 leading-snug flex items-start gap-2 \\\${
                           activeHeading === heading.id 
                             ? 'text-blue-600 dark:text-blue-400 font-semibold' 
                             : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                        } ${heading.level === 3 ? 'pl-4' : ''}`}
+                        } \\\${heading.level === 3 ? 'pl-4' : ''}\\\`}
                       >
                         {activeHeading === heading.id && <div className="w-1 h-4 bg-blue-600 rounded-full shrink-0 mt-0.5"></div>}
                         <span className={activeHeading === heading.id ? '' : heading.level === 2 ? 'ml-3' : ''}>{heading.text}</span>
@@ -253,7 +255,7 @@ export default function PostPage() {
                     className="w-full flex items-center justify-between p-5 font-bold text-slate-900 dark:text-white"
                   >
                     <span>Table of Contents</span>
-                    <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${isMobileTocOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={\`w-5 h-5 transition-transform duration-300 \\\${isMobileTocOpen ? 'rotate-180' : ''}\\\`} />
                   </button>
                   <AnimatePresence>
                     {isMobileTocOpen && (
@@ -268,11 +270,11 @@ export default function PostPage() {
                             <button
                               key={heading.id}
                               onClick={() => scrollToHeading(heading.id)}
-                              className={`text-left text-sm transition-colors duration-200 leading-snug flex items-start gap-2 ${
+                              className={\`text-left text-sm transition-colors duration-200 leading-snug flex items-start gap-2 \\\${
                                 activeHeading === heading.id 
                                   ? 'text-blue-600 dark:text-blue-400 font-semibold' 
                                   : 'text-slate-600 dark:text-slate-400'
-                              } ${heading.level === 3 ? 'pl-4' : ''}`}
+                              } \\\${heading.level === 3 ? 'pl-4' : ''}\\\`}
                             >
                               {activeHeading === heading.id && <div className="w-1 h-4 bg-blue-600 rounded-full shrink-0 mt-0.5"></div>}
                               <span className={activeHeading === heading.id ? '' : heading.level === 2 ? 'ml-3' : ''}>{heading.text}</span>
@@ -309,3 +311,5 @@ export default function PostPage() {
     </>
   );
 }
+`;
+fs.writeFileSync('src/pages/PostPage.tsx', content);
