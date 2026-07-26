@@ -1,4 +1,5 @@
-import { useParams, Link } from 'react-router-dom';
+import fs from 'fs';
+const content = `import { useParams, Link } from 'react-router-dom';
 import { ALL_POSTS } from '../data';
 import { Calendar, User, Clock, Share2, Facebook, Twitter, Linkedin, ChevronRight, Copy, Tag } from 'lucide-react';
 import { motion, useScroll, useSpring } from 'motion/react';
@@ -38,7 +39,7 @@ export default function PostPage() {
   const categoryName = post.categorySlug ? post.categorySlug.split('-').map((s:string) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ') : post.category || '';
   post.category = categoryName;
   
-  const displayTitle = post.seoTitle || `${post.title} - Career Notice`;
+  const displayTitle = post.seoTitle || \`\${post.title} - Career Notice\`;
   const displayDescription = post.seoDescription || post.title;
   const displayImage = post.featuredImage || (window.location.origin + '/default-og.jpg');
   const postUrl = window.location.href;
@@ -76,14 +77,14 @@ export default function PostPage() {
             <nav className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-8 font-medium">
               <Link to="/" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</Link>
               <ChevronRight className="w-4 h-4 shrink-0 opacity-50" />
-              <Link to={`/category/${post.categorySlug}`} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{post.category}</Link>
+              <Link to={\`/category/\${post.categorySlug}\`} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{post.category}</Link>
               <ChevronRight className="w-4 h-4 shrink-0 opacity-50" />
               <span className="text-gray-900 dark:text-gray-200 truncate">{post.title.substring(0, 40)}...</span>
             </nav>
 
             <div className="flex flex-col items-start gap-6">
               <Link 
-                to={`/category/${post.categorySlug}`}
+                to={\`/category/\${post.categorySlug}\`}
                 className="inline-block px-4 py-1.5 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 text-sm font-bold rounded-full uppercase tracking-wider shadow-sm border border-blue-100 dark:border-blue-500/20 hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors"
               >
                 {post.category}
@@ -117,7 +118,7 @@ export default function PostPage() {
 
         <div className="container mx-auto px-4 max-w-5xl -mt-8 relative z-10">
           {/* Featured Image */}
-          <div className={`w-full aspect-[21/9] min-h-[300px] md:min-h-[400px] rounded-2xl md:rounded-[2rem] overflow-hidden shadow-2xl bg-gradient-to-br ${post.imgGradient || 'from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900'} border-4 border-white dark:border-slate-800 relative`}>
+          <div className={\`w-full aspect-[21/9] min-h-[300px] md:min-h-[400px] rounded-2xl md:rounded-[2rem] overflow-hidden shadow-2xl bg-gradient-to-br \${post.imgGradient || 'from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900'} border-4 border-white dark:border-slate-800 relative\`}>
             {post.featuredImage ? (
               <img src={post.featuredImage} alt={post.title} className="absolute inset-0 w-full h-full object-cover" />
             ) : (
@@ -150,13 +151,13 @@ export default function PostPage() {
                   Share this Post
                 </h3>
                 <div className="grid grid-cols-3 gap-3 mb-4">
-                  <button onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}`, '_blank')} className="flex flex-col items-center justify-center gap-2 bg-slate-50 dark:bg-slate-800 hover:bg-[#1877F2]/10 hover:text-[#1877F2] text-slate-600 dark:text-slate-400 p-4 rounded-2xl transition-colors">
+                  <button onClick={() => window.open(\`https://www.facebook.com/sharer/sharer.php?u=\${encodeURIComponent(postUrl)}\`, '_blank')} className="flex flex-col items-center justify-center gap-2 bg-slate-50 dark:bg-slate-800 hover:bg-[#1877F2]/10 hover:text-[#1877F2] text-slate-600 dark:text-slate-400 p-4 rounded-2xl transition-colors">
                     <Facebook className="w-6 h-6" />
                   </button>
-                  <button onClick={() => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(post.title)}`, '_blank')} className="flex flex-col items-center justify-center gap-2 bg-slate-50 dark:bg-slate-800 hover:bg-[#1DA1F2]/10 hover:text-[#1DA1F2] text-slate-600 dark:text-slate-400 p-4 rounded-2xl transition-colors">
+                  <button onClick={() => window.open(\`https://twitter.com/intent/tweet?url=\${encodeURIComponent(postUrl)}&text=\${encodeURIComponent(post.title)}\`, '_blank')} className="flex flex-col items-center justify-center gap-2 bg-slate-50 dark:bg-slate-800 hover:bg-[#1DA1F2]/10 hover:text-[#1DA1F2] text-slate-600 dark:text-slate-400 p-4 rounded-2xl transition-colors">
                     <Twitter className="w-6 h-6" />
                   </button>
-                  <button onClick={() => window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(postUrl)}&title=${encodeURIComponent(post.title)}`, '_blank')} className="flex flex-col items-center justify-center gap-2 bg-slate-50 dark:bg-slate-800 hover:bg-[#0A66C2]/10 hover:text-[#0A66C2] text-slate-600 dark:text-slate-400 p-4 rounded-2xl transition-colors">
+                  <button onClick={() => window.open(\`https://www.linkedin.com/shareArticle?mini=true&url=\${encodeURIComponent(postUrl)}&title=\${encodeURIComponent(post.title)}\`, '_blank')} className="flex flex-col items-center justify-center gap-2 bg-slate-50 dark:bg-slate-800 hover:bg-[#0A66C2]/10 hover:text-[#0A66C2] text-slate-600 dark:text-slate-400 p-4 rounded-2xl transition-colors">
                     <Linkedin className="w-6 h-6" />
                   </button>
                 </div>
@@ -178,7 +179,7 @@ export default function PostPage() {
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {post.tags.map((tag: string) => (
-                      <Link key={tag} to={`/search?q=${tag}`} className="px-4 py-2 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                      <Link key={tag} to={\`/search?q=\${tag}\`} className="px-4 py-2 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                         {tag}
                       </Link>
                     ))}
@@ -194,7 +195,7 @@ export default function PostPage() {
           <div className="container mx-auto px-4 max-w-5xl mt-20">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">More in {post.category}</h2>
-              <Link to={`/category/${post.categorySlug}`} className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
+              <Link to={\`/category/\${post.categorySlug}\`} className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
                 View all
               </Link>
             </div>
@@ -202,10 +203,10 @@ export default function PostPage() {
               {relatedPosts.map((relatedPost: any) => (
                 <Link 
                   key={relatedPost.id} 
-                  to={`/post/${relatedPost.id}`}
+                  to={\`/post/\${relatedPost.id}\`}
                   className="group flex flex-col bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-sm border border-slate-200/60 dark:border-slate-800 hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300"
                 >
-                  <div className={`aspect-[16/10] bg-gradient-to-br ${relatedPost.imgGradient || 'from-slate-100 to-slate-200'} relative overflow-hidden`}>
+                  <div className={\`aspect-[16/10] bg-gradient-to-br \${relatedPost.imgGradient || 'from-slate-100 to-slate-200'} relative overflow-hidden\`}>
                     {relatedPost.featuredImage && (
                       <img src={relatedPost.featuredImage} alt={relatedPost.title} className="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-700 group-hover:scale-105" />
                     )}
@@ -228,3 +229,5 @@ export default function PostPage() {
     </>
   );
 }
+`;
+fs.writeFileSync('src/pages/PostPage.tsx', content);
