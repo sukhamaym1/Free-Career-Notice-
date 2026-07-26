@@ -14,6 +14,8 @@ import { GitHubClient } from '../lib/github';
 import WebsiteSettings from './components/WebsiteSettings';
 import AdminLayout from './components/AdminLayout';
 import DashboardPage from './pages/DashboardPage';
+import PostsPage from './pages/PostsPage';
+import EditorPage from './pages/EditorPage';
 import SEOCalculator from './components/SEOCalculator';
 
 interface AdminDashboardProps {
