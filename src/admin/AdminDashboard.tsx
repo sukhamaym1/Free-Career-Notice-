@@ -99,7 +99,21 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     setSyncStatus('syncing');
     try {
       const files = await client.listDirectory('content/posts');
-      const postPromises = files.map((f: any) => client.getFile(f.path).then(res => ({ ...res, path: f.path })));
+      const postPromises = files.map((f: any) => client.getFile(f.path).then(async res => {
+        if (res && res.content) {
+          // Sync to local filesystem
+          try {
+            await fetch('/api/fs/write', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ filePath: f.path, content: res.content })
+            });
+          } catch (e) {
+            console.error('Failed to sync locally', e);
+          }
+        }
+        return { ...res, path: f.path };
+      }));
       const postResults = await Promise.all(postPromises);
       const posts = postResults.filter((r: any) => r && r.content).map((r: any) => ({ ...JSON.parse(r.content), _sha: r.sha, _path: r.path }));
       
