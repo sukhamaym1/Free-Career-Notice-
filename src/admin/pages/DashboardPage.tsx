@@ -4,11 +4,12 @@ import {
 } from 'lucide-react';
 
 interface DashboardPageProps {
+  setActiveTab: (tab: string) => void;
   parsedData: any;
   rawPosts: any[];
 }
 
-export default function DashboardPage({ parsedData, rawPosts }: DashboardPageProps) {
+export default function DashboardPage({ parsedData, rawPosts, setActiveTab }: DashboardPageProps) {
   const publishedCount = rawPosts.filter(p => !p.draft).length;
   const draftCount = rawPosts.filter(p => p.draft).length;
   

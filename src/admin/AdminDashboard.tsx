@@ -16,6 +16,9 @@ import AdminLayout from './components/AdminLayout';
 import DashboardPage from './pages/DashboardPage';
 import PostsPage from './pages/PostsPage';
 import EditorPage from './pages/EditorPage';
+import CategoriesPage from './pages/CategoriesPage';
+import TagsPage from './pages/TagsPage';
+import MediaLibraryPage from './pages/MediaLibraryPage';
 import SEOCalculator from './components/SEOCalculator';
 
 interface AdminDashboardProps {
@@ -430,80 +433,11 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
 
     if (activeTab === 'Dashboard') {
       return (
-        <div className="space-y-8 animate-in fade-in duration-300">
-          <div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white dark:bg-[#1e293b] rounded-xl p-6 border border-slate-200 dark:border-slate-700/50 shadow-sm">
-                <div className="text-4xl font-bold text-blue-600 dark:text-[#38bdf8] mb-2">{parsedData.JOB_NOTIFICATIONS.length}</div>
-                <div className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">Total Jobs</div>
-              </div>
-              <div className="bg-white dark:bg-[#1e293b] rounded-xl p-6 border border-slate-200 dark:border-slate-700/50 shadow-sm">
-                <div className="text-4xl font-bold text-blue-600 dark:text-[#38bdf8] mb-2">{parsedData.ADMIT_CARDS.length}</div>
-                <div className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">Admit Cards</div>
-              </div>
-              <div className="bg-white dark:bg-[#1e293b] rounded-xl p-6 border border-slate-200 dark:border-slate-700/50 shadow-sm">
-                <div className="text-4xl font-bold text-blue-600 dark:text-[#38bdf8] mb-2">{parsedData.RESULTS.length}</div>
-                <div className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase">Results</div>
-              </div>
-              
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden flex flex-col">
-              <div className="p-6 border-b border-slate-200 dark:border-slate-700/50 flex justify-between items-center">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Recent Posts</h3>
-                <button onClick={() => setActiveTab('All Posts')} className="px-4 py-1.5 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-sm font-medium rounded-md transition-colors text-slate-700 dark:text-slate-200">
-                  View All
-                </button>
-              </div>
-              <div className="p-6 overflow-x-auto flex-1">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="text-sm font-semibold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700/50">
-                      <th className="pb-4 pr-4">Title</th>
-                      <th className="pb-4 px-4">Category</th>
-                      <th className="pb-4 px-4">Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rawPosts.slice(0, 5).map((job, i) => (
-                      <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                        <td className="py-4 pr-4 border-b border-slate-100 dark:border-slate-800/50 font-medium text-slate-800 dark:text-slate-200 max-w-[200px] truncate">
-                          {job.title}
-                        </td>
-                        <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400">
-                          {job.categorySlug}
-                        </td>
-                        <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400 text-sm whitespace-nowrap">
-                          {new Date(job.date).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm p-6 flex flex-col">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Quick Actions</h3>
-              <div className="space-y-3">
-                <button onClick={() => { setEditingPost(null); setActiveTab('Create Post'); }} className="w-full flex items-center gap-3 px-4 py-3 bg-blue-600 dark:bg-[#0ea5e9] hover:bg-blue-700 dark:hover:bg-[#0284c7] text-white rounded-lg transition-colors font-medium text-sm">
-                  <Edit3 className="w-5 h-5 text-blue-100 dark:text-yellow-300" />
-                  Write a New Post
-                </button>
-                <button 
-                  onClick={fetchData}
-                  disabled={syncStatus === 'syncing'}
-                  className="w-full flex items-center gap-3 px-4 py-3 bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed border border-slate-200 dark:border-transparent"
-                >
-                  <RefreshCw className={`w-5 h-5 text-blue-600 dark:text-sky-400 ${syncStatus === 'syncing' ? 'animate-spin' : ''}`} />
-                  {syncStatus === 'syncing' ? 'Fetching...' : 'Refresh from GitHub'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <DashboardPage 
+          parsedData={parsedData}
+          rawPosts={rawPosts}
+          setActiveTab={setActiveTab}
+        />
       );
     }
 
@@ -864,208 +798,43 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
 
     if (activeTab === 'Categories') {
       return (
-        <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden animate-in fade-in duration-300 p-6">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Manage Categories</h3>
-          
-          <div className="flex gap-4 mb-6">
-            <input 
-              type="text" 
-              placeholder="New Category Name" 
-              value={newCatName}
-              onChange={(e) => setNewCatName(e.target.value)}
-              className="flex-1 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button onClick={handleAddCategory} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
-              Add Category
-            </button>
-          </div>
-
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="text-sm font-semibold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700/50">
-                <th className="pb-4 pr-4">Name</th>
-                <th className="pb-4 px-4">Slug</th>
-                <th className="pb-4 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {categories.map((cat, i) => (
-                <tr key={cat.id || i} className="border-b border-slate-100 dark:border-slate-800/50">
-                  <td className="py-4 pr-4 font-medium text-slate-800 dark:text-slate-200">{cat.name}</td>
-                  <td className="py-4 px-4 text-slate-500 dark:text-slate-400">{cat.slug}</td>
-                  <td className="py-4 px-4 text-right">
-                    <button onClick={() => handleEditCategory(cat)} className="text-blue-600 hover:underline mr-3">Edit</button>
-                    <button onClick={() => handleDeleteCategory(cat.id)} className="text-red-600 hover:underline">Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <CategoriesPage 
+          categories={categories}
+          handleAddCategory={handleAddCategory}
+          handleEditCategory={handleEditCategory}
+          handleDeleteCategory={handleDeleteCategory}
+          newCatName={newCatName}
+          setNewCatName={setNewCatName}
+        />
       );
     }
 
     if (activeTab === 'Tags') {
       return (
-        <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden animate-in fade-in duration-300 p-6">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Manage Tags</h3>
-          
-          <div className="flex gap-4 mb-6">
-            <input 
-              type="text" 
-              placeholder="New Tag Name" 
-              value={newTagName}
-              onChange={(e) => setNewTagName(e.target.value)}
-              className="flex-1 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button onClick={handleAddTag} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
-              Add Tag
-            </button>
-          </div>
-
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="text-sm font-semibold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700/50">
-                <th className="pb-4 pr-4">Name</th>
-                <th className="pb-4 px-4">Slug</th>
-                <th className="pb-4 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tags.map((tag, i) => (
-                <tr key={tag.id || i} className="border-b border-slate-100 dark:border-slate-800/50">
-                  <td className="py-4 pr-4 font-medium text-slate-800 dark:text-slate-200">{tag.name}</td>
-                  <td className="py-4 px-4 text-slate-500 dark:text-slate-400">{tag.slug}</td>
-                  <td className="py-4 px-4 text-right">
-                    <button onClick={() => handleEditTag(tag)} className="text-blue-600 hover:underline mr-3">Edit</button>
-                    <button onClick={() => handleDeleteTag(tag.id)} className="text-red-600 hover:underline">Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <TagsPage 
+          tags={tags}
+          handleAddTag={handleAddTag}
+          handleEditTag={handleEditTag}
+          handleDeleteTag={handleDeleteTag}
+          newTagName={newTagName}
+          setNewTagName={setNewTagName}
+        />
       );
     }
 
     if (activeTab === 'Media Library') {
       return (
-        <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden animate-in fade-in duration-300 p-6">
-          
-          {/* Top Actions & Search */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Media Library</h3>
-            <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-              <div className="relative w-full sm:w-64">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search media..."
-                  value={mediaSearchQuery}
-                  onChange={(e) => setMediaSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
-                />
-              </div>
-              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-                {selectedMedia.length > 0 && (
-                  <button 
-                    onClick={handleBulkDeleteMedia}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors text-sm whitespace-nowrap"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                    Delete ({selectedMedia.length})
-                  </button>
-                )}
-                <label className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm whitespace-nowrap">
-                  <DownloadCloud className="w-4 h-4" />
-                  Upload
-                  <input type="file" className="hidden" accept="image/*" onChange={handleUploadMedia} />
-                </label>
-              </div>
-            </div>
-          </div>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="text-sm font-semibold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700/50">
-                  <th className="pb-4 pl-4 w-12">
-                    <input 
-                      type="checkbox" 
-                      checked={mediaFiles.filter(f => f.name.toLowerCase().includes(mediaSearchQuery.toLowerCase())).length > 0 && selectedMedia.length === mediaFiles.filter(f => f.name.toLowerCase().includes(mediaSearchQuery.toLowerCase())).length}
-                      onChange={(e) => {
-                        const filtered = mediaFiles.filter(f => f.name.toLowerCase().includes(mediaSearchQuery.toLowerCase()));
-                        if (e.target.checked) {
-                          setSelectedMedia(filtered.map(f => f.name));
-                        } else {
-                          setSelectedMedia([]);
-                        }
-                      }}
-                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 bg-white cursor-pointer"
-                    />
-                  </th>
-                  <th className="pb-4 px-4 w-24">Preview</th>
-                  <th className="pb-4 px-4">File Name</th>
-                  <th className="pb-4 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mediaFiles.filter(f => f.name.toLowerCase().includes(mediaSearchQuery.toLowerCase())).map((f, i) => (
-                  <tr key={i} className={`border-b border-slate-100 dark:border-slate-800/50 transition-colors ${selectedMedia.includes(f.name) ? 'bg-blue-50/50 dark:bg-blue-900/10' : 'hover:bg-slate-50 dark:hover:bg-slate-800/30'}`}>
-                    <td className="py-3 pl-4">
-                      <input 
-                        type="checkbox" 
-                        checked={selectedMedia.includes(f.name)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedMedia([...selectedMedia, f.name]);
-                          } else {
-                            setSelectedMedia(selectedMedia.filter(name => name !== f.name));
-                          }
-                        }}
-                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 bg-white cursor-pointer"
-                      />
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="w-16 h-12 rounded overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
-                        <img src={f.download_url || `/uploads/${f.name}`} alt={f.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 font-medium text-sm text-slate-800 dark:text-slate-200">
-                      {f.name}
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button 
-                          onClick={() => {
-                            const url = window.location.origin + `/uploads/${f.name}`;
-                            navigator.clipboard.writeText(url);
-                            alert('Copied URL: ' + url);
-                          }} 
-                          className="p-1.5 text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors" title="Copy URL">
-                          <LinkIcon className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => handleRenameMedia(f)} className="p-1.5 text-blue-500 hover:text-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded transition-colors" title="Rename">
-                          <Edit3 className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => handleDeleteMedia(f)} className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors" title="Delete">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {mediaFiles.filter(f => f.name.toLowerCase().includes(mediaSearchQuery.toLowerCase())).length === 0 && (
-                  <tr>
-                    <td colSpan={4} className="py-12 text-center text-slate-500">
-                      {mediaFiles.length === 0 ? 'No media files found in public/uploads/' : 'No media files match your search.'}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <MediaLibraryPage 
+          mediaFiles={mediaFiles}
+          selectedMedia={selectedMedia}
+          setSelectedMedia={setSelectedMedia}
+          mediaSearchQuery={mediaSearchQuery}
+          setMediaSearchQuery={setMediaSearchQuery}
+          handleBulkDeleteMedia={handleBulkDeleteMedia}
+          handleUploadMedia={handleUploadMedia}
+          handleRenameMedia={handleRenameMedia}
+          handleDeleteMedia={handleDeleteMedia}
+        />
       );
     }
 
