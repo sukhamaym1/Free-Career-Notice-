@@ -6,3 +6,5 @@
 - **Public Website**: Public-facing pages and components MUST go into their respective standard directories (`src/pages/`, `src/components/`, `src/lib/`).
 
 By adhering to this structure, we ensure the workspace remains organized and maintainable.
+
+- **Preserve Existing Designs & Functionality**: Never modify, change, or remove any existing design, layout, or functionality when adding new features or making updates, unless I explicitly instruct you to do so. New additions should seamlessly integrate without altering what is already there.
