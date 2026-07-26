@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import AdminLogin from './admin/AdminLogin';
-import AdminDashboard from './admin/AdminDashboard';
+import AdminLogin from './AdminLogin';
+import AdminDashboard from './AdminDashboard';
 
 interface AdminPageProps {
   theme: 'light' | 'dark';

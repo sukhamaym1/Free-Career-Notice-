@@ -8,11 +8,11 @@ import {
   LayoutTemplate, Users, Activity, Trash2, Link as LinkIcon, DownloadCloud, Image
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { cn } from '../../lib/utils';
-import RichTextEditor from '../../components/admin/RichTextEditor';
-import { GitHubClient } from '../../lib/github';
-import WebsiteSettings from '../../components/admin/WebsiteSettings';
-import SEOCalculator from '../../components/admin/SEOCalculator';
+import { cn } from '../lib/utils';
+import RichTextEditor from './components/RichTextEditor';
+import { GitHubClient } from '../lib/github';
+import WebsiteSettings from './components/WebsiteSettings';
+import SEOCalculator from './components/SEOCalculator';
 
 interface AdminDashboardProps {
   onLogout: () => void;

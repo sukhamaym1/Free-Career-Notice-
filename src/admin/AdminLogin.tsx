@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { motion } from 'motion/react';
 import { KeyRound, Mail, Loader2, Info } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../lib/utils';
 
 interface AdminLoginProps {
   onLogin: (pat: string, repo: string, branch: string) => void;

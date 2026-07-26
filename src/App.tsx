@@ -14,7 +14,7 @@ import CategoryPage from './pages/CategoryPage';
 import TextPage from './pages/TextPage';
 import SearchPage from './pages/SearchPage';
 import QuizPage from './pages/QuizPage';
-import AdminPage from './pages/AdminPage';
+import AdminPage from './admin/AdminPage';
 
 import PostPage from './pages/PostPage';
 import BackToTop from './components/BackToTop';
