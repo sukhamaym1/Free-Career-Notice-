@@ -1,4 +1,6 @@
-import { useEffect, useState, useRef } from 'react';
+import fs from 'fs';
+
+const content = `import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ALL_POSTS } from '../data';
 import { 
@@ -40,7 +42,7 @@ export default function PostPage() {
       const elements = Array.from(contentRef.current.querySelectorAll('h2, h3'));
       const parsedHeadings = elements.map((el, index) => {
         if (!el.id) {
-          el.id = `heading-${index}`;
+          el.id = \`heading-\${index}\`;
         }
         return {
           id: el.id,
@@ -101,7 +103,7 @@ export default function PostPage() {
   const categoryName = post.categorySlug ? post.categorySlug.split('-').map((s:string) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ') : post.category || '';
   post.category = categoryName;
   
-  const displayTitle = post.seoTitle || `${post.title} - Career Notice`;
+  const displayTitle = post.seoTitle || \`\${post.title} - Career Notice\`;
   const displayDescription = post.seoDescription || post.title;
   const displayImage = post.featuredImage || (window.location.origin + '/default-og.jpg');
   const postUrl = window.location.href;
@@ -150,7 +152,7 @@ export default function PostPage() {
       "@type": "ListItem",
       "position": 2,
       "name": post.category,
-      "item": `${window.location.origin}/category/${post.categorySlug}`
+      "item": \`\${window.location.origin}/category/\${post.categorySlug}\`
     },{
       "@type": "ListItem",
       "position": 3,
@@ -198,19 +200,19 @@ export default function PostPage() {
         
         {/* Floating Share Bar - Desktop */}
         <div className="hidden xl:flex fixed left-6 top-1/2 -translate-y-1/2 flex-col gap-4 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-3 rounded-full border border-slate-200/60 dark:border-slate-800 shadow-2xl">
-          <button onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:text-white hover:bg-[#1877F2] transition-all hover:scale-110 hover:shadow-lg hover:shadow-[#1877F2]/40" title="Share on Facebook">
+          <button onClick={() => window.open(\`https://www.facebook.com/sharer/sharer.php?u=\${encodeURIComponent(postUrl)}\`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:text-white hover:bg-[#1877F2] transition-all hover:scale-110 hover:shadow-lg hover:shadow-[#1877F2]/40" title="Share on Facebook">
             <Facebook className="w-5 h-5" />
           </button>
-          <button onClick={() => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(post.title)}`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:text-white hover:bg-[#1DA1F2] transition-all hover:scale-110 hover:shadow-lg hover:shadow-[#1DA1F2]/40" title="Share on Twitter">
+          <button onClick={() => window.open(\`https://twitter.com/intent/tweet?url=\${encodeURIComponent(postUrl)}&text=\${encodeURIComponent(post.title)}\`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:text-white hover:bg-[#1DA1F2] transition-all hover:scale-110 hover:shadow-lg hover:shadow-[#1DA1F2]/40" title="Share on Twitter">
             <Twitter className="w-5 h-5" />
           </button>
-          <button onClick={() => window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(postUrl)}&title=${encodeURIComponent(post.title)}`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:text-white hover:bg-[#0A66C2] transition-all hover:scale-110 hover:shadow-lg hover:shadow-[#0A66C2]/40" title="Share on LinkedIn">
+          <button onClick={() => window.open(\`https://www.linkedin.com/shareArticle?mini=true&url=\${encodeURIComponent(postUrl)}&title=\${encodeURIComponent(post.title)}\`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:text-white hover:bg-[#0A66C2] transition-all hover:scale-110 hover:shadow-lg hover:shadow-[#0A66C2]/40" title="Share on LinkedIn">
             <Linkedin className="w-5 h-5" />
           </button>
-          <button onClick={() => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(post.title + ' ' + postUrl)}`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:text-white hover:bg-[#25D366] transition-all hover:scale-110 hover:shadow-lg hover:shadow-[#25D366]/40" title="Share on WhatsApp">
+          <button onClick={() => window.open(\`https://api.whatsapp.com/send?text=\${encodeURIComponent(post.title + ' ' + postUrl)}\`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:text-white hover:bg-[#25D366] transition-all hover:scale-110 hover:shadow-lg hover:shadow-[#25D366]/40" title="Share on WhatsApp">
             <WhatsAppIcon className="w-5 h-5" />
           </button>
-          <button onClick={() => window.open(`https://t.me/share/url?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(post.title)}`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:text-white hover:bg-[#0088cc] transition-all hover:scale-110 hover:shadow-lg hover:shadow-[#0088cc]/40" title="Share on Telegram">
+          <button onClick={() => window.open(\`https://t.me/share/url?url=\${encodeURIComponent(postUrl)}&text=\${encodeURIComponent(post.title)}\`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:text-white hover:bg-[#0088cc] transition-all hover:scale-110 hover:shadow-lg hover:shadow-[#0088cc]/40" title="Share on Telegram">
             <TelegramIcon className="w-5 h-5" />
           </button>
           <div className="w-6 h-[1px] bg-slate-200 dark:bg-slate-700 mx-auto my-1"></div>
@@ -229,7 +231,7 @@ export default function PostPage() {
                 <div className="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/60 to-slate-900"></div>
               </>
             ) : (
-              <div className={`w-full h-full bg-gradient-to-br ${post.imgGradient || 'from-blue-900 to-indigo-900'} opacity-60`}></div>
+              <div className={\`w-full h-full bg-gradient-to-br \${post.imgGradient || 'from-blue-900 to-indigo-900'} opacity-60\`}></div>
             )}
             <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-[2px]"></div>
           </div>
@@ -239,7 +241,7 @@ export default function PostPage() {
             <nav className="flex items-center gap-2 text-sm text-slate-300 mb-8 font-medium bg-white/5 backdrop-blur-md w-fit px-4 py-2 rounded-full border border-white/10">
               <Link to="/" className="hover:text-white transition-colors">Home</Link>
               <ChevronRight className="w-4 h-4 shrink-0 opacity-50" />
-              <Link to={`/category/${post.categorySlug}`} className="hover:text-white transition-colors">{post.category}</Link>
+              <Link to={\`/category/\${post.categorySlug}\`} className="hover:text-white transition-colors">{post.category}</Link>
               <ChevronRight className="w-4 h-4 shrink-0 opacity-50" />
               <span className="text-white truncate max-w-[200px] sm:max-w-[300px]">{post.title}</span>
             </nav>
@@ -251,7 +253,7 @@ export default function PostPage() {
               className="max-w-4xl"
             >
               <Link 
-                to={`/category/${post.categorySlug}`}
+                to={\`/category/\${post.categorySlug}\`}
                 className="inline-flex items-center px-4 py-1.5 bg-blue-500/20 text-blue-300 text-sm font-bold rounded-full uppercase tracking-wider border border-blue-400/30 hover:bg-blue-500/30 transition-colors mb-6 backdrop-blur-md"
               >
                 {post.category}
@@ -320,7 +322,7 @@ export default function PostPage() {
           </div>
         )}
 
-        <div className={`container mx-auto px-4 max-w-6xl ${!post.featuredImage ? 'mt-12' : ''}`}>
+        <div className={\`container mx-auto px-4 max-w-6xl \${!post.featuredImage ? 'mt-12' : ''}\`}>
           <div className="flex flex-col lg:flex-row gap-10 xl:gap-16">
             
             {/* Main Content Area */}
@@ -362,7 +364,7 @@ export default function PostPage() {
                     {post.tags.map((tag: string) => (
                       <Link 
                         key={tag} 
-                        to={`/search?q=${tag}`} 
+                        to={\`/search?q=\${tag}\`} 
                         className="group flex items-center px-5 py-2.5 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-medium rounded-full border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 hover:-translate-y-1 transition-all"
                       >
                         <span className="text-blue-500 mr-1.5 opacity-50 group-hover:opacity-100 transition-opacity">#</span>
@@ -433,11 +435,11 @@ export default function PostPage() {
                       <button
                         key={heading.id}
                         onClick={() => scrollToHeading(heading.id)}
-                        className={`text-left text-sm font-medium transition-all duration-200 line-clamp-2 ${
+                        className={\`text-left text-sm font-medium transition-all duration-200 line-clamp-2 \${
                           activeHeading === heading.id 
                             ? 'text-blue-600 dark:text-blue-400 translate-x-1' 
                             : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                        } ${heading.level === 3 ? 'pl-4 border-l-2 border-slate-100 dark:border-slate-800 ml-1' : ''}`}
+                        } \${heading.level === 3 ? 'pl-4 border-l-2 border-slate-100 dark:border-slate-800 ml-1' : ''}\`}
                       >
                         {heading.text}
                       </button>
@@ -474,7 +476,7 @@ export default function PostPage() {
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Trending Now</h3>
                 <div className="flex flex-col gap-4">
                   {popularPosts.map((pp: any, idx: number) => (
-                    <Link key={pp.id} to={`/post/${pp.id}`} className="group flex gap-4 items-center">
+                    <Link key={pp.id} to={\`/post/\${pp.id}\`} className="group flex gap-4 items-center">
                       <div className="text-4xl font-black text-slate-100 dark:text-slate-800 group-hover:text-blue-100 dark:group-hover:text-blue-900/30 transition-colors w-8 text-center shrink-0">
                         {idx + 1}
                       </div>
@@ -518,7 +520,7 @@ export default function PostPage() {
           <div className="container mx-auto px-4 max-w-6xl mt-24">
             <div className="flex items-center justify-between mb-10">
               <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">More in {post.category}</h2>
-              <Link to={`/category/${post.categorySlug}`} className="hidden sm:flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/20 px-4 py-2 rounded-full transition-colors">
+              <Link to={\`/category/\${post.categorySlug}\`} className="hidden sm:flex items-center gap-2 text-blue-600 dark:text-blue-400 font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/20 px-4 py-2 rounded-full transition-colors">
                 View all articles
                 <ArrowLeft className="w-4 h-4 rotate-180" />
               </Link>
@@ -533,10 +535,10 @@ export default function PostPage() {
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
                 >
                   <Link 
-                    to={`/post/${relatedPost.id}`}
+                    to={\`/post/\${relatedPost.id}\`}
                     className="group flex flex-col bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl border border-slate-200/60 dark:border-slate-800 transition-all duration-500 hover:-translate-y-2 h-full"
                   >
-                    <div className={`aspect-[4/3] bg-gradient-to-br ${relatedPost.imgGradient || 'from-slate-100 to-slate-200'} relative overflow-hidden`}>
+                    <div className={\`aspect-[4/3] bg-gradient-to-br \${relatedPost.imgGradient || 'from-slate-100 to-slate-200'} relative overflow-hidden\`}>
                       {relatedPost.featuredImage ? (
                         <img src={relatedPost.featuredImage} alt={relatedPost.title} className="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-700 group-hover:scale-110" loading="lazy" />
                       ) : (
@@ -581,7 +583,7 @@ export default function PostPage() {
             <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="px-6 py-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold rounded-full shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700 transition-all">
               Back to Top
             </button>
-            <Link to={`/category/${post.categorySlug}`} className="px-6 py-3 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-semibold rounded-full shadow-sm hover:shadow-md border border-blue-100 dark:border-blue-800/50 transition-all">
+            <Link to={\`/category/\${post.categorySlug}\`} className="px-6 py-3 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-semibold rounded-full shadow-sm hover:shadow-md border border-blue-100 dark:border-blue-800/50 transition-all">
               Browse More {post.category}
             </Link>
           </div>
@@ -592,16 +594,16 @@ export default function PostPage() {
           <div className="flex items-center justify-between max-w-md mx-auto">
             <span className="text-sm font-bold text-slate-900 dark:text-white hidden sm:block">Share:</span>
             <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
-              <button onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:text-white hover:bg-[#1877F2] transition-colors">
+              <button onClick={() => window.open(\`https://www.facebook.com/sharer/sharer.php?u=\${encodeURIComponent(postUrl)}\`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:text-white hover:bg-[#1877F2] transition-colors">
                 <Facebook className="w-4 h-4" />
               </button>
-              <button onClick={() => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(post.title)}`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:text-white hover:bg-[#1DA1F2] transition-colors">
+              <button onClick={() => window.open(\`https://twitter.com/intent/tweet?url=\${encodeURIComponent(postUrl)}&text=\${encodeURIComponent(post.title)}\`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:text-white hover:bg-[#1DA1F2] transition-colors">
                 <Twitter className="w-4 h-4" />
               </button>
-              <button onClick={() => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(post.title + ' ' + postUrl)}`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:text-white hover:bg-[#25D366] transition-colors">
+              <button onClick={() => window.open(\`https://api.whatsapp.com/send?text=\${encodeURIComponent(post.title + ' ' + postUrl)}\`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:text-white hover:bg-[#25D366] transition-colors">
                 <WhatsAppIcon className="w-4 h-4" />
               </button>
-              <button onClick={() => window.open(`https://t.me/share/url?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(post.title)}`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:text-white hover:bg-[#0088cc] transition-colors">
+              <button onClick={() => window.open(\`https://t.me/share/url?url=\${encodeURIComponent(postUrl)}&text=\${encodeURIComponent(post.title)}\`, '_blank')} className="w-10 h-10 flex items-center justify-center rounded-full text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 hover:text-white hover:bg-[#0088cc] transition-colors">
                 <TelegramIcon className="w-4 h-4" />
               </button>
               <div className="w-px h-6 bg-slate-300 dark:bg-slate-700 mx-1"></div>
@@ -617,3 +619,7 @@ export default function PostPage() {
     </>
   );
 }
+`;
+
+fs.writeFileSync('src/pages/PostPage.tsx', content);
+console.log("Rewrite complete.");
