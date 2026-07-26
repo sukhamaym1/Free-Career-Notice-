@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] - Zero-Cost GitHub CMS Architecture
+## [Unreleased]
+
+### Added
+- **Local Filesystem Mirroring**: Implemented Express backend API routes (`/api/fs/write` and `/api/fs/delete`) in `server.ts` to sync GitHub CMS updates with the local container filesystem. This prevents newly created posts and uploaded images from disappearing locally when the development server reloads or before the GitHub push propagates.
+- **Featured Image Support**: Enhanced `CategoryPage.tsx` and `PostPage.tsx` to dynamically display the `featuredImage` from the post JSON instead of a colored gradient, if one is provided via the admin panel.
+
+### Changed
+- **Post Details Redesign**: Re-engineered the layout in `PostPage.tsx` to present a more professional reading experience, utilizing a full-bleed hero section for the featured image and an elegant content and sidebar configuration.
+- **Architectural Update**: Migrated the application from a client-side only Single Page App (SPA) to a Full-Stack application (Express + Vite) to support local synchronization API routes. Updated `package.json` build scripts accordingly.
+
+## [Previous Updates] - Zero-Cost GitHub CMS Architecture
 ### Added
 - **GitHub CMS Core**: Built `src/lib/github.ts` to directly interact with the GitHub REST API from the browser.
 - **Content Storage**: Migrated all hardcoded post arrays into individual JSON files under `/content/posts/*.json`.
