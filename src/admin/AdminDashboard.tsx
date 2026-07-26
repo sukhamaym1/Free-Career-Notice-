@@ -12,6 +12,8 @@ import { cn } from '../lib/utils';
 import RichTextEditor from './components/RichTextEditor';
 import { GitHubClient } from '../lib/github';
 import WebsiteSettings from './components/WebsiteSettings';
+import AdminLayout from './components/AdminLayout';
+import DashboardPage from './pages/DashboardPage';
 import SEOCalculator from './components/SEOCalculator';
 
 interface AdminDashboardProps {
@@ -1087,180 +1089,42 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0f172a] text-slate-900 dark:text-slate-200 flex font-sans transition-colors duration-200">
-      
-      {/* Sidebar */}
-      <aside 
-        className={cn(
-          "bg-white dark:bg-[#111827] border-r border-slate-200 dark:border-slate-800 flex flex-col transition-all duration-300 fixed md:relative z-40 h-screen",
-          isSidebarCollapsed ? "w-20" : "w-64",
-          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-        )}
-      >
-        <div className="h-16 flex items-center justify-between px-4 border-b border-slate-200 dark:border-slate-800 shrink-0">
-          <div className="flex items-center gap-3 cursor-pointer overflow-hidden" onClick={() => setActiveTab('Dashboard')}>
-            <svg className="w-8 h-8 text-blue-600 dark:text-blue-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 3v18h18" />
-              <path d="m19 9-5 5-4-4-3 3" />
-            </svg>
-            {!isSidebarCollapsed && <span className="font-bold text-lg whitespace-nowrap text-slate-800 dark:text-white">CMS Admin</span>}
-          </div>
-        </div>
-        
-        <nav className="flex-1 overflow-y-auto py-4">
-          <ul className="space-y-1 px-3">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeTab === item.name;
-              return (
-                <li key={item.name}>
-                  <button
-                    onClick={() => {
-                      setActiveTab(item.name);
-                      setIsMobileMenuOpen(false);
-                    }}
-                    title={isSidebarCollapsed ? item.name : undefined}
-                    className={cn(
-                      "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group",
-                      isActive 
-                        ? "bg-blue-600 text-white font-medium" 
-                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200",
-                      isSidebarCollapsed && "justify-center"
-                    )}
-                  >
-                    <Icon className="w-5 h-5 shrink-0" />
-                    {!isSidebarCollapsed && <span className="truncate">{item.name}</span>}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-        
-        <div className="p-3 border-t border-slate-200 dark:border-slate-800 shrink-0">
-          <button 
-            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            className="hidden md:flex w-full items-center justify-center gap-3 px-3 py-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-lg transition-colors mb-2"
-          >
-            {isSidebarCollapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
-          </button>
-          
-          <button 
-            onClick={onLogout}
-            title={isSidebarCollapsed ? "Logout" : undefined}
-            className={cn(
-              "w-full flex items-center gap-3 px-3 py-2.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors",
-              isSidebarCollapsed && "justify-center"
-            )}
-          >
-            <LogOut className="w-5 h-5 shrink-0" />
-            {!isSidebarCollapsed && <span>Logout</span>}
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-        
-        {/* Top Header */}
-        <header className="h-16 bg-white dark:bg-[#111827] border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 shrink-0 z-30">
-          <div className="flex items-center gap-4">
-            <button 
-              className="md:hidden p-2 -ml-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
-              onClick={() => setIsMobileMenuOpen(true)}
-            >
-              <Menu className="w-5 h-5" />
-            </button>
+    <AdminLayout
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+      theme={theme}
+      toggleTheme={toggleTheme}
+      onLogout={onLogout}
+    >
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div className="flex items-center gap-3 bg-white dark:bg-[#1e293b] px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700/50 shadow-sm ml-auto">
+          <div className="flex items-center gap-2">
+            {syncStatus === 'synced' && <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />}
+            {syncStatus === 'unsynced' && <AlertCircle className="w-4 h-4 text-amber-500 dark:text-amber-400" />}
+            {syncStatus === 'syncing' && <RefreshCw className="w-4 h-4 text-blue-500 dark:text-sky-400 animate-spin" />}
+            {syncStatus === 'error' && <AlertCircle className="w-4 h-4 text-red-500 dark:text-red-400" />}
             
-            <div className="hidden sm:flex relative group">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input 
-                type="text" 
-                placeholder="Search everywhere (⌘K)" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-64 pl-9 pr-4 py-2 bg-slate-100 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white placeholder-slate-500 transition-all focus:w-80"
-              />
-            </div>
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              {syncStatus === 'synced' && 'All changes synced'}
+              {syncStatus === 'unsynced' && 'Unsynced changes'}
+              {syncStatus === 'syncing' && 'Syncing...'}
+              {syncStatus === 'error' && 'Sync failed'}
+            </span>
           </div>
           
-          <div className="flex items-center gap-3">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-            >
-              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
-            
-            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
-              S
-            </div>
-          </div>
-        </header>
-
-        {/* Content Scroll Area */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-8">
-          <div className="max-w-6xl mx-auto space-y-8 pb-20">
-            
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-0">{activeTab}</h1>
-              
-              <div className="flex items-center gap-3 bg-white dark:bg-[#1e293b] px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700/50 shadow-sm">
-                <div className="flex items-center gap-2">
-                  {syncStatus === 'synced' && <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />}
-                  {syncStatus === 'unsynced' && <AlertCircle className="w-4 h-4 text-amber-500 dark:text-amber-400" />}
-                  {syncStatus === 'syncing' && <RefreshCw className="w-4 h-4 text-blue-500 dark:text-sky-400 animate-spin" />}
-                  {syncStatus === 'error' && <AlertCircle className="w-4 h-4 text-red-500 dark:text-red-400" />}
-                  
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    {syncStatus === 'synced' && 'All changes synced'}
-                    {syncStatus === 'unsynced' && 'Unsynced changes'}
-                    {syncStatus === 'syncing' && 'Syncing...'}
-                    {syncStatus === 'error' && 'Sync failed'}
-                  </span>
-                </div>
-                
-                {lastSynced && (
-                  <>
-                    <div className="w-px h-4 bg-slate-300 dark:bg-slate-700"></div>
-                    <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                      <Clock className="w-3.5 h-3.5" />
-                      {lastSynced.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                  </>
-                )}
+          {lastSynced && (
+            <>
+              <div className="w-px h-4 bg-slate-300 dark:bg-slate-700"></div>
+              <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                <Clock className="w-3.5 h-3.5" />
+                {lastSynced.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
-            </div>
-            
-            {renderContent()}
-            
-          </div>
-        </main>
+            </>
+          )}
+        </div>
       </div>
-
-      {/* Mobile Overlay */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="fixed inset-0 bg-black/50 z-30 md:hidden"
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Mobile Floating Action Button */}
-      <button 
-        onClick={() => {
-          setActiveTab('Create Post');
-          setIsMobileMenuOpen(false);
-        }}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 hover:bg-blue-700 rounded-full shadow-lg flex items-center justify-center text-white transition-colors z-20 md:hidden"
-      >
-        <Edit className="w-6 h-6" />
-      </button>
-    </div>
+      
+      {renderContent()}
+    </AdminLayout>
   );
 }

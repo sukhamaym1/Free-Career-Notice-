@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ALL_POSTS } from '../data';
 import { 
-  Calendar, User, Eye, ChevronRight, ChevronDown
+  Calendar, User, Eye, ChevronRight, ChevronDown, List
 } from 'lucide-react';
 import { motion, useScroll, useSpring, AnimatePresence } from 'motion/react';
 import { Helmet } from 'react-helmet-async';
@@ -18,7 +18,7 @@ export default function PostPage() {
 
   const [headings, setHeadings] = useState<{id: string, text: string, level: number}[]>([]);
   const [activeHeading, setActiveHeading] = useState<string>('');
-  const [isMobileTocOpen, setIsMobileTocOpen] = useState(false);
+  const [isTocOpen, setIsTocOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -59,7 +59,6 @@ export default function PostPage() {
     if (element) {
       const y = element.getBoundingClientRect().top + window.scrollY - 100;
       window.scrollTo({ top: y, behavior: 'smooth' });
-      setIsMobileTocOpen(false);
     }
   };
 
@@ -169,7 +168,7 @@ export default function PostPage() {
         
         {/* Header Section matching screenshot */}
         <div className="bg-[#0a0f1c] pt-12 pb-8 w-full border-b border-slate-800">
-          <div className="max-w-[1100px] mx-auto px-4 md:px-8 xl:px-0">
+          <div className="max-w-[1000px] mx-auto px-4 md:px-8">
             
             {/* Breadcrumb */}
             <nav className="flex items-center gap-2 text-sm text-slate-400 mb-6 font-medium">
@@ -202,108 +201,101 @@ export default function PostPage() {
         </div>
 
         {/* Content Layout */}
-        <div className="max-w-[1100px] mx-auto px-4 md:px-8 xl:px-0 pt-12 pb-16">
-          <div className="flex flex-col lg:flex-row gap-12 xl:gap-16 items-start relative">
+        <div className="max-w-[800px] mx-auto px-4 md:px-8 pt-12 pb-16">
+          <article className="w-full">
             
-            {/* Sidebar TOC - Desktop */}
-            <aside className="hidden lg:block w-[280px] xl:w-[300px] shrink-0 sticky top-10">
-              {headings.length > 0 && (
-                <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:shadow-none border border-slate-100 dark:border-slate-800">
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wider">Table of Contents</h3>
-                  <nav className="flex flex-col gap-3 max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
-                    {headings.map((heading) => (
-                      <button
-                        key={heading.id}
-                        onClick={() => scrollToHeading(heading.id)}
-                        className={`text-left text-sm transition-all duration-200 leading-snug flex items-start gap-2 ${
-                          activeHeading === heading.id 
-                            ? 'text-blue-600 dark:text-blue-400 font-semibold' 
-                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                        } ${heading.level === 3 ? 'pl-4' : ''}`}
-                      >
-                        {activeHeading === heading.id && <div className="w-1 h-4 bg-blue-600 rounded-full shrink-0 mt-0.5"></div>}
-                        <span className={activeHeading === heading.id ? '' : heading.level === 2 ? 'ml-3' : ''}>{heading.text}</span>
-                      </button>
-                    ))}
-                  </nav>
-                </div>
-              )}
-            </aside>
+            {/* Featured Image inside content (if exists) */}
+            {post.featuredImage && (
+              <div className="w-full aspect-[21/9] bg-slate-100 dark:bg-slate-800 rounded-2xl overflow-hidden mb-10 shadow-sm border border-slate-200 dark:border-slate-800">
+                <img 
+                  src={post.featuredImage} 
+                  alt={post.title} 
+                  loading="lazy"
+                  className="w-full h-full object-cover" 
+                />
+              </div>
+            )}
 
-            {/* Main Article Content */}
-            <article className="flex-1 max-w-[760px] w-full min-w-0">
-              
-              {/* Featured Image inside content (if exists) */}
-              {post.featuredImage && (
-                <div className="w-full aspect-[21/9] bg-slate-100 dark:bg-slate-800 rounded-2xl overflow-hidden mb-10 shadow-sm border border-slate-200 dark:border-slate-800">
-                  <img 
-                    src={post.featuredImage} 
-                    alt={post.title} 
-                    loading="lazy"
-                    className="w-full h-full object-cover" 
-                  />
-                </div>
-              )}
-
-              {/* Mobile TOC Collapsible */}
-              {headings.length > 0 && (
-                <div className="lg:hidden mb-10 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-                  <button 
-                    onClick={() => setIsMobileTocOpen(!isMobileTocOpen)}
-                    className="w-full flex items-center justify-between p-5 font-bold text-slate-900 dark:text-white"
-                  >
+            {/* TOC Dropdown - Desktop & Mobile */}
+            {headings.length > 0 && (
+              <div className="mb-10 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+                <button 
+                  onClick={() => setIsTocOpen(!isTocOpen)}
+                  className="w-full flex items-center justify-between p-4 md:p-5 font-bold text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <List className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     <span>Table of Contents</span>
-                    <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${isMobileTocOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  <AnimatePresence>
-                    {isMobileTocOpen && (
-                      <motion.div 
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden"
-                      >
-                        <nav className="flex flex-col gap-3 p-5 pt-0 border-t border-slate-100 dark:border-slate-800 mt-2 pt-4 max-h-[50vh] overflow-y-auto">
-                          {headings.map((heading) => (
-                            <button
-                              key={heading.id}
-                              onClick={() => scrollToHeading(heading.id)}
-                              className={`text-left text-sm transition-colors duration-200 leading-snug flex items-start gap-2 ${
-                                activeHeading === heading.id 
-                                  ? 'text-blue-600 dark:text-blue-400 font-semibold' 
-                                  : 'text-slate-600 dark:text-slate-400'
-                              } ${heading.level === 3 ? 'pl-4' : ''}`}
-                            >
-                              {activeHeading === heading.id && <div className="w-1 h-4 bg-blue-600 rounded-full shrink-0 mt-0.5"></div>}
-                              <span className={activeHeading === heading.id ? '' : heading.level === 2 ? 'ml-3' : ''}>{heading.text}</span>
-                            </button>
-                          ))}
-                        </nav>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              )}
+                  </div>
+                  <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${isTocOpen ? 'rotate-180' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {isTocOpen && (
+                    <motion.div 
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <nav className="flex flex-col gap-2 p-4 md:p-5 pt-0 border-t border-slate-200 dark:border-slate-800 mt-1 max-h-[60vh] overflow-y-auto">
+                        {headings.map((heading) => (
+                          <button
+                            key={heading.id}
+                            onClick={() => scrollToHeading(heading.id)}
+                            className={`text-left text-sm md:text-base transition-colors duration-200 leading-relaxed flex items-start gap-3 py-1 ${
+                              activeHeading === heading.id 
+                                ? 'text-blue-600 dark:text-blue-400 font-semibold' 
+                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                            } ${heading.level === 3 ? 'pl-6' : ''}`}
+                          >
+                            <span className={`w-1.5 h-1.5 rounded-full shrink-0 mt-2 ${activeHeading === heading.id ? 'bg-blue-600 dark:bg-blue-400' : 'bg-slate-300 dark:bg-slate-700'}`}></span>
+                            <span>{heading.text}</span>
+                          </button>
+                        ))}
+                      </nav>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
 
-              {/* Article Content - Clean & Minimal Typography */}
-              <div 
-                ref={contentRef}
-                className="prose prose-lg dark:prose-invert max-w-none 
-                prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white
-                prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:bg-white dark:prose-h2:bg-slate-900 prose-h2:py-3 prose-h2:px-5 prose-h2:border-l-4 prose-h2:border-blue-600 prose-h2:rounded-r-lg prose-h2:shadow-sm prose-h2:border-t prose-h2:border-r prose-h2:border-b prose-h2:border-slate-100 dark:prose-h2:border-slate-800
-                prose-h3:text-xl prose-h3:md:text-2xl prose-h3:mt-8 prose-h3:mb-4
-                prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
-                prose-img:rounded-2xl prose-img:my-8 prose-img:border prose-img:border-slate-200 dark:prose-img:border-slate-800
-                prose-p:text-slate-800 dark:prose-p:text-slate-300 prose-p:leading-[1.8] prose-p:mb-6
-                prose-li:text-slate-800 dark:prose-li:text-slate-300 prose-li:marker:text-blue-600
-                prose-blockquote:border-l-4 prose-blockquote:border-slate-300 dark:prose-blockquote:border-slate-700 prose-blockquote:bg-slate-50 dark:prose-blockquote:bg-slate-900 prose-blockquote:py-3 prose-blockquote:px-6 prose-blockquote:rounded-r-xl prose-blockquote:not-italic prose-blockquote:text-slate-700 dark:prose-blockquote:text-slate-300 prose-blockquote:font-normal
-                prose-table:w-full prose-table:overflow-hidden prose-table:rounded-xl prose-table:border prose-table:border-slate-200 dark:prose-table:border-slate-800
-                prose-th:bg-slate-50 dark:prose-th:bg-slate-900 prose-th:p-4 prose-th:text-left prose-th:font-semibold prose-th:text-slate-900 dark:prose-th:text-slate-100
-                prose-td:p-4 prose-td:border-t prose-td:border-slate-200 dark:prose-td:border-slate-800"
-                dangerouslySetInnerHTML={{ __html: post.content || '' }} 
-              />
-            </article>
-          </div>
+            {/* Article Content - Clean & Minimal Typography */}
+            <div 
+              ref={contentRef}
+              className="prose prose-lg md:prose-xl dark:prose-invert max-w-none 
+              prose-headings:font-bold prose-headings:text-slate-900 dark:prose-headings:text-white
+              prose-h2:text-2xl prose-h2:md:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:bg-slate-50 dark:prose-h2:bg-slate-900 prose-h2:py-3 prose-h2:px-5 prose-h2:border-l-4 prose-h2:border-blue-600 prose-h2:rounded-r-lg prose-h2:border-t prose-h2:border-r prose-h2:border-b prose-h2:border-slate-100 dark:prose-h2:border-slate-800
+              prose-h3:text-xl prose-h3:md:text-2xl prose-h3:mt-10 prose-h3:mb-4
+              prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
+              prose-img:rounded-2xl prose-img:my-8 prose-img:border prose-img:border-slate-200 dark:prose-img:border-slate-800
+              prose-p:text-slate-800 dark:prose-p:text-slate-300 prose-p:leading-[1.8] prose-p:mb-6
+              prose-li:text-slate-800 dark:prose-li:text-slate-300 prose-li:marker:text-blue-600
+              prose-blockquote:border-l-4 prose-blockquote:border-slate-300 dark:prose-blockquote:border-slate-700 prose-blockquote:bg-slate-50 dark:prose-blockquote:bg-slate-900 prose-blockquote:py-3 prose-blockquote:px-6 prose-blockquote:rounded-r-xl prose-blockquote:not-italic prose-blockquote:text-slate-700 dark:prose-blockquote:text-slate-300 prose-blockquote:font-normal
+              prose-table:w-full prose-table:overflow-hidden prose-table:rounded-xl prose-table:border prose-table:border-slate-200 dark:prose-table:border-slate-800
+              prose-th:bg-slate-50 dark:prose-th:bg-slate-900 prose-th:p-4 prose-th:text-left prose-th:font-semibold prose-th:text-slate-900 dark:prose-th:text-slate-100
+              prose-td:p-4 prose-td:border-t prose-td:border-slate-200 dark:prose-td:border-slate-800"
+              dangerouslySetInnerHTML={{ __html: post.content || '' }} 
+            />
+
+            {/* Tags Section */}
+            {post.tags && post.tags.length > 0 && (
+              <div className="mt-16 pt-8 border-t border-slate-200 dark:border-slate-800">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Related Topics</h3>
+                <div className="flex flex-wrap gap-2">
+                  {post.tags.map((tag: string) => (
+                    <Link 
+                      key={tag} 
+                      to={`/search?q=${tag}`} 
+                      className="px-4 py-2 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 text-sm font-medium rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-800"
+                    >
+                      {tag}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+          </article>
         </div>
       </main>
     </>
