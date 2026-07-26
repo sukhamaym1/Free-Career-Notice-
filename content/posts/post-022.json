@@ -4,15 +4,19 @@
   "categorySlug": "results",
   "content": "<p>Central Bank of India Faculty Result 2026 OUT – Check Selection List</p>",
   "author": "Sukhamay",
-  "date": "March 12, 2026",
-  "tags": [
-    "RESULTS"
-  ],
+  "date": "2026-03-11T18:30:00.000Z",
+  "tags": [],
   "tagColor": "bg-green-500",
-  "imgGradient": "from-blue-600 to-indigo-800",
+  "imgGradient": "from-blue-500 to-indigo-600",
   "salary": "",
   "jobType": "",
-  "location": "",
+  "location": null,
   "bgClass": "",
-  "status": "published"
+  "status": "published",
+  "_sha": "f6b7e9d7ab28d86632fd11f6a1f0293e1b52216e",
+  "_path": "content/posts/post-022.json",
+  "seoTitle": "",
+  "seoDescription": "",
+  "focusKeyword": "",
+  "featuredImage": "https://free-career-notice.pages.dev/uploads/1000007135.png"
 }
