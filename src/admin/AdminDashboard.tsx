@@ -21,6 +21,12 @@ import TagsPage from './pages/TagsPage';
 import MediaLibraryPage from './pages/MediaLibraryPage';
 import SEOCalculator from './components/SEOCalculator';
 import ComingSoon from './components/ComingSoon';
+import PagesPage from './pages/PagesPage';
+import CommentsPage from './pages/CommentsPage';
+import AdsPage from './pages/AdsPage';
+import AppearancePage from './pages/AppearancePage';
+import UsersPage from './pages/UsersPage';
+import ToolsPage from './pages/ToolsPage';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -533,7 +539,15 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
       );
     }
 
-    // Default to coming soon for other tabs like Pages, Comments, Advertisement, Appearance, Users, Tools
+    
+    if (activeTab === 'Pages') return <PagesPage />;
+    if (activeTab === 'Comments') return <CommentsPage />;
+    if (activeTab === 'Advertisement') return <AdsPage />;
+    if (['Theme Settings', 'Menus', 'Widgets'].includes(activeTab)) return <AppearancePage type={activeTab} />;
+    if (activeTab === 'Users') return <UsersPage />;
+    if (activeTab === 'Tools') return <ToolsPage />;
+
+    // Default to coming soon for other tabs
     return <ComingSoon title={activeTab} />;
   };
 
