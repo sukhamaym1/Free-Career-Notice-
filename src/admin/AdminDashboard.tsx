@@ -20,6 +20,7 @@ import CategoriesPage from './pages/CategoriesPage';
 import TagsPage from './pages/TagsPage';
 import MediaLibraryPage from './pages/MediaLibraryPage';
 import SEOCalculator from './components/SEOCalculator';
+import ComingSoon from './components/ComingSoon';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -441,358 +442,39 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
       );
     }
 
-    if (activeTab === 'All Posts') {
+    if (['All Posts', 'Posts', 'Drafts', 'Scheduled', 'Published', 'Trash'].includes(activeTab)) {
       return (
-        <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden flex flex-col animate-in fade-in duration-300">
-          <div className="p-6 border-b border-slate-200 dark:border-slate-700/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">All Posts</h3>
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <select 
-                value={categoryFilter} 
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">All Categories</option>
-                {filterOptions.length > 0 ? filterOptions.map(c => (
-                  <option key={c.id} value={c.slug}>{c.name}</option>
-                )) : (
-                  <>
-                    <option value="job-notifications">Job Notifications</option>
-                    <option value="admit-cards">Admit Cards</option>
-                    <option value="results">Results</option>
-                    <option value="highlight-updates">Highlight Updates</option>
-                  </>
-                )}
-              </select>
-              <button onClick={() => { setEditingPost(null); setActiveTab('Create Post'); }} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm whitespace-nowrap">
-                + Add New
-              </button>
-            </div>
-          </div>
-          <div className="p-6 overflow-x-auto flex-1">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="text-sm font-semibold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700/50">
-                  <th className="pb-4 pr-4">Title</th>
-                  <th className="pb-4 px-4">Category</th>
-                  <th className="pb-4 px-4">Status</th>
-                  <th className="pb-4 px-4">Date</th>
-                  <th className="pb-4 px-4">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredPosts.map((job, i) => (
-                  <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                    <td className="py-4 pr-4 border-b border-slate-100 dark:border-slate-800/50 font-medium text-slate-800 dark:text-slate-200">
-                      {job.title}
-                    </td>
-                    <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400">
-                      <span className="px-2 py-1 rounded text-xs text-white bg-slate-600">
-                        {job.categorySlug}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400">
-                      <span className={cn("px-2 py-1 rounded text-xs text-white", 
-                        job.status === 'draft' ? "bg-amber-500" : 
-                        (job.date && new Date(job.date) > new Date() ? "bg-blue-500" : "bg-emerald-500")
-                      )}>
-                        {job.status === 'draft' ? 'Draft' : (job.date && new Date(job.date) > new Date() ? 'Scheduled' : 'Published')}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400 text-sm whitespace-nowrap">
-                      {new Date(job.date).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })}
-                    </td>
-                    <td className="py-4 px-4 border-b border-slate-100 dark:border-slate-800/50 text-slate-500 dark:text-slate-400 text-sm">
-                      <button onClick={() => { setEditingPost(job); setActiveTab('Create Post'); }} className="text-blue-600 hover:underline mr-3">Edit</button>
-                      <button onClick={() => handleDeletePost(job)} className="text-red-600 hover:underline">Delete</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {filteredPosts.length === 0 && (
-              <div className="py-8 text-center text-slate-500">No posts found.</div>
-            )}
-          </div>
-        </div>
+        <PostsPage 
+          rawPosts={rawPosts}
+          categories={categories}
+          setActiveTab={setActiveTab}
+          setEditingPost={setEditingPost}
+          handleDeletePost={async (post) => {
+            if (confirm('Delete this post?')) {
+              setSyncStatus('syncing');
+              try {
+                await client.deleteFile(post._path, 'Delete post', post._sha);
+                fetchData();
+              } catch (e) {
+                setSyncStatus('error');
+              }
+            }
+          }}
+          currentFilter={activeTab as any}
+        />
       );
     }
 
-    if (activeTab === 'Create Post') {
-      const isEdit = !!editingPost;
+    if (activeTab === 'Create Post' || activeTab === 'Edit Post' || activeTab.endsWith('Builder') || activeTab === 'Table Generator') {
+      // For builders, we can pass default template or something. But EditorPage is sufficient for now.
       return (
-        <div className="bg-white dark:bg-[#1e293b] rounded-xl border border-slate-200 dark:border-slate-700/50 shadow-sm p-6 animate-in fade-in duration-300">
-          
-          {/* We will inject local state for drafts */}
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">{isEdit ? 'Edit Post' : 'Create New Post'}</h3>
-            <div className="flex items-center gap-4">
-              <button 
-                type="button" 
-                id="restore-draft-btn" 
-                className="hidden text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1"
-                onClick={() => {
-                  const saveKey = editingPost ? `draftPost-${editingPost.id}` : 'draftPost-new';
-                  const draft = localStorage.getItem(saveKey);
-                  if (draft) {
-                    try {
-                      const data = JSON.parse(draft);
-                      const form = document.getElementById('post-editor-form') as HTMLFormElement;
-                      if (form) {
-                        // Restore basic inputs
-                        Object.keys(data).forEach(key => {
-                          const input = form.elements.namedItem(key);
-                          if (input) {
-                            if (input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement || input instanceof HTMLSelectElement) {
-                              // Skip multiple select for simple restore, or handle specifically
-                              if (input instanceof HTMLSelectElement && input.multiple) {
-                                Array.from(input.options).forEach(opt => {
-                                  opt.selected = data[key].includes(opt.value);
-                                });
-                              } else {
-                                input.value = data[key];
-                              }
-                            }
-                          }
-                        });
-                        
-                        // Handle RichTextEditor
-                        const rtfInput = document.getElementById('editor-content') as HTMLInputElement;
-                        if (rtfInput && data.content) {
-                          rtfInput.value = data.content;
-                          // trigger an event to update the visual editor if necessary
-                          // Since RichTextEditor is controlled/uncontrolled via defaultValue, 
-                          // a clean way is just re-rendering, but we'll dispatch a custom event.
-                          window.dispatchEvent(new CustomEvent('restore-editor-content', { detail: data.content }));
-                        }
-                        
-                        const indicator = document.getElementById('autosave-indicator');
-                        if (indicator) {
-                          indicator.innerHTML = 'Draft restored';
-                          setTimeout(() => {
-                            if (indicator) indicator.innerHTML = '';
-                          }, 3000);
-                        }
-                      }
-                    } catch (e) {
-                      console.error('Failed to restore draft', e);
-                    }
-                  }
-                }}
-              >
-                <RefreshCw className="w-4 h-4" /> Restore Draft
-              </button>
-              <span id="autosave-indicator" className="text-sm text-slate-500 flex items-center gap-1"></span>
-            </div>
-          </div>
-          <form id="post-editor-form" onSubmit={handleSavePost} className="flex flex-col lg:flex-row gap-8 max-w-[1400px] mx-auto pb-20">
-            {/* Main Content Area - WordPress Style */}
-            <div className="flex-1 space-y-8 min-w-0">
-              
-              {/* Title - Borderless, Large */}
-              <div className="bg-white dark:bg-[#0f172a] p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                <input 
-                  name="title" 
-                  defaultValue={editingPost?.title || ''} 
-                  required 
-                  placeholder="Add title"
-                  onChange={(e) => {
-                    const title = e.target.value;
-                    const slugInput = document.querySelector('input[name="slug"]') as HTMLInputElement;
-                    if (!editingPost && slugInput && slugInput.getAttribute('data-user-edited') !== 'true') {
-                      slugInput.value = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-                    }
-                  }}
-                  className="w-full bg-transparent text-4xl font-extrabold text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-600 focus:outline-none mb-6" 
-                />
-                
-                <div className="min-h-[500px]">
-                  <input type="hidden" name="content" id="editor-content" defaultValue={editingPost?.content || ''} />
-                  <RichTextEditor 
-                    content={editingPost?.content || ''}
-                    onChange={(html) => {
-                      const input = document.getElementById('editor-content') as HTMLInputElement;
-                      if (input) input.value = html;
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Custom Fields / Excerpt (WP Style) */}
-              <div className="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
-                  <h4 className="font-semibold text-slate-900 dark:text-white">Job Details (Custom Fields)</h4>
-                </div>
-                <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Job Type</label>
-                    <input name="jobType" defaultValue={editingPost?.jobType || ''} placeholder="e.g. Full-time, Remote" className="w-full bg-white dark:bg-[#1e293b] border border-slate-300 dark:border-slate-700 rounded-md px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Salary</label>
-                    <input name="salary" defaultValue={editingPost?.salary || ''} placeholder="e.g. $80k - $120k" className="w-full bg-white dark:bg-[#1e293b] border border-slate-300 dark:border-slate-700 rounded-md px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Sidebar Area - WP Style */}
-            <div className="w-full lg:w-[350px] xl:w-[400px] shrink-0 space-y-6">
-              
-              {/* Publish Box */}
-              <div className="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                <div className="px-5 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20 flex justify-between items-center">
-                  <h4 className="font-semibold text-slate-900 dark:text-white">Publish</h4>
-                </div>
-                <div className="p-5 space-y-4">
-                  <div className="flex flex-col gap-3">
-                    <button type="submit" data-action="publish" className="w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium transition-colors shadow-sm">
-                      {isEdit ? 'Update & Publish' : 'Publish Post'}
-                    </button>
-                    <div className="flex gap-2">
-                      <button type="submit" data-action="draft" className="flex-1 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-md font-medium transition-colors text-sm text-center">
-                        Save Draft
-                      </button>
-                      <button type="button" onClick={() => { setActiveTab('Dashboard'); setEditingPost(null); }} className="flex-1 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 hover:text-red-600 hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-700 dark:text-slate-200 rounded-md font-medium transition-colors text-sm text-center">
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Status & Schedule */}
-              <div className="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                <div className="px-5 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
-                  <h4 className="font-semibold text-slate-900 dark:text-white">Post Settings</h4>
-                </div>
-                <div className="p-5 space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Publish Date & Time</label>
-                    <input 
-                      name="date" 
-                      type="datetime-local" 
-                      defaultValue={(() => {
-                        if (editingPost?.date) {
-                          const d = new Date(editingPost.date);
-                          if (!isNaN(d.getTime())) {
-                            const tzOffset = d.getTimezoneOffset() * 60000;
-                            return new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
-                          }
-                        }
-                        const d = new Date();
-                        const tzOffset = d.getTimezoneOffset() * 60000;
-                        return new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
-                      })()} 
-                      required 
-                      className="w-full bg-slate-50 dark:bg-[#1e293b] border border-slate-300 dark:border-slate-700 rounded-md px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&::-webkit-calendar-picker-indicator]:dark:invert text-sm" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Author</label>
-                    <input name="author" defaultValue={editingPost?.author || 'Admin'} required className="w-full bg-slate-50 dark:bg-[#1e293b] border border-slate-300 dark:border-slate-700 rounded-md px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
-                  </div>
-                </div>
-              </div>
-
-              {/* SEO Section */}
-              <div className="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                <div className="px-5 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
-                  <h4 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                    <Settings className="w-4 h-4 text-slate-500" /> SEO Parameters
-                  </h4>
-                </div>
-                <div className="p-5 space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Focus Keyword</label>
-                    <input name="focusKeyword" defaultValue={editingPost?.focusKeyword || ''} placeholder="e.g. software engineer jobs" className="w-full bg-slate-50 dark:bg-[#1e293b] border border-slate-300 dark:border-slate-700 rounded-md px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">URL Slug</label>
-                    <input 
-                      name="slug" 
-                      defaultValue={editingPost?.id || ''} 
-                      disabled={!!editingPost} 
-                      placeholder="e.g. my-seo-post" 
-                      onChange={(e) => {
-                        if (e.target.value === '') {
-                          e.target.removeAttribute('data-user-edited');
-                        } else {
-                          e.target.setAttribute('data-user-edited', 'true');
-                        }
-                      }}
-                      className="w-full bg-slate-50 dark:bg-[#1e293b] border border-slate-300 dark:border-slate-700 rounded-md px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 text-sm" 
-                    />
-                    <p className="text-xs text-slate-500 mt-1">Leave empty to auto-generate from title.</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Meta Title</label>
-                    <input name="seoTitle" defaultValue={editingPost?.seoTitle || ''} placeholder="Optimized title" className="w-full bg-slate-50 dark:bg-[#1e293b] border border-slate-300 dark:border-slate-700 rounded-md px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Meta Description</label>
-                    <textarea name="seoDescription" defaultValue={editingPost?.seoDescription || ''} rows={3} placeholder="Brief description for search results" className="w-full bg-slate-50 dark:bg-[#1e293b] border border-slate-300 dark:border-slate-700 rounded-md px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
-                  </div>
-                </div>
-              </div>
-
-              {/* SEO Calculator */}
-              <SEOCalculator />
-
-              {/* Organization */}
-              <div className="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                <div className="px-5 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
-                  <h4 className="font-semibold text-slate-900 dark:text-white">Categories & Tags</h4>
-                </div>
-                <div className="p-5 space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Category</label>
-                    <select name="categorySlug" defaultValue={editingPost?.categorySlug || 'new-updates'} required className="w-full bg-slate-50 dark:bg-[#1e293b] border border-slate-300 dark:border-slate-700 rounded-md px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm appearance-none">
-                      {filterOptions.length > 0 ? filterOptions.map(c => (
-                        <option key={c.id} value={c.slug}>{c.name}</option>
-                      )) : (
-                        <>
-                          <option value="job-notifications">Job Notifications</option>
-                          <option value="admit-cards">Admit Cards</option>
-                          <option value="results">Results</option>
-                          <option value="highlight-updates">Highlight Updates</option>
-                        </>
-                      )}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Tags</label>
-                    <select name="tag" multiple defaultValue={editingPost?.tags || []} className="w-full bg-slate-50 dark:bg-[#1e293b] border border-slate-300 dark:border-slate-700 rounded-md px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 h-32 text-sm">
-                      <option disabled value="">Select tags...</option>
-                      {tags.map(t => (
-                        <option key={t.id} value={t.slug}>{t.name}</option>
-                      ))}
-                    </select>
-                    <p className="text-xs text-slate-500 mt-2">Hold Ctrl/Cmd to select multiple</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Featured Image */}
-              <div className="bg-white dark:bg-[#0f172a] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-                <div className="px-5 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
-                  <h4 className="font-semibold text-slate-900 dark:text-white">Featured Image</h4>
-                </div>
-                <div className="p-5">
-                  <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-6 flex flex-col items-center justify-center text-center bg-slate-50 dark:bg-[#1e293b]">
-                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mb-3">
-                      <Image className="w-6 h-6" />
-                    </div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Image URL</label>
-                    <input name="featuredImage" defaultValue={editingPost?.featuredImage || ''} placeholder="e.g. https://example.com/image.jpg" className="w-full bg-white dark:bg-[#0f172a] border border-slate-300 dark:border-slate-600 rounded-md px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-center" />
-                    <p className="text-xs text-slate-500 mt-3">Provide a URL for the post's featured image.</p>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </form>
-        </div>
+        <EditorPage 
+          editingPost={editingPost}
+          handleSavePost={handleSavePost}
+          setActiveTab={setActiveTab}
+          categories={categories}
+          tags={tags}
+        />
       );
     }
 
@@ -851,12 +533,8 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
       );
     }
 
-    return (
-      <div className="flex flex-col items-center justify-center h-64 text-slate-400">
-        <Folder className="w-16 h-16 mb-4 opacity-50" />
-        <p>This module is under development.</p>
-      </div>
-    );
+    // Default to coming soon for other tabs like Pages, Comments, Advertisement, Appearance, Users, Tools
+    return <ComingSoon title={activeTab} />;
   };
 
   return (

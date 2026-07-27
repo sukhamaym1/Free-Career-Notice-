@@ -11,7 +11,7 @@ interface PostsPageProps {
   setActiveTab: (tab: string) => void;
   setEditingPost: (post: any) => void;
   handleDeletePost: (post: any) => void;
-  currentFilter: 'All' | 'Published' | 'Drafts' | 'Scheduled' | 'Trash';
+  currentFilter: 'All' | 'Posts' | 'All Posts' | 'Published' | 'Drafts' | 'Scheduled' | 'Trash';
 }
 
 export default function PostsPage({ 
