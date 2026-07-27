@@ -195,7 +195,7 @@ export default function EditorPage({
         {/* Main Editor Column */}
         <div className={cn("space-y-6 transition-all duration-500 relative", isDistractionFree ? "col-span-3 max-w-4xl mx-auto w-full" : "lg:col-span-2")}>
           
-          <div>
+          <div className="editor-title-sticky bg-transparent py-2 transition-all duration-300">
             <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Post Title</label>
             <input 
               name="title" 
