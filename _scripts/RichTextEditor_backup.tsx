@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import Focus from '@tiptap/extension-focus';
-import { Extension } from '@tiptap/core';
 import { cn } from '../../lib/utils';
 import { FileCode2, Save } from 'lucide-react';
 
@@ -19,32 +17,12 @@ import { EditorBubbleMenu, EditorFloatingMenu } from './editor/FloatingAndBubble
 import { EditorFooter } from './editor/EditorFooter';
 
 interface RichTextEditorProps {
-  isFocusMode?: boolean;
   content: string;
   onChange: (content: string) => void;
   placeholder?: string;
 }
 
-const CustomShortcuts = Extension.create({
-  name: 'customShortcuts',
-  addKeyboardShortcuts() {
-    return {
-      'Mod-k': () => {
-        const previousUrl = this.editor.getAttributes('link').href;
-        const url = window.prompt('URL', previousUrl);
-        if (url === null) return true;
-        if (url === '') {
-          this.editor.chain().focus().extendMarkRange('link').unsetLink().run();
-          return true;
-        }
-        this.editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
-        return true;
-      },
-    }
-  }
-});
-
-export default function RichTextEditor({ content, onChange, placeholder, isFocusMode }: RichTextEditorProps) {
+export default function RichTextEditor({ content, onChange, placeholder }: RichTextEditorProps) {
   const [isRawMode, setIsRawMode] = useState(false);
   const [rawContent, setRawContent] = useState(content);
   const [saved, setSaved] = useState(true);
@@ -52,11 +30,6 @@ export default function RichTextEditor({ content, onChange, placeholder, isFocus
 
   const editor = useEditor({
     extensions: [
-      CustomShortcuts,
-      Focus.configure({
-        className: 'has-focus',
-        mode: 'deepest',
-      }),
       StarterKit.configure({
         heading: { levels: [1, 2, 3, 4, 5, 6] },
         dropcursor: false,
@@ -85,7 +58,7 @@ export default function RichTextEditor({ content, onChange, placeholder, isFocus
     },
     editorProps: {
       attributes: {
-        class: `prose prose-slate sm:prose lg:prose-lg xl:prose-xl focus:outline-none dark:prose-invert max-w-none min-h-[500px] p-6 editor-content ${isFocusMode ? 'focus-mode-active' : ''}`,
+        class: 'prose prose-slate sm:prose lg:prose-lg xl:prose-xl focus:outline-none dark:prose-invert max-w-none min-h-[500px] p-6',
       },
     },
   });
@@ -129,7 +102,7 @@ export default function RichTextEditor({ content, onChange, placeholder, isFocus
   }, []);
 
   return (
-    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] flex flex-col shadow-sm focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all relative overflow-visible">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] flex flex-col shadow-sm focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
       
       {!isRawMode && <EditorToolbar editor={editor} />}
       {!isRawMode && <EditorBubbleMenu editor={editor} />}

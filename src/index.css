@@ -2,3 +2,28 @@
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* Editor Focus Mode */
+.editor-content.focus-mode-active > * {
+  transition: opacity 0.3s ease;
+  opacity: 0.3;
+}
+.editor-content.focus-mode-active > *.has-focus {
+  opacity: 1;
+}
+
+/* Sticky Toolbar & Title Adjustments */
+.editor-fullscreen .editor-toolbar {
+  top: 56px !important;
+}
+.editor-title-sticky {
+  position: sticky;
+  z-index: 30;
+  transition: all 0.3s ease;
+}
+.editor-fullscreen .editor-title-sticky {
+  top: 56px;
+}
+.editor-fullscreen.title-scrolled-past .editor-title-sticky {
+  /* We can hide it or let it scroll away, but standard position sticky works */
+}

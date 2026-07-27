@@ -58,7 +58,7 @@ export const EditorToolbar = ({ editor }: { editor: any }) => {
   }, [editor]);
 
   return (
-    <div className="editor-toolbar border-b border-slate-200 dark:border-slate-800 p-2 flex flex-wrap items-center gap-1 bg-slate-50/95 dark:bg-slate-900/95 backdrop-blur-md rounded-t-lg shadow-sm sticky top-0 z-40 transition-all duration-300">
+    <div className="border-b border-slate-200 dark:border-slate-800 p-2 flex flex-wrap items-center gap-1 bg-slate-50 dark:bg-slate-900/50 rounded-t-lg shadow-sm sticky top-0 z-20">
       
       <div className="flex items-center gap-1 mr-2">
         <ToolbarButton onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} title="Undo">
