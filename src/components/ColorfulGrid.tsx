@@ -1,8 +1,9 @@
-import { COLOR_BLOCKS } from '../data';
+import { useData } from '../components/DataProvider';
 import { Link } from 'react-router-dom';
 import { Sparkles, ArrowRight } from 'lucide-react';
 
 export default function ColorfulGrid() {
+  const { COLOR_BLOCKS } = useData();
   return (
     <div className="mb-12">
       <div className="flex items-center gap-2 mb-6 px-1">

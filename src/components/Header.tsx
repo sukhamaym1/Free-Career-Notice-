@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Moon, Sun, GraduationCap, ChevronDown, Search, Menu, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { SITE_SETTINGS } from '../data';
+import { useData } from '../components/DataProvider';
 import { useTypingPlaceholder } from '../hooks/useTypingPlaceholder';
 import { AnimatePresence, motion } from 'motion/react';
 
@@ -45,6 +45,7 @@ interface HeaderProps {
 }
 
 export default function Header({ theme, toggleTheme }: HeaderProps) {
+  const { SITE_SETTINGS } = useData();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const closeMobileMenu = () => {

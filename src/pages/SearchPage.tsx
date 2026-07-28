@@ -1,9 +1,10 @@
 import { useSearchParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { JOB_NOTIFICATIONS, ADMIT_CARDS, RESULTS } from '../data';
+import { useData } from '../components/DataProvider';
 import { Search } from 'lucide-react';
 
 export default function SearchPage() {
+  const { JOB_NOTIFICATIONS, ADMIT_CARDS, RESULTS } = useData();
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
 

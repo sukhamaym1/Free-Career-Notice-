@@ -9,11 +9,7 @@ interface AdminPageProps {
 
 export default function AdminPage({ theme, toggleTheme }: AdminPageProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [githubConfig, setGithubConfig] = useState({
-    pat: '',
-    repo: '',
-    branch: ''
-  });
+  const [pat, setPat] = useState('');
 
   // Check for existing session token
   useEffect(() => {
@@ -21,8 +17,8 @@ export default function AdminPage({ theme, toggleTheme }: AdminPageProps) {
     if (savedSession) {
       try {
         const parsed = JSON.parse(savedSession);
-        if (parsed.pat && parsed.repo && parsed.branch) {
-          setGithubConfig(parsed);
+        if (parsed.pat) {
+          setPat(parsed.pat);
           setIsLoggedIn(true);
         }
       } catch (e) {
@@ -31,16 +27,15 @@ export default function AdminPage({ theme, toggleTheme }: AdminPageProps) {
     }
   }, []);
 
-  const handleLogin = (pat: string, repo: string, branch: string) => {
-    const config = { pat, repo, branch };
-    setGithubConfig(config);
-    sessionStorage.setItem('github_cms_session', JSON.stringify(config));
+  const handleLogin = (newPat: string) => {
+    setPat(newPat);
+    sessionStorage.setItem('github_cms_session', JSON.stringify({ pat: newPat }));
     setIsLoggedIn(true);
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    setGithubConfig({ pat: '', repo: '', branch: '' });
+    setPat('');
     sessionStorage.removeItem('github_cms_session');
   };
 
@@ -51,7 +46,7 @@ export default function AdminPage({ theme, toggleTheme }: AdminPageProps) {
   return (
     <AdminDashboard 
       onLogout={handleLogout} 
-      githubConfig={githubConfig}
+      pat={pat}
       theme={theme} 
       toggleTheme={toggleTheme} 
     />

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ALL_POSTS } from '../data';
+import { useData } from '../components/DataProvider';
 import { 
   Calendar, User, Eye, ChevronRight, ChevronDown, List
 } from 'lucide-react';
@@ -8,6 +8,7 @@ import { motion, useScroll, useSpring, AnimatePresence } from 'motion/react';
 import { Helmet } from 'react-helmet-async';
 
 export default function PostPage() {
+  const { PUBLISHED_POSTS, ALL_POSTS } = useData();
   const { postId } = useParams();
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -64,7 +65,7 @@ export default function PostPage() {
 
   const foundPost = ALL_POSTS.find((p: any) => p.id === postId);
   
-  const post = foundPost || {
+  const post: any = foundPost || {
     title: "Post Not Found",
     category: "Unknown",
     categorySlug: "unknown",

@@ -267,3 +267,8 @@ The storage architecture is designed to be easily extensible.
 - **Dead Code / Refactoring Note**: `temp_editor.txt` is present in the root directory and may be a leftover scratchpad file.
 - **Tailwind CSS**: The project uses Tailwind CSS V4 via `@import "tailwindcss";` in `src/index.css`. There is no `tailwind.config.js` file (which is correct for V4).
 - **Public Directory**: The `public/uploads` directory is created implicitly when the first file is uploaded, and may not appear in the repository if empty.
+
+
+## Dual-Repository Migration
+
+This project now uses a dual-repository architecture. The Website Repository (this one) contains the source code, while all user-generated content (posts, images, settings) is stored in an external Content Repository via the configured Storage Provider in `src/config.ts`. This prevents content loss during AI Studio updates. Admin Panel communicates with the Content Service.

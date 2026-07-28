@@ -9,3 +9,8 @@ These are the immutable rules for maintaining and extending this project.
 5. **Always update documentation**: Any structural change (new folder, new service, new schema field) MUST be reflected in this Documentation Framework immediately.
 6. **No duplicate logic**: If a function exists (e.g., `cn` for Tailwind class merging), use it instead of recreating it.
 7. **Keep Admin and Public isolated**: Admin components must live in `src/admin/`. Public components must live in `src/components/` and `src/pages/`.
+
+
+## Dual-Repository Migration
+
+This project now uses a dual-repository architecture. The Website Repository (this one) contains the source code, while all user-generated content (posts, images, settings) is stored in an external Content Repository via the configured Storage Provider in `src/config.ts`. This prevents content loss during AI Studio updates. Admin Panel communicates with the Content Service.

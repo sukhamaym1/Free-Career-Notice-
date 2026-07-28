@@ -50,3 +50,8 @@ The project is divided into three main components:
 
 ## Extensibility
 Future providers (like Cloudflare D1/R2, Supabase, Firebase) can be added by implementing the `StorageProvider` interface and configuring the factory in `src/lib/storage/index.ts` without changing any code in the Admin Panel.
+
+
+## Dual-Repository Migration
+
+This project now uses a dual-repository architecture. The Website Repository (this one) contains the source code, while all user-generated content (posts, images, settings) is stored in an external Content Repository via the configured Storage Provider in `src/config.ts`. This prevents content loss during AI Studio updates. Admin Panel communicates with the Content Service.

@@ -26,3 +26,8 @@ Located at `src/lib/storage/mediaService.ts`.
 
 ### StorageProvider (Interface)
 Located at `src/lib/storage/types.ts`. All future providers must implement this interface to be compatible with the Admin Panel.
+
+
+## Dual-Repository Migration
+
+This project now uses a dual-repository architecture. The Website Repository (this one) contains the source code, while all user-generated content (posts, images, settings) is stored in an external Content Repository via the configured Storage Provider in `src/config.ts`. This prevents content loss during AI Studio updates. Admin Panel communicates with the Content Service.

@@ -1,7 +1,8 @@
 import { useParams } from 'react-router-dom';
-import { SITE_SETTINGS } from '../data';
+import { useData } from '../components/DataProvider';
 
 export default function TextPage() {
+  const { PUBLISHED_POSTS, SITE_SETTINGS } = useData();
   const { pageId } = useParams();
   
   const staticPagesList = [

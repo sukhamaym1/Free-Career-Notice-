@@ -30,12 +30,12 @@ import ToolsPage from './pages/ToolsPage';
 
 interface AdminDashboardProps {
   onLogout: () => void;
-  githubConfig: { pat: string, repo: string, branch: string };
+  pat: string;
   theme: 'light' | 'dark';
   toggleTheme: () => void;
 }
 
-export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTheme }: AdminDashboardProps) {
+export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -70,17 +70,17 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
   };
 
   
-  const storageProvider = createStorageProvider({
-    provider: 'github',
-    github: { pat: githubConfig.pat, repo: githubConfig.repo, branch: githubConfig.branch }
-  });
+  const storageProvider = createStorageProvider(pat);
+
+
+
   const contentService = new ContentService(storageProvider);
   const mediaService = new MediaService(storageProvider);
 
 
   useEffect(() => {
     fetchData();
-  }, [githubConfig]);
+  }, [pat]);
 
   useEffect(() => {
     let interval: any;
@@ -380,11 +380,13 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
   });
 
 
+
   const filteredPosts = rawPosts.filter(p => {
     const matchesSearch = p.title?.toLowerCase().includes(searchQuery.toLowerCase()) || p.categorySlug?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = categoryFilter ? p.categorySlug === categoryFilter : true;
     return matchesSearch && matchesCategory;
   });
+
 
   const renderContent = () => {
     if (syncStatus === 'syncing' && rawPosts.length === 0) {

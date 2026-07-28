@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useTheme } from './hooks/useTheme';
-import { SITE_SETTINGS } from './data';
+import { useData } from './components/DataProvider';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
@@ -21,6 +21,7 @@ import BackToTop from './components/BackToTop';
 import ScrollToTop from './components/ScrollToTop';
 
 export default function App() {
+  const { SITE_SETTINGS, loading } = useData();
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin');
@@ -69,7 +70,7 @@ export default function App() {
       metaKeywords.setAttribute('content', (SITE_SETTINGS as any).seoKeywords);
     }
 
-  }, []);
+  }, [SITE_SETTINGS]);
   
 
   useEffect(() => {
@@ -100,7 +101,7 @@ export default function App() {
       document.removeEventListener('click', handleGlobalClick);
       document.removeEventListener('show-toast', handleCustomToast);
     };
-  }, []);
+  }, [SITE_SETTINGS]);
 
   return (
     <div className={`min-h-screen font-sans transition-colors duration-200 ${isAdmin ? 'bg-slate-50 dark:bg-[#0f172a] text-slate-900 dark:text-white' : 'bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-gray-100'}`}>

@@ -2,31 +2,22 @@ import { GitHubProvider } from './githubProvider';
 import { ContentService } from './contentService';
 import { MediaService } from './mediaService';
 import { StorageProvider } from './types';
+import { CMS_CONFIG } from '../../config';
 
-// Configuration interface to switch providers easily in the future
-export interface StorageConfig {
-  provider: 'github' | 'cloudflare_d1' | 'supabase' | 'firebase' | 'local';
-  github?: {
-    pat: string;
-    repo: string;
-    branch: string;
-  };
-  // Future provider configs...
-}
-
-export function createStorageProvider(config: StorageConfig): StorageProvider {
-  switch (config.provider) {
+export function createStorageProvider(pat?: string): StorageProvider {
+  switch (CMS_CONFIG.provider) {
     case 'github':
-      if (!config.github) throw new Error("GitHub config missing");
+      // The pat can be provided by the admin login, otherwise it's undefined (for public frontend)
       return new GitHubProvider(
-        config.github.pat,
-        config.github.repo,
-        config.github.branch
+        pat || '',
+        CMS_CONFIG.github.owner,
+        CMS_CONFIG.github.repo,
+        CMS_CONFIG.github.branch,
+        CMS_CONFIG.github.contentRoot,
+        CMS_CONFIG.github.uploadsRoot
       );
-    // case 'supabase':
-    //   return new SupabaseProvider(config.supabase);
     default:
-      throw new Error(`Storage provider ${config.provider} is not supported yet.`);
+      throw new Error(`Storage provider ${CMS_CONFIG.provider} is not supported yet.`);
   }
 }
 

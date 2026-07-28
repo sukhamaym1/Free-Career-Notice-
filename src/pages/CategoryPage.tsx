@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { PUBLISHED_POSTS } from '../data';
+import { useData } from '../components/DataProvider';
 import JobFilterSidebar, { FilterState } from '../components/JobFilterSidebar';
 
 export default function CategoryPage() {
+  const { JOB_NOTIFICATIONS, ADMIT_CARDS, RESULTS, PUBLISHED_POSTS } = useData();
   const { categoryId } = useParams();
 
   const [filters, setFilters] = useState<FilterState>({

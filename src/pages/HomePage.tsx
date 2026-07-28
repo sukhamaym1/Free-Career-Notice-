@@ -3,9 +3,10 @@ import Hero from '../components/Hero';
 import ActionGroup from '../components/ActionGroup';
 import ColorfulGrid from '../components/ColorfulGrid';
 import ListSection from '../components/ListSection';
-import { JOB_NOTIFICATIONS, ADMIT_CARDS, RESULTS } from '../data';
+import { useData } from '../components/DataProvider';
 
 export default function HomePage() {
+  const { JOB_NOTIFICATIONS, ADMIT_CARDS, RESULTS } = useData();
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
