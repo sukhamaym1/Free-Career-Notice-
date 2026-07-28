@@ -1,102 +1,28 @@
 # API Documentation
 
-This document outlines the REST API design for the Cloudflare Worker backend. 
+## Storage Layer Services
 
-All endpoints require a valid JWT in the `Authorization: Bearer <token>` header, except for the login endpoint.
+### ContentService
+Located at `src/lib/storage/contentService.ts`.
 
-## Base URL
-`https://api-worker.<your-subdomain>.workers.dev/api`
+- `getPosts(): Promise<Post[]>`: Retrieves all posts.
+- `getPost(id: string): Promise<Post | null>`: Retrieves a single post.
+- `savePost(post: Post, isEdit: boolean): Promise<void>`: Creates or updates a post.
+- `deletePost(id: string): Promise<void>`: Deletes a post.
+- `getCategories(): Promise<Category[]>`: Retrieves all categories.
+- `saveCategories(categories: Category[]): Promise<void>`: Bulk saves the categories array.
+- `getTags(): Promise<Tag[]>`: Retrieves all tags.
+- `saveTags(tags: Tag[]): Promise<void>`: Bulk saves the tags array.
+- `getSettings(): Promise<SiteSettings>`: Retrieves global site settings.
+- `saveSettings(settings: SiteSettings): Promise<void>`: Saves global site settings.
 
-## Authentication
+### MediaService
+Located at `src/lib/storage/mediaService.ts`.
 
-### `POST /auth/login`
-Authenticates a user and returns a JWT.
+- `listImages(): Promise<MediaFile[]>`: Retrieves a list of all uploaded images.
+- `uploadImage(file: File, fileName: string): Promise<void>`: Uploads a new image.
+- `deleteImage(path: string): Promise<void>`: Deletes an image given its path.
+- `renameImage(oldPath: string, newPath: string): Promise<void>`: Renames/moves an image.
 
-**Request:**
-```json
-{
-  "email": "admin@example.com",
-  "password": "securepassword123"
-}
-```
-
-**Response (200 OK):**
-```json
-{
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": "user_123",
-    "name": "Admin User",
-    "role": "admin"
-  }
-}
-```
-
-## Posts
-
-### `GET /posts`
-Retrieves a list of posts. Supports optional query parameters.
-
-**Query Parameters:**
-- `status`: filter by status (e.g., `published`, `draft`)
-- `category`: filter by category slug
-- `page`: pagination offset
-
-**Response (200 OK):**
-```json
-[
-  {
-    "id": "post_1",
-    "title": "SSC CGL 2026 Notification",
-    "slug": "ssc-cgl-2026",
-    "status": "published",
-    "createdAt": "2026-05-15T10:00:00Z"
-  }
-]
-```
-
-### `POST /posts`
-Creates a new post.
-
-**Request:**
-```json
-{
-  "title": "UPSC Prelims Admit Card",
-  "slug": "upsc-prelims-admit-card",
-  "content": "<p>Content here...</p>",
-  "categoryId": "cat_1",
-  "tags": ["tag_1", "tag_2"],
-  "status": "draft"
-}
-```
-
-### `PUT /posts/:id`
-Updates an existing post.
-
-### `DELETE /posts/:id`
-Deletes a post (or moves it to trash).
-
-## Media Library
-
-### `POST /media/upload`
-Uploads a file to Cloudflare R2 and returns the public URL.
-
-**Request (FormData):**
-- `file`: The file blob
-
-**Response (200 OK):**
-```json
-{
-  "id": "media_123",
-  "url": "https://media.freecareernotice.com/file.jpg",
-  "filename": "file.jpg"
-}
-```
-
-### `GET /media`
-Lists files stored in the R2 bucket.
-
-## Role Based Access Control (RBAC)
-- **Admin**: Full CRUD access on all endpoints, settings, and users.
-- **Editor**: Can create and edit posts/categories/tags, but cannot modify settings or users.
-- **Author**: Can only create and edit their own posts. Cannot publish directly if a review workflow is configured.
+### StorageProvider (Interface)
+Located at `src/lib/storage/types.ts`. All future providers must implement this interface to be compatible with the Admin Panel.
