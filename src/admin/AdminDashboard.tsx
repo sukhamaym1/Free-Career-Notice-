@@ -171,7 +171,8 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     
     try {
       const isEdit = !!editingPost;
-      const nextIdNumber = rawPosts.length > 0 ? Math.max(...rawPosts.map(p => parseInt(p.id.replace('post-', '') || '0'))) + 1 : 1;
+      const postIds = rawPosts.map(p => p.id).filter(id => /^post-\d+$/.test(id));
+      const nextIdNumber = postIds.length > 0 ? Math.max(...postIds.map(id => parseInt(id.replace('post-', '')))) + 1 : 1;
       
       const title = formData.get('title') as string;
       const customSlug = formData.get('slug') as string;
@@ -204,7 +205,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
         salary: formData.get('salary'),
         jobType: formData.get('jobType'),
         location: formData.get('location'),
-        status: action === 'draft' ? 'draft' : 'published'
+        status: formData.get('status') === 'draft' ? 'draft' : 'published'
       };
 
       await client.putFile(
@@ -394,7 +395,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
         googleAnalyticsId: formData.get('googleAnalyticsId'),
         publisherId: formData.get('publisherId')
       };
-      const res = await client.putFile('website/settings.json', JSON.stringify(updated, null, 2), 'Update settings', settingsSha || undefined);
+      const res = await client.putFile('content/settings.json', JSON.stringify(updated, null, 2), 'Update settings', settingsSha || undefined);
       setSettingsSha(res.content?.sha);
       setSiteSettings(updated);
       setSyncStatus('synced');

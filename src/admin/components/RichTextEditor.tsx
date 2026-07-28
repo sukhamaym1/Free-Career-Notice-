@@ -121,6 +121,18 @@ export default function RichTextEditor({ content, onChange, placeholder, isFocus
     }
   }, [content]);
 
+  useEffect(() => {
+    const handleRestore = (e: any) => {
+      if (editor) {
+        editor.commands.setContent(e.detail);
+        setRawContent(e.detail);
+        onChange(e.detail);
+      }
+    };
+    window.addEventListener("restore-editor-content", handleRestore);
+    return () => window.removeEventListener("restore-editor-content", handleRestore);
+  }, [editor, onChange]);
+
   // Cleanup timeout
   useEffect(() => {
     return () => {

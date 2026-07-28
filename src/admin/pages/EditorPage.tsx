@@ -27,6 +27,7 @@ export default function EditorPage({
   const [isDistractionFree, setIsDistractionFree] = useState(false);
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [saveStatus, setSaveStatus] = useState<string>('');
+  const [content, setContent] = useState(editingPost?.content || '');
 
   
   // Global Shortcuts
@@ -216,16 +217,12 @@ export default function EditorPage({
             <label className="block text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">Content</label>
             <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500 transition-all">
               <RichTextEditor 
-                content={editingPost?.content || ''} 
-                onChange={() => {}} // Will be handled via form submission
+                isFocusMode={isFocusMode}
+                content={content} 
+                onChange={setContent}
               />
             </div>
-            <textarea 
-              name="content" 
-              id="hidden-content-input" 
-              className="hidden" 
-              defaultValue={editingPost?.content || ''}
-            ></textarea>
+            <input type="hidden" name="content" value={content} />
           </div>
           
         </div>
