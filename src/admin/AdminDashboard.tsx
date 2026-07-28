@@ -10,7 +10,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 import RichTextEditor from './components/RichTextEditor';
-import { GitHubClient } from '../lib/github';
+import { createStorageProvider, ContentService, MediaService } from '../lib/storage';
 import WebsiteSettings from './components/WebsiteSettings';
 import AdminLayout from './components/AdminLayout';
 import DashboardPage from './pages/DashboardPage';
@@ -69,7 +69,14 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     RESULTS: rawPosts.filter(p => p.categorySlug === 'results'),
   };
 
-  const client = new GitHubClient(githubConfig.pat, githubConfig.repo, githubConfig.branch);
+  
+  const storageProvider = createStorageProvider({
+    provider: 'github',
+    github: { pat: githubConfig.pat, repo: githubConfig.repo, branch: githubConfig.branch }
+  });
+  const contentService = new ContentService(storageProvider);
+  const mediaService = new MediaService(storageProvider);
+
 
   useEffect(() => {
     fetchData();
@@ -112,48 +119,20 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
   const fetchData = async () => {
     setSyncStatus('syncing');
     try {
-      const files = await client.listDirectory('content/posts');
-      const postPromises = files.map((f: any) => client.getFile(f.path).then(async res => {
-        if (res && res.content) {
-          // Sync to local filesystem
-          try {
-            await fetch('/api/fs/write', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ filePath: f.path, content: res.content })
-            });
-          } catch (e) {
-            console.error('Failed to sync locally', e);
-          }
-        }
-        return { ...res, path: f.path };
-      }));
-      const postResults = await Promise.all(postPromises);
-      const posts = postResults.filter((r: any) => r && r.content).map((r: any) => ({ ...JSON.parse(r.content), _sha: r.sha, _path: r.path }));
-      
-      posts.sort((a, b) => (b.id > a.id ? 1 : -1));
+      const posts = await contentService.getPosts();
       setRawPosts(posts);
 
-      const catRes = await client.getFile('content/categories.json');
-      if (catRes) {
-        setCategories(JSON.parse(catRes.content));
-        setCategoriesSha(catRes.sha);
-      }
-      
-      const tagRes = await client.getFile('content/tags.json');
-      if (tagRes) {
-        setTags(JSON.parse(tagRes.content));
-        setTagsSha(tagRes.sha);
-      }
-      
-      const setRes = await client.getFile('content/settings.json');
-      if (setRes) {
-        setSiteSettings(JSON.parse(setRes.content));
-        setSettingsSha(setRes.sha);
-      }
+      const cats = await contentService.getCategories();
+      setCategories(cats);
 
-      const mediaRes = await client.listDirectory('public/uploads');
-      setMediaFiles(mediaRes.filter((f: any) => f.type === 'file'));
+      const tgs = await contentService.getTags();
+      setTags(tgs);
+
+      const settings = await contentService.getSettings();
+      setSiteSettings(settings);
+
+      const media = await mediaService.listImages();
+      setMediaFiles(media);
 
       setSyncStatus('synced');
       setLastSynced(new Date());
@@ -208,12 +187,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
         status: formData.get('status') === 'draft' ? 'draft' : 'published'
       };
 
-      await client.putFile(
-        `content/posts/${newPost.id}.json`,
-        JSON.stringify(newPost, null, 2),
-        isEdit ? `Update post ${newPost.id}` : `Create post ${newPost.id}`,
-        isEdit ? editingPost._sha : undefined
-      );
+      await contentService.savePost(newPost as any, false);
 
       
       // Clear draft after successful save
@@ -232,7 +206,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     if (!confirm('Delete this post?')) return;
     setSyncStatus('syncing');
     try {
-      await client.deleteFile(post._path, `Delete post ${post.id}`, post._sha);
+      await contentService.deletePost(post.id);
       await fetchData();
     } catch (err) {
       setSyncStatus('error');
@@ -245,8 +219,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     try {
       const slug = newCatName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       const updated = [...categories, { id: `cat_${Date.now()}`, name: newCatName, slug }];
-      const res = await client.putFile('content/categories.json', JSON.stringify(updated, null, 2), 'Update categories', categoriesSha || undefined);
-      setCategoriesSha(res.content?.sha);
+      await contentService.saveCategories(updated);
       setCategories(updated);
       setNewCatName('');
       setSyncStatus('synced');
@@ -257,8 +230,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     setSyncStatus('syncing');
     try {
       const updated = categories.filter(c => c.id !== id);
-      const res = await client.putFile('content/categories.json', JSON.stringify(updated, null, 2), 'Delete category', categoriesSha || undefined);
-      setCategoriesSha(res.content?.sha);
+      await contentService.saveCategories(updated);
       setCategories(updated);
       setSyncStatus('synced');
     } catch (err) { setSyncStatus('error'); }
@@ -271,8 +243,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     try {
       const slug = newName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       const updated = categories.map(c => c.id === cat.id ? { ...c, name: newName, slug } : c);
-      const res = await client.putFile('content/categories.json', JSON.stringify(updated, null, 2), 'Edit category', categoriesSha || undefined);
-      setCategoriesSha(res.content?.sha);
+      await contentService.saveCategories(updated);
       setCategories(updated);
       setSyncStatus('synced');
     } catch (err) { setSyncStatus('error'); }
@@ -284,8 +255,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     try {
       const slug = newTagName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       const updated = [...tags, { id: `tag_${Date.now()}`, name: newTagName, slug }];
-      const res = await client.putFile('content/tags.json', JSON.stringify(updated, null, 2), 'Update tags', tagsSha || undefined);
-      setTagsSha(res.content?.sha);
+      await contentService.saveTags(updated);
       setTags(updated);
       setNewTagName('');
       setSyncStatus('synced');
@@ -296,8 +266,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     setSyncStatus('syncing');
     try {
       const updated = tags.filter(c => c.id !== id);
-      const res = await client.putFile('content/tags.json', JSON.stringify(updated, null, 2), 'Delete tag', tagsSha || undefined);
-      setTagsSha(res.content?.sha);
+      await contentService.saveTags(updated);
       setTags(updated);
       setSyncStatus('synced');
     } catch (err) { setSyncStatus('error'); }
@@ -310,8 +279,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     try {
       const slug = newName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       const updated = tags.map(c => c.id === tag.id ? { ...c, name: newName, slug } : c);
-      const res = await client.putFile('content/tags.json', JSON.stringify(updated, null, 2), 'Edit tag', tagsSha || undefined);
-      setTagsSha(res.content?.sha);
+      await contentService.saveTags(updated);
       setTags(updated);
       setSyncStatus('synced');
     } catch (err) { setSyncStatus('error'); }
@@ -322,14 +290,9 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     if (!file) return;
     setSyncStatus('syncing');
     try {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64Content = (reader.result as string).split(',')[1];
-        const fileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-        await client.putBinaryFile(`public/uploads/${fileName}`, base64Content, `Upload ${fileName}`);
-        await fetchData();
-      };
-      reader.readAsDataURL(file);
+      const fileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      await mediaService.uploadImage(file, fileName);
+      await fetchData();
     } catch (err) {
       setSyncStatus('error');
     }
@@ -339,7 +302,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     if (!confirm('Delete this media file?')) return;
     setSyncStatus('syncing');
     try {
-      await client.deleteFile(file.path, `Delete ${file.name}`, file.sha);
+      await mediaService.deleteImage(file.path);
       await fetchData();
     } catch (err) {
       setSyncStatus('error');
@@ -354,7 +317,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
       for (const name of selectedMedia) {
         const file = mediaFiles.find(f => f.name === name);
         if (file) {
-          await client.deleteFile(file.path, `Delete ${file.name}`, file.sha);
+          await mediaService.deleteImage(file.path);
         }
       }
       setSelectedMedia([]);
@@ -369,14 +332,8 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
     if (!newName || newName === file.name) return;
     setSyncStatus('syncing');
     try {
-      const fileData = await client.getRawFile(file.path);
-      if (fileData) {
-        await client.putBinaryFile(`public/uploads/${newName}`, fileData.content, `Rename to ${newName}`);
-        await client.deleteFile(file.path, `Delete old ${file.name}`, file.sha);
-        await fetchData();
-      } else {
-        setSyncStatus('error');
-      }
+      await mediaService.renameImage(file.path, `public/uploads/${newName}`);
+      await fetchData();
     } catch (err) {
       setSyncStatus('error');
     }
@@ -395,8 +352,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
         googleAnalyticsId: formData.get('googleAnalyticsId'),
         publisherId: formData.get('publisherId')
       };
-      const res = await client.putFile('content/settings.json', JSON.stringify(updated, null, 2), 'Update settings', settingsSha || undefined);
-      setSettingsSha(res.content?.sha);
+      await contentService.saveSettings(updated);
       setSiteSettings(updated);
       setSyncStatus('synced');
     } catch (err) {
@@ -460,7 +416,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
             if (confirm('Delete this post?')) {
               setSyncStatus('syncing');
               try {
-                await client.deleteFile(post._path, 'Delete post', post._sha);
+                await contentService.deletePost(post.id);
                 fetchData();
               } catch (e) {
                 setSyncStatus('error');
@@ -534,7 +490,7 @@ export default function AdminDashboard({ onLogout, githubConfig, theme, toggleTh
           setSiteSettings={setSiteSettings}
           settingsSha={settingsSha}
           setSettingsSha={setSettingsSha}
-          client={client}
+          contentService={contentService}
           setSyncStatus={setSyncStatus}
         />
       );

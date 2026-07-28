@@ -8,7 +8,7 @@ export default function WebsiteSettings({
   setSiteSettings, 
   settingsSha, 
   setSettingsSha, 
-  client, 
+  contentService,
   setSyncStatus 
 }: any) {
   const [activeTab, setActiveTab] = useState('General');
@@ -43,8 +43,7 @@ export default function WebsiteSettings({
     e.preventDefault();
     setSyncStatus('syncing');
     try {
-      const res = await client.putFile('content/settings.json', JSON.stringify(formData, null, 2), 'Update website settings', settingsSha || undefined);
-      setSettingsSha(res.content?.sha);
+      await contentService.saveSettings(formData);
       setSiteSettings(formData);
       setSyncStatus('synced');
     } catch (err) {
