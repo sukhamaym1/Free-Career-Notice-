@@ -74,6 +74,25 @@ export class GitHubProvider implements StorageProvider {
 
   // --- Posts ---
   async getPosts(): Promise<Post[]> {
+    try {
+      // 1. Try to fetch the pre-built index first (No rate limits, fast!)
+      const indexRes = await fetch(`https://raw.githubusercontent.com/${this.owner}/${this.repo}/${this.branch}/${this.contentRoot}/posts.json?t=${Date.now()}`);
+      if (indexRes.ok) {
+        const posts = await indexRes.json();
+        if (Array.isArray(posts)) {
+          // Store shas for future updates
+          posts.forEach(p => {
+            if (p.id && p._sha) this.postShaMap.set(p.id, p._sha);
+          });
+          posts.sort((a, b) => ((b.id || '') > (a.id || '') ? -1 : 1));
+          return posts;
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to fetch posts.json index, falling back to API", e);
+    }
+
+    // 2. Fallback to API (Subject to rate limits for anonymous visitors)
     const files = await this.client.listDirectory(`${this.contentRoot}/posts`);
     if (!Array.isArray(files) || files.length === 0) return [];
     
@@ -116,8 +135,52 @@ export class GitHubProvider implements StorageProvider {
       posts.push(...results.filter((r: any) => r !== null));
     }
     
-    posts.sort((a, b) => ((b.id || '') > (a.id || '') ? -1 : 1)); // reverse alphabetical/chronological if id is date-based
+    posts.sort((a, b) => ((b.id || '') > (a.id || '') ? -1 : 1));
     return posts;
+  }
+
+  async rebuildPostsIndex(): Promise<void> {
+    // This is called by the admin to generate the posts.json file
+    const files = await this.client.listDirectory(`${this.contentRoot}/posts`);
+    if (!Array.isArray(files)) return;
+    
+    const posts: Post[] = [];
+    for (const f of files) {
+      if (!f.name.endsWith('.json')) continue;
+      let fileStr = '';
+      if (f.download_url) {
+        try {
+          const res = await fetch(f.download_url + `?t=${Date.now()}`, { cache: 'no-store' });
+          if (res.ok) fileStr = await res.text();
+        } catch (e) {}
+      }
+      if (!fileStr) {
+        const res = await this.client.getFile(f.path);
+        if (res && res.content) fileStr = res.content;
+      }
+      if (fileStr) {
+        try {
+          const post = JSON.parse(fileStr);
+          post._path = f.path;
+          post._sha = f.sha;
+          posts.push(post);
+        } catch(e) {}
+      }
+    }
+    
+    // Check if posts.json exists to get its SHA for update
+    let indexSha: string | undefined;
+    try {
+      const existing = await this.client.getFile(`${this.contentRoot}/posts.json`);
+      if (existing && existing.sha) indexSha = existing.sha;
+    } catch(e) {}
+
+    await this.client.putFile(
+      `${this.contentRoot}/posts.json`,
+      JSON.stringify(posts, null, 2),
+      'Update posts index',
+      indexSha
+    );
   }
 
   async getPost(id: string): Promise<Post | null> {
@@ -153,6 +216,8 @@ export class GitHubProvider implements StorageProvider {
     if (res && res.content && res.content.sha) {
       this.postShaMap.set(post.id, res.content.sha);
     }
+    // Update the index asynchronously so it doesn't block
+    this.rebuildPostsIndex().catch(e => console.error('Failed to rebuild posts index', e));
   }
 
   async updatePost(id: string, post: Post): Promise<void> {
@@ -173,24 +238,47 @@ export class GitHubProvider implements StorageProvider {
       sha,
       (newSha) => { this.postShaMap.set(id, newSha); }
     );
+    // Update the index asynchronously
+    this.rebuildPostsIndex().catch(e => console.error('Failed to rebuild posts index', e));
   }
 
   async deletePost(id: string): Promise<void> {
     await this.deleteWithRetry(`${this.contentRoot}/posts/${id}.json`, `Delete post ${id}`, this.postShaMap.get(id));
     this.postShaMap.delete(id);
+    // Update the index asynchronously
+    this.rebuildPostsIndex().catch(e => console.error('Failed to rebuild posts index', e));
+  }
+
+  // --- Helper to fetch JSON directly without API rate limits ---
+  private async fetchPublicJson(path: string): Promise<any> {
+    try {
+      const res = await fetch(`https://raw.githubusercontent.com/${this.owner}/${this.repo}/${this.branch}/${path}?t=${Date.now()}`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (e) {
+      console.warn(`Failed to fetch public JSON for ${path}, falling back to API`);
+    }
+    
+    const apiRes = await this.client.getFile(path);
+    if (apiRes && apiRes.content) {
+      try { return JSON.parse(apiRes.content); } catch (e) {}
+    }
+    return null;
   }
 
   // --- Categories ---
   async getCategories(): Promise<Category[]> {
-    const res = await this.client.getFile(`${this.contentRoot}/categories.json`);
-    if (res && res.content) {
-      this.categoriesSha = res.sha;
-      try { return JSON.parse(res.content); } catch (e) { return []; }
-    }
-    return [];
+    const data = await this.fetchPublicJson(`${this.contentRoot}/categories.json`);
+    return Array.isArray(data) ? data : [];
   }
 
   async saveCategories(categories: Category[]): Promise<void> {
+    try {
+      const existing = await this.client.getFile(`${this.contentRoot}/categories.json`);
+      if (existing && existing.sha) this.categoriesSha = existing.sha;
+    } catch(e) {}
+    
     await this.putWithRetry(
       `${this.contentRoot}/categories.json`,
       JSON.stringify(categories, null, 2),
@@ -202,15 +290,16 @@ export class GitHubProvider implements StorageProvider {
 
   // --- Tags ---
   async getTags(): Promise<Tag[]> {
-    const res = await this.client.getFile(`${this.contentRoot}/tags.json`);
-    if (res && res.content) {
-      this.tagsSha = res.sha;
-      try { return JSON.parse(res.content); } catch (e) { return []; }
-    }
-    return [];
+    const data = await this.fetchPublicJson(`${this.contentRoot}/tags.json`);
+    return Array.isArray(data) ? data : [];
   }
 
   async saveTags(tags: Tag[]): Promise<void> {
+    try {
+      const existing = await this.client.getFile(`${this.contentRoot}/tags.json`);
+      if (existing && existing.sha) this.tagsSha = existing.sha;
+    } catch(e) {}
+
     await this.putWithRetry(
       `${this.contentRoot}/tags.json`,
       JSON.stringify(tags, null, 2),
@@ -222,15 +311,16 @@ export class GitHubProvider implements StorageProvider {
 
   // --- Settings ---
   async getSettings(): Promise<SiteSettings> {
-    const res = await this.client.getFile(`${this.contentRoot}/settings.json`);
-    if (res && res.content) {
-      this.settingsSha = res.sha;
-      try { return JSON.parse(res.content); } catch (e) { return {}; }
-    }
-    return {};
+    const data = await this.fetchPublicJson(`${this.contentRoot}/settings.json`);
+    return data || {};
   }
 
   async saveSettings(settings: SiteSettings): Promise<void> {
+    try {
+      const existing = await this.client.getFile(`${this.contentRoot}/settings.json`);
+      if (existing && existing.sha) this.settingsSha = existing.sha;
+    } catch(e) {}
+
     await this.putWithRetry(
       `${this.contentRoot}/settings.json`,
       JSON.stringify(settings, null, 2),
@@ -242,15 +332,16 @@ export class GitHubProvider implements StorageProvider {
 
   // --- Menu ---
   async getMenu(): Promise<any> {
-    const res = await this.client.getFile(`${this.contentRoot}/menu.json`);
-    if (res && res.content) {
-      this.menuSha = res.sha;
-      try { return JSON.parse(res.content); } catch (e) { return []; }
-    }
-    return [];
+    const data = await this.fetchPublicJson(`${this.contentRoot}/menu.json`);
+    return Array.isArray(data) ? data : [];
   }
 
   async saveMenu(menu: any): Promise<void> {
+    try {
+      const existing = await this.client.getFile(`${this.contentRoot}/menu.json`);
+      if (existing && existing.sha) this.menuSha = existing.sha;
+    } catch(e) {}
+
     await this.putWithRetry(
       `${this.contentRoot}/menu.json`,
       JSON.stringify(menu, null, 2),
