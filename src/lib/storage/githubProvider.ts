@@ -429,11 +429,11 @@ export class GitHubProvider implements StorageProvider {
       for (const file of files) {
         if (file.name.endsWith('.json')) {
           const id = file.name.replace('.json', '');
-          const pageStr = await this.client.getFile(file.path);
-          if (pageStr) {
-            const pageObj = JSON.parse(pageStr);
+          const res = await this.client.getFile(file.path);
+          if (res && res.content) {
+            const pageObj = JSON.parse(res.content);
             pages[id] = pageObj.content || '';
-            this.pageShaMap.set(id, file.sha);
+            this.pageShaMap.set(id, res.sha);
           }
         }
       }
@@ -455,9 +455,9 @@ export class GitHubProvider implements StorageProvider {
       }
     }
     try {
-      const existing = await this.client.getFile(`${this.contentRoot}/pages/${id}.json`);
-      if (existing) {
-        const pageObj = JSON.parse(existing);
+      const res = await this.client.getFile(`${this.contentRoot}/pages/${id}.json`);
+      if (res && res.content) {
+        const pageObj = JSON.parse(res.content);
         return pageObj.content;
       }
       return null;
@@ -472,6 +472,9 @@ export class GitHubProvider implements StorageProvider {
     if (!sha) {
       try {
         const existing = await this.client.getFile(`${this.contentRoot}/pages/${id}.json`);
+        if (existing && existing.sha) {
+          sha = existing.sha;
+        }
       } catch (e) {
       }
     }
