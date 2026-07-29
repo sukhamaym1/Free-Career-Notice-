@@ -12,6 +12,8 @@ interface AdminLayoutProps {
   theme: 'light' | 'dark';
   toggleTheme: () => void;
   onLogout: () => void;
+  onScan?: () => void;
+  syncStatus?: 'idle' | 'syncing' | 'synced' | 'unsynced' | 'error';
 }
 
 export default function AdminLayout({
@@ -20,7 +22,9 @@ export default function AdminLayout({
   setActiveTab,
   theme,
   toggleTheme,
-  onLogout
+  onLogout,
+  onScan,
+  syncStatus
 }: AdminLayoutProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -84,6 +88,8 @@ export default function AdminLayout({
           theme={theme}
           toggleTheme={toggleTheme}
           onLogout={onLogout}
+          onScan={onScan}
+          syncStatus={syncStatus}
         />
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 dark:bg-[#0B1120]">
           {children}

@@ -187,7 +187,7 @@ export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: Ad
         status: formData.get('status') === 'draft' ? 'draft' : 'published'
       };
 
-      await contentService.savePost(newPost as any, false);
+      await contentService.savePost(newPost as any, isEdit);
 
       
       // Clear draft after successful save
@@ -517,6 +517,8 @@ export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: Ad
       theme={theme}
       toggleTheme={toggleTheme}
       onLogout={onLogout}
+      onScan={fetchData}
+      syncStatus={syncStatus}
     >
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div className="flex items-center gap-3 bg-white dark:bg-[#1e293b] px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700/50 shadow-sm ml-auto">

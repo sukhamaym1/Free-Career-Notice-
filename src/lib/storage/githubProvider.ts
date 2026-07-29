@@ -63,10 +63,18 @@ export class GitHubProvider implements StorageProvider {
   }
 
   async createPost(post: Post): Promise<void> {
+    let sha = this.postShaMap.get(post.id);
+    if (!sha) {
+      const existing = await this.client.getFile(`${this.contentRoot}/posts/${post.id}.json`);
+      if (existing && existing.sha) {
+        sha = existing.sha;
+      }
+    }
     const res = await this.client.putFile(
       `${this.contentRoot}/posts/${post.id}.json`,
       JSON.stringify(post, null, 2),
-      `Create post ${post.id}`
+      `Create post ${post.id}`,
+      sha
     );
     if (res && res.content && res.content.sha) {
       this.postShaMap.set(post.id, res.content.sha);
@@ -74,7 +82,13 @@ export class GitHubProvider implements StorageProvider {
   }
 
   async updatePost(id: string, post: Post): Promise<void> {
-    const sha = this.postShaMap.get(id);
+    let sha = this.postShaMap.get(id);
+    if (!sha) {
+      const existing = await this.client.getFile(`${this.contentRoot}/posts/${id}.json`);
+      if (existing && existing.sha) {
+        sha = existing.sha;
+      }
+    }
     const res = await this.client.putFile(
       `${this.contentRoot}/posts/${id}.json`,
       JSON.stringify(post, null, 2),
@@ -206,7 +220,12 @@ export class GitHubProvider implements StorageProvider {
       reader.onloadend = async () => {
         try {
           const base64Content = (reader.result as string).split(',')[1];
-          await this.client.putBinaryFile(`${this.uploadsRoot}/${fileName}`, base64Content, `Upload ${fileName}`);
+          let sha: string | undefined;
+          const existing = await this.client.getFile(`${this.uploadsRoot}/${fileName}`);
+          if (existing && existing.sha) {
+            sha = existing.sha;
+          }
+          await this.client.putBinaryFile(`${this.uploadsRoot}/${fileName}`, base64Content, `Upload ${fileName}`, sha);
           resolve();
         } catch (err) {
           reject(err);
