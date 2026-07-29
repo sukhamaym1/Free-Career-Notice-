@@ -22,7 +22,11 @@ export class GitHubClient {
       headers['Authorization'] = `Bearer ${this.pat}`;
     }
 
-    const res = await fetch(`https://api.github.com/repos/${this.owner}/${this.repo}${endpoint}`, {
+    const url = this.pat 
+      ? `https://api.github.com/repos/${this.owner}/${this.repo}${endpoint}`
+      : `/api/github/repos/${this.owner}/${this.repo}${endpoint}`;
+
+    const res = await fetch(url, {
       cache: 'no-store',
       ...options,
       headers

@@ -50,6 +50,74 @@ async function startServer() {
     }
   });
 
+  const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+  const githubCache = new Map<string, { data: any, timestamp: number }>();
+
+  // GitHub Proxy with Caching to prevent rate limits on the public site
+  app.all('/api/github/*', async (req, res) => {
+    try {
+      const endpoint = req.params[0];
+      const search = req.originalUrl.split('?')[1] || '';
+      const fullUrl = `https://api.github.com/${endpoint}${search ? '?' + search : ''}`;
+      
+      const isGet = req.method === 'GET' || req.method === 'HEAD';
+      
+      // Check cache first for GET requests
+      const cacheKey = fullUrl;
+      if (isGet) {
+        const cached = githubCache.get(cacheKey);
+        if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+          return res.json(cached.data);
+        }
+      }
+
+      const headers: any = {
+        'Accept': 'application/vnd.github.v3+json',
+        'User-Agent': 'free-career-notice-proxy'
+      };
+
+      // Forward Authorization header if provided by the client (Admin)
+      if (req.headers.authorization) {
+        headers['Authorization'] = req.headers.authorization;
+      } else if (process.env.GITHUB_PAT) {
+        // Fallback to backend PAT to increase public rate limit to 5000/hr
+        headers['Authorization'] = `Bearer ${process.env.GITHUB_PAT}`;
+      }
+
+      const fetchOptions: RequestInit = {
+        method: req.method,
+        headers,
+      };
+
+      if (!isGet && req.body) {
+        fetchOptions.body = JSON.stringify(req.body);
+      }
+
+      const githubRes = await fetch(fullUrl, fetchOptions);
+      
+      if (!githubRes.ok) {
+        const errorText = await githubRes.text();
+        return res.status(githubRes.status).send(errorText);
+      }
+
+      if (githubRes.status === 204) {
+        return res.status(204).send();
+      }
+
+      const data = await githubRes.json();
+      
+      // Cache the successful response for GET requests
+      if (isGet) {
+        githubCache.set(cacheKey, { data, timestamp: Date.now() });
+      }
+
+      res.json(data);
+    } catch (err: any) {
+      console.error('GitHub Proxy Error:', err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({

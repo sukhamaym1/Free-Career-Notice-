@@ -104,17 +104,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
           // Ignore
         }
         
-        // If we don't have a PAT, avoid making unauthenticated API requests to GitHub
-        // because it quickly exhausts the 60 requests/hour IP limit.
-        if (!pat) {
-          if (mounted) {
-            const processed = processPosts(fallbackRawPosts as Post[]);
-            setData({ ...processed, SITE_SETTINGS: fallbackSettings as SiteSettings });
-            setLoading(false);
-          }
-          return;
-        }
-
         const storageProvider = createStorageProvider(pat);
         const contentService = new ContentService(storageProvider);
         
