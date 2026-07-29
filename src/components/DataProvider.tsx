@@ -67,7 +67,7 @@ function processPosts(rawPosts: Post[]) {
         location: p.location,
       })),
     ADMIT_CARDS: publishedPosts
-      .filter(p => p.categorySlug === 'admit-cards')
+      .filter(p => p.categorySlug === 'admit-card' || p.categorySlug === 'admit-card')
       .map(p => ({
         id: p.id,
         title: p.title,

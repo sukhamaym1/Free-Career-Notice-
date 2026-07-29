@@ -73,7 +73,7 @@ export default function Header({ theme, toggleTheme }: HeaderProps) {
         <nav className="hidden md:flex items-center gap-6 xl:gap-8 text-sm font-semibold text-gray-700 dark:text-gray-300">
           <Link to="/" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</Link>
           <Link to="/category/job-notifications" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Job Notifications</Link>
-          <Link to="/category/admit-cards" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Admit Card</Link>
+          <Link to="/category/admit-card" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Admit Card</Link>
           <Link to="/category/results" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Results</Link>
           
           <div className="relative group">
@@ -129,7 +129,7 @@ export default function Header({ theme, toggleTheme }: HeaderProps) {
               <nav className="flex flex-col gap-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
                 <Link to="/" onClick={closeMobileMenu} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2 border-b border-gray-100 dark:border-gray-800">Home</Link>
                 <Link to="/category/job-notifications" onClick={closeMobileMenu} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2 border-b border-gray-100 dark:border-gray-800">Job Notifications</Link>
-                <Link to="/category/admit-cards" onClick={closeMobileMenu} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2 border-b border-gray-100 dark:border-gray-800">Admit Card</Link>
+                <Link to="/category/admit-card" onClick={closeMobileMenu} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2 border-b border-gray-100 dark:border-gray-800">Admit Card</Link>
                 <Link to="/category/results" onClick={closeMobileMenu} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2 border-b border-gray-100 dark:border-gray-800">Results</Link>
               </nav>
             </div>

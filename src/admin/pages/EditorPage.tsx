@@ -289,7 +289,7 @@ export default function EditorPage({
                   )) : (
                     <>
                       <option value="job-notifications">Job Notifications</option>
-                      <option value="admit-cards">Admit Cards</option>
+                      <option value="admit-card">Admit Cards</option>
                       <option value="results">Results</option>
                       <option value="highlight-updates">Highlight Updates</option>
                     </>

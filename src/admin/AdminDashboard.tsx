@@ -65,7 +65,7 @@ export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: Ad
     NEW_UPDATES: rawPosts.filter(p => p.categorySlug === 'new-updates'),
     COLOR_BLOCKS: rawPosts.filter(p => p.categorySlug === 'highlight-updates'),
     JOB_NOTIFICATIONS: rawPosts.filter(p => p.categorySlug === 'job-notifications'),
-    ADMIT_CARDS: rawPosts.filter(p => p.categorySlug === 'admit-cards'),
+    ADMIT_CARDS: rawPosts.filter(p => p.categorySlug === 'admit-card'),
     RESULTS: rawPosts.filter(p => p.categorySlug === 'results'),
   };
 

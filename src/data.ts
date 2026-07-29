@@ -35,7 +35,7 @@ export const JOB_NOTIFICATIONS = publishedPosts
   }));
 
 export const ADMIT_CARDS = publishedPosts
-  .filter(p => p.categorySlug === 'admit-cards')
+  .filter(p => p.categorySlug === 'admit-card')
   .map(p => ({
     id: p.id,
     title: p.title,

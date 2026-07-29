@@ -62,9 +62,9 @@ async function startServer() {
       
       const isGet = req.method === 'GET' || req.method === 'HEAD';
       
-      // Check cache first for GET requests
+      // Check cache first for GET requests, but bypass if Authorization is provided
       const cacheKey = fullUrl;
-      if (isGet) {
+      if (isGet && !req.headers.authorization) {
         const cached = githubCache.get(cacheKey);
         if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
           return res.json(cached.data);
