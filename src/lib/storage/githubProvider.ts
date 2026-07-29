@@ -34,7 +34,7 @@ export class GitHubProvider implements StorageProvider {
       }
       return res;
     } catch (e: any) {
-      if (e.message && e.message.includes('409')) {
+      if (e.message && (e.message.includes('409') || e.message.includes('422'))) {
         const existing = await this.client.getFile(path);
         if (existing && existing.sha) {
           const res = await this.client.putFile(path, content, message, existing.sha);

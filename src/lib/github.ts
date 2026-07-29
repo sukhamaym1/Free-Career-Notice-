@@ -30,8 +30,12 @@ export class GitHubClient {
 
     if (!res.ok) {
       const errBody = await res.text().catch(() => '');
-      console.error('GitHub API Error body:', errBody);
-      throw new Error(`GitHub API Error: ${res.status} ${res.statusText}`);
+      if (res.status !== 404) {
+        console.error('GitHub API Error body:', errBody);
+      }
+      const error = new Error(`GitHub API Error: ${res.status} ${res.statusText}`);
+      (error as any).status = res.status;
+      throw error;
     }
     
     // For 204 No Content

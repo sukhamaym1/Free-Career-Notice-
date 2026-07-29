@@ -93,7 +93,29 @@ export function DataProvider({ children }: { children: ReactNode }) {
     let mounted = true;
     async function loadData() {
       try {
-        const storageProvider = createStorageProvider(''); // No PAT for public fetch
+        let pat = '';
+        try {
+          const savedSession = sessionStorage.getItem('github_cms_session');
+          if (savedSession) {
+            const parsed = JSON.parse(savedSession);
+            pat = parsed.pat || '';
+          }
+        } catch (e) {
+          // Ignore
+        }
+        
+        // If we don't have a PAT, avoid making unauthenticated API requests to GitHub
+        // because it quickly exhausts the 60 requests/hour IP limit.
+        if (!pat) {
+          if (mounted) {
+            const processed = processPosts(fallbackRawPosts as Post[]);
+            setData({ ...processed, SITE_SETTINGS: fallbackSettings as SiteSettings });
+            setLoading(false);
+          }
+          return;
+        }
+
+        const storageProvider = createStorageProvider(pat);
         const contentService = new ContentService(storageProvider);
         
         const [posts, settings] = await Promise.all([

@@ -107,7 +107,7 @@ export default function MediaLibraryPage({
                 </td>
                 <td className="py-3 px-4">
                   <div className="w-16 h-12 rounded overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
-                    <img src={f.download_url || `/uploads/${f.name}`} alt={f.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                    <img src={f.url || `/uploads/${f.name}`} alt={f.name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                   </div>
                 </td>
                 <td className="py-3 px-4 font-medium text-sm text-slate-800 dark:text-slate-200">
@@ -117,7 +117,7 @@ export default function MediaLibraryPage({
                   <div className="flex items-center justify-end gap-2">
                     <button 
                       onClick={() => {
-                        const url = window.location.origin + `/uploads/${f.name}`;
+                        const url = f.url || (window.location.origin + `/uploads/${f.name}`);
                         navigator.clipboard.writeText(url);
                         alert('Copied URL: ' + url);
                       }} 
