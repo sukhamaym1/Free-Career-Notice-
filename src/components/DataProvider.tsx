@@ -18,6 +18,7 @@ interface DataContextType {
   RESULTS: any[];
   COLOR_BLOCKS: any[];
   SITE_SETTINGS: SiteSettings;
+  STATIC_PAGES: Record<string, string>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -95,7 +96,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<Omit<DataContextType, 'loading' | 'error'>>(() => {
     // Initialize with fallback
     const processed = processPosts(fallbackRawPosts as Post[]);
-    return { ...processed, SITE_SETTINGS: fallbackSettings as SiteSettings };
+    return { ...processed, SITE_SETTINGS: fallbackSettings as SiteSettings, STATIC_PAGES: {} };
   });
   
   const [loading, setLoading] = useState(true);
@@ -119,9 +120,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
         const storageProvider = createStorageProvider(pat);
         const contentService = new ContentService(storageProvider);
         
-        const [posts, settings] = await Promise.all([
+        const [posts, settings, pages] = await Promise.all([
           contentService.getPosts(),
-          contentService.getSettings()
+          contentService.getSettings(),
+          contentService.getPages ? contentService.getPages() : Promise.resolve({})
         ]);
 
         if (mounted) {
@@ -135,7 +137,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
           const mergedPosts = Array.from(postsMap.values());
           const processed = processPosts(mergedPosts);
           
-          setData({ ...processed, SITE_SETTINGS: { ...(fallbackSettings as SiteSettings), ...(settings || {}) } });
+          setData({ ...processed, SITE_SETTINGS: { ...(fallbackSettings as SiteSettings), ...(settings || {}) }, STATIC_PAGES: pages || {} });
         }
       } catch (err) {
         console.error("Failed to load CMS data from remote, falling back to local bundle.", err);

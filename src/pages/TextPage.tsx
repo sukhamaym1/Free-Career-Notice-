@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useData } from '../components/DataProvider';
 
 export default function TextPage() {
-  const { PUBLISHED_POSTS, SITE_SETTINGS } = useData();
+  const { SITE_SETTINGS, STATIC_PAGES } = useData();
   const { pageId } = useParams();
   
   const staticPagesList = [
@@ -19,7 +19,7 @@ export default function TextPage() {
 
   const pageDef = staticPagesList.find(p => p.id === pageId);
   const pageTitle = pageDef ? pageDef.name : 'Page Not Found';
-  const pageContentHtml = (SITE_SETTINGS as any).staticPages?.[pageId as string] || '<p>The page you are looking for does not exist or has no content.</p>';
+  const pageContentHtml = STATIC_PAGES?.[pageId as string] || (SITE_SETTINGS as any).staticPages?.[pageId as string] || '<p>The page you are looking for does not exist or has no content.</p>';
 
   return (
     <main className="container mx-auto px-4 py-16 pb-32 animate-in fade-in duration-500 max-w-4xl">

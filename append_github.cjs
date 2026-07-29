@@ -1,33 +1,14 @@
 const fs = require('fs');
+
 let code = fs.readFileSync('src/lib/storage/githubProvider.ts', 'utf8');
 
-const target = `  async saveMenu(menu: any): Promise<void> {
-    await this.saveWithRetry(
-      \`\${this.contentRoot}/menu.json\`,
-      'Update menu',
-      JSON.stringify(menu, null, 2),
-      this.menuSha
-    );
-  }
-`;
-
-const replacement = `  async saveMenu(menu: any): Promise<void> {
-    await this.saveWithRetry(
-      \`\${this.contentRoot}/menu.json\`,
-      'Update menu',
-      JSON.stringify(menu, null, 2),
-      this.menuSha
-    );
-  }
-
+const replacement = `
   // Pages
   private pageShaMap: Map<string, string> = new Map();
 
   async getPages(): Promise<Record<string, string>> {
     const pages: Record<string, string> = {};
     if (!this.client) {
-      // Fetch index or rely on individual page fetches
-      // For now, let's just fetch them individually since there's no index
       return pages;
     }
     
@@ -79,10 +60,7 @@ const replacement = `  async saveMenu(menu: any): Promise<void> {
     if (!sha) {
       try {
         const existing = await this.client.getFile(\`\${this.contentRoot}/pages/\${id}.json\`);
-        // sha would be tracked by the underlying getFile maybe? 
-        // we should actually fetch the file stats or just let saveWithRetry handle it or fail
       } catch (e) {
-        // file doesn't exist
       }
     }
     await this.saveWithRetry(
@@ -91,10 +69,10 @@ const replacement = `  async saveMenu(menu: any): Promise<void> {
       JSON.stringify({ content }, null, 2),
       sha
     );
-    // Refresh sha after save - saveWithRetry doesn't return the new sha, so we clear it
     this.pageShaMap.delete(id);
   }
+}
 `;
 
-code = code.replace(target, replacement);
+code = code.replace(/}\s*$/, replacement);
 fs.writeFileSync('src/lib/storage/githubProvider.ts', code);

@@ -63,6 +63,11 @@ export interface StorageProvider {
   getMenu(): Promise<any>;
   saveMenu(menu: any): Promise<void>;
 
+  // Pages
+  getPages(): Promise<Record<string, string>>;
+  getPage(id: string): Promise<string | null>;
+  savePage(id: string, content: string): Promise<void>;
+
   // Media
   uploadImage(file: File, fileName: string): Promise<void>;
   deleteImage(path: string): Promise<void>;
