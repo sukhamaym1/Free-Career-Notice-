@@ -478,12 +478,12 @@ export class GitHubProvider implements StorageProvider {
       } catch (e) {
       }
     }
-    await this.saveWithRetry(
+        await this.putWithRetry(
       `${this.contentRoot}/pages/${id}.json`,
-      `Update page ${id}`,
       JSON.stringify({ content }, null, 2),
-      sha
+      `Update page ${id}`,
+      sha,
+      (newSha) => { this.pageShaMap.set(id, newSha); }
     );
-    this.pageShaMap.delete(id);
   }
 }
