@@ -23,25 +23,30 @@ export class GitHubProvider implements StorageProvider {
     const files = await this.client.listDirectory(`${this.contentRoot}/posts`);
     if (!Array.isArray(files) || files.length === 0) return [];
     
-    const postPromises = files.map(async (f: any) => {
-      const res = await this.client.getFile(f.path);
-      if (res && res.content) {
-        try {
-          const post = JSON.parse(res.content);
-          post._path = f.path;
-          post._sha = res.sha;
-          this.postShaMap.set(post.id, res.sha);
-          return post;
-        } catch (e) {
-          console.error("Failed to parse post JSON", e);
-          return null;
+    const posts: Post[] = [];
+    const chunkSize = 5;
+    for (let i = 0; i < files.length; i += chunkSize) {
+      const chunk = files.slice(i, i + chunkSize);
+      const postPromises = chunk.map(async (f: any) => {
+        const res = await this.client.getFile(f.path);
+        if (res && res.content) {
+          try {
+            const post = JSON.parse(res.content);
+            post._path = f.path;
+            post._sha = res.sha;
+            this.postShaMap.set(post.id, res.sha);
+            return post;
+          } catch (e) {
+            console.error("Failed to parse post JSON", e);
+            return null;
+          }
         }
-      }
-      return null;
-    });
-
-    const postResults = await Promise.all(postPromises);
-    const posts = postResults.filter((r: any) => r !== null);
+        return null;
+      });
+      const results = await Promise.all(postPromises);
+      posts.push(...results.filter((r: any) => r !== null));
+    }
+    
     posts.sort((a, b) => ((b.id || '') > (a.id || '') ? -1 : 1)); // reverse alphabetical/chronological if id is date-based
     return posts;
   }
@@ -87,6 +92,8 @@ export class GitHubProvider implements StorageProvider {
       const existing = await this.client.getFile(`${this.contentRoot}/posts/${id}.json`);
       if (existing && existing.sha) {
         sha = existing.sha;
+      } else {
+        throw new Error(`Cannot update post ${id}: unable to retrieve its current SHA. File might not exist or rate limited.`);
       }
     }
     const res = await this.client.putFile(

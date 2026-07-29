@@ -23,11 +23,14 @@ export class GitHubClient {
     }
 
     const res = await fetch(`https://api.github.com/repos/${this.owner}/${this.repo}${endpoint}`, {
+      cache: 'no-store',
       ...options,
       headers
     });
 
     if (!res.ok) {
+      const errBody = await res.text().catch(() => '');
+      console.error('GitHub API Error body:', errBody);
       throw new Error(`GitHub API Error: ${res.status} ${res.statusText}`);
     }
     

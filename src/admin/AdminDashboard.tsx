@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { FormEvent } from 'react';
 import { 
   LayoutDashboard, Edit3, Folder, FileEdit, Image as ImageIcon, 
@@ -70,12 +70,9 @@ export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: Ad
   };
 
   
-  const storageProvider = createStorageProvider(pat);
-
-
-
-  const contentService = new ContentService(storageProvider);
-  const mediaService = new MediaService(storageProvider);
+  const storageProvider = useMemo(() => createStorageProvider(pat), [pat]);
+  const contentService = useMemo(() => new ContentService(storageProvider), [storageProvider]);
+  const mediaService = useMemo(() => new MediaService(storageProvider), [storageProvider]);
 
 
   useEffect(() => {
