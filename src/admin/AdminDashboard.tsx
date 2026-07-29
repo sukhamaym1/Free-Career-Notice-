@@ -543,6 +543,16 @@ export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: Ad
               </div>
             </>
           )}
+          
+          <div className="w-px h-4 bg-slate-300 dark:bg-slate-700 ml-1"></div>
+          <button 
+            onClick={fetchData}
+            disabled={syncStatus === 'syncing'}
+            className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md transition-colors disabled:opacity-50"
+            title="Scan & Sync Repository"
+          >
+            <RefreshCw className={`w-4 h-4 text-slate-600 dark:text-slate-400 ${syncStatus === 'syncing' ? 'animate-spin' : ''}`} />
+          </button>
         </div>
       </div>
       

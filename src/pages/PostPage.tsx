@@ -283,7 +283,7 @@ export default function PostPage() {
               <div className="mt-16 pt-8 border-t border-slate-200 dark:border-slate-800">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Related Topics</h3>
                 <div className="flex flex-wrap gap-2">
-                  {post.tags.map((tag: string) => (
+                  {post.tags && post.tags.map((tag: string) => (
                     <Link 
                       key={tag} 
                       to={`/search?q=${tag}`} 

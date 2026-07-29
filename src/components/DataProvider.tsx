@@ -102,8 +102,17 @@ export function DataProvider({ children }: { children: ReactNode }) {
         ]);
 
         if (mounted) {
-          const processed = processPosts(posts);
-          setData({ ...processed, SITE_SETTINGS: settings });
+          // Merge fallback data with remote data to prevent an empty site when the remote repo is new
+          const postsMap = new Map();
+          (fallbackRawPosts as Post[]).forEach(p => postsMap.set(p.id, p));
+          if (posts && Array.isArray(posts)) {
+            posts.forEach(p => postsMap.set(p.id, p));
+          }
+          
+          const mergedPosts = Array.from(postsMap.values());
+          const processed = processPosts(mergedPosts);
+          
+          setData({ ...processed, SITE_SETTINGS: { ...(fallbackSettings as SiteSettings), ...(settings || {}) } });
         }
       } catch (err) {
         console.error("Failed to load CMS data from remote, falling back to local bundle.", err);
