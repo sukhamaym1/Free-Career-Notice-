@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useTheme } from './hooks/useTheme';
 import { useData } from './components/DataProvider';
 import Header from './components/Header';
@@ -14,6 +15,7 @@ import CategoryPage from './pages/CategoryPage';
 import TextPage from './pages/TextPage';
 import SearchPage from './pages/SearchPage';
 import QuizPage from './pages/QuizPage';
+import SitemapPage from './pages/SitemapPage';
 import AdminPage from './admin/AdminPage';
 
 import PostPage from './pages/PostPage';
@@ -28,49 +30,7 @@ export default function App() {
 
   const [toast, setToast] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Dynamic Favicon
-    if ((SITE_SETTINGS as any).faviconUrl) {
-      const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-      if (link) {
-        link.href = (SITE_SETTINGS as any).faviconUrl;
-      } else {
-        const newLink = document.createElement('link');
-        newLink.rel = 'icon';
-        newLink.href = (SITE_SETTINGS as any).faviconUrl;
-        document.head.appendChild(newLink);
-      }
-    }
-    
-    
-    // Dynamic SEO
-    if ((SITE_SETTINGS as any).seoTitle) {
-      document.title = (SITE_SETTINGS as any).seoTitle;
-    } else if ((SITE_SETTINGS as any).siteName) {
-      document.title = (SITE_SETTINGS as any).siteName;
-    }
 
-    if ((SITE_SETTINGS as any).seoDescription) {
-      let metaDesc = document.querySelector("meta[name='description']");
-      if (!metaDesc) {
-        metaDesc = document.createElement('meta');
-        metaDesc.setAttribute('name', 'description');
-        document.head.appendChild(metaDesc);
-      }
-      metaDesc.setAttribute('content', (SITE_SETTINGS as any).seoDescription);
-    }
-
-    if ((SITE_SETTINGS as any).seoKeywords) {
-      let metaKeywords = document.querySelector("meta[name='keywords']");
-      if (!metaKeywords) {
-        metaKeywords = document.createElement('meta');
-        metaKeywords.setAttribute('name', 'keywords');
-        document.head.appendChild(metaKeywords);
-      }
-      metaKeywords.setAttribute('content', (SITE_SETTINGS as any).seoKeywords);
-    }
-
-  }, [SITE_SETTINGS]);
   
 
   useEffect(() => {
@@ -105,6 +65,12 @@ export default function App() {
 
   return (
     <div className={`min-h-screen font-sans transition-colors duration-200 ${isAdmin ? 'bg-slate-50 dark:bg-[#0f172a] text-slate-900 dark:text-white' : 'bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-gray-100'}`}>
+      <Helmet>
+        <title>{(SITE_SETTINGS as any).seoTitle || (SITE_SETTINGS as any).siteName || 'Free Career Notice'}</title>
+        {(SITE_SETTINGS as any).seoDescription && <meta name="description" content={(SITE_SETTINGS as any).seoDescription} />}
+        {(SITE_SETTINGS as any).seoKeywords && <meta name="keywords" content={(SITE_SETTINGS as any).seoKeywords} />}
+        {(SITE_SETTINGS as any).faviconUrl && <link rel="icon" type="image/x-icon" href={(SITE_SETTINGS as any).faviconUrl} />}
+      </Helmet>
       <ScrollToTop />
       {!isAdmin && <Header theme={theme} toggleTheme={toggleTheme} />}
       
@@ -112,6 +78,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/quiz" element={<QuizPage />} />
+        <Route path="/sitemap" element={<SitemapPage />} />
         <Route path="/admin" element={<AdminPage theme={theme} toggleTheme={toggleTheme} />} />
         <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route path="/post/:postId" element={<PostPage />} />
