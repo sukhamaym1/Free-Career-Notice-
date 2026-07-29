@@ -18,6 +18,60 @@ export class GitHubProvider implements StorageProvider {
     this.uploadsRoot = uploadsRoot;
   }
 
+  private async putWithRetry(path: string, content: string, message: string, sha: string | undefined, setShaCallback: (newSha: string) => void) {
+    let currentSha = sha;
+    if (!currentSha) {
+      const existing = await this.client.getFile(path);
+      if (existing && existing.sha) {
+        currentSha = existing.sha;
+      }
+    }
+    
+    try {
+      const res = await this.client.putFile(path, content, message, currentSha);
+      if (res && res.content && res.content.sha) {
+        setShaCallback(res.content.sha);
+      }
+      return res;
+    } catch (e: any) {
+      if (e.message && e.message.includes('409')) {
+        const existing = await this.client.getFile(path);
+        if (existing && existing.sha) {
+          const res = await this.client.putFile(path, content, message, existing.sha);
+          if (res && res.content && res.content.sha) {
+            setShaCallback(res.content.sha);
+          }
+          return res;
+        }
+      }
+      throw e;
+    }
+  }
+
+  private async deleteWithRetry(path: string, message: string, sha: string | undefined) {
+    let currentSha = sha;
+    if (!currentSha) {
+      const existing = await this.client.getFile(path);
+      if (existing && existing.sha) {
+        currentSha = existing.sha;
+      } else {
+        throw new Error(`File not found for deletion: ${path}`);
+      }
+    }
+    
+    try {
+      return await this.client.deleteFile(path, message, currentSha);
+    } catch (e: any) {
+      if (e.message && e.message.includes('409')) {
+        const existing = await this.client.getFile(path);
+        if (existing && existing.sha) {
+          return await this.client.deleteFile(path, message, existing.sha);
+        }
+      }
+      throw e;
+    }
+  }
+
   // --- Posts ---
   async getPosts(): Promise<Post[]> {
     const files = await this.client.listDirectory(`${this.contentRoot}/posts`);
@@ -96,28 +150,19 @@ export class GitHubProvider implements StorageProvider {
         throw new Error(`Cannot update post ${id}: unable to retrieve its current SHA. File might not exist or rate limited.`);
       }
     }
-    const res = await this.client.putFile(
+    
+    await this.putWithRetry(
       `${this.contentRoot}/posts/${id}.json`,
       JSON.stringify(post, null, 2),
       `Update post ${id}`,
-      sha
+      sha,
+      (newSha) => { this.postShaMap.set(id, newSha); }
     );
-    if (res && res.content && res.content.sha) {
-      this.postShaMap.set(id, res.content.sha);
-    }
   }
 
   async deletePost(id: string): Promise<void> {
-    const sha = this.postShaMap.get(id);
-    if (!sha) {
-        const post = await this.getPost(id);
-        if (!post) throw new Error("Post not found to delete");
-    }
-    const currentSha = this.postShaMap.get(id);
-    if (currentSha) {
-      await this.client.deleteFile(`${this.contentRoot}/posts/${id}.json`, `Delete post ${id}`, currentSha);
-      this.postShaMap.delete(id);
-    }
+    await this.deleteWithRetry(`${this.contentRoot}/posts/${id}.json`, `Delete post ${id}`, this.postShaMap.get(id));
+    this.postShaMap.delete(id);
   }
 
   // --- Categories ---
@@ -131,15 +176,13 @@ export class GitHubProvider implements StorageProvider {
   }
 
   async saveCategories(categories: Category[]): Promise<void> {
-    const res = await this.client.putFile(
+    await this.putWithRetry(
       `${this.contentRoot}/categories.json`,
       JSON.stringify(categories, null, 2),
       'Update categories',
-      this.categoriesSha
+      this.categoriesSha,
+      (newSha) => { this.categoriesSha = newSha; }
     );
-    if (res && res.content && res.content.sha) {
-      this.categoriesSha = res.content.sha;
-    }
   }
 
   // --- Tags ---
@@ -153,15 +196,13 @@ export class GitHubProvider implements StorageProvider {
   }
 
   async saveTags(tags: Tag[]): Promise<void> {
-    const res = await this.client.putFile(
+    await this.putWithRetry(
       `${this.contentRoot}/tags.json`,
       JSON.stringify(tags, null, 2),
       'Update tags',
-      this.tagsSha
+      this.tagsSha,
+      (newSha) => { this.tagsSha = newSha; }
     );
-    if (res && res.content && res.content.sha) {
-      this.tagsSha = res.content.sha;
-    }
   }
 
   // --- Settings ---
@@ -175,15 +216,13 @@ export class GitHubProvider implements StorageProvider {
   }
 
   async saveSettings(settings: SiteSettings): Promise<void> {
-    const res = await this.client.putFile(
+    await this.putWithRetry(
       `${this.contentRoot}/settings.json`,
       JSON.stringify(settings, null, 2),
       'Update settings',
-      this.settingsSha
+      this.settingsSha,
+      (newSha) => { this.settingsSha = newSha; }
     );
-    if (res && res.content && res.content.sha) {
-      this.settingsSha = res.content.sha;
-    }
   }
 
   // --- Menu ---
@@ -197,15 +236,13 @@ export class GitHubProvider implements StorageProvider {
   }
 
   async saveMenu(menu: any): Promise<void> {
-    const res = await this.client.putFile(
+    await this.putWithRetry(
       `${this.contentRoot}/menu.json`,
       JSON.stringify(menu, null, 2),
       'Update menu',
-      this.menuSha
+      this.menuSha,
+      (newSha) => { this.menuSha = newSha; }
     );
-    if (res && res.content && res.content.sha) {
-      this.menuSha = res.content.sha;
-    }
   }
 
   // --- Media ---
@@ -247,7 +284,7 @@ export class GitHubProvider implements StorageProvider {
     const files = await this.listImages();
     const file = files.find(f => f.path === path);
     if (file) {
-      await this.client.deleteFile(path, `Delete ${file.name}`, file.sha);
+      await this.deleteWithRetry(path, `Delete ${file.name}`, file.sha);
     }
   }
 

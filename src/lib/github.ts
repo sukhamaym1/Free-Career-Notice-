@@ -42,7 +42,7 @@ export class GitHubClient {
 
   async getFile(path: string) {
     try {
-      const data = await this.request(`/contents/${path}?ref=${this.branch}`);
+      const data = await this.request(`/contents/${path}?ref=${this.branch}&t=${Date.now()}`);
       if (data.content) {
         return {
           sha: data.sha,
@@ -57,7 +57,7 @@ export class GitHubClient {
 
   async getRawFile(path: string) {
     try {
-      const data = await this.request(`/contents/${path}?ref=${this.branch}`);
+      const data = await this.request(`/contents/${path}?ref=${this.branch}&t=${Date.now()}`);
       if (data.content) {
         return {
           sha: data.sha,
@@ -72,7 +72,7 @@ export class GitHubClient {
 
   async listDirectory(path: string) {
     try {
-      const data = await this.request(`/contents/${path}?ref=${this.branch}`);
+      const data = await this.request(`/contents/${path}?ref=${this.branch}&t=${Date.now()}`);
       if (Array.isArray(data)) {
         return data;
       }
