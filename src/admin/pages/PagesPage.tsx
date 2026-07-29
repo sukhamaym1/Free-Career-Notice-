@@ -60,7 +60,7 @@ export default function PagesPage() {
       STATIC_PAGES[selectedPage] = content;
     } catch (err) {
       console.error(err);
-      alert('Failed to save page.');
+      alert('Failed to save page: ' + (err.message || String(err)));
     } finally {
       setSaving(false);
     }

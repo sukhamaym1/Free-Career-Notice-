@@ -129,7 +129,7 @@ export class ContentService {
       await this.provider.savePage(id, content);
     } catch (error) {
       console.error('Failed to save page:', error);
-      throw new Error('Failed to save page.');
+      throw error;
     }
   }
 }
