@@ -191,7 +191,7 @@ export default function PostPage() {
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                <span>{new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                <span>{post.date && !isNaN(new Date(post.date).getTime()) ? new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Eye className="w-4 h-4" />

@@ -37,9 +37,21 @@ function processPosts(rawPosts: Post[]) {
   return {
     ALL_POSTS: rawPosts,
     PUBLISHED_POSTS: publishedPosts,
-    COLOR_BLOCKS: publishedPosts
-      .filter(p => p.categorySlug === 'highlight-updates')
-      .map(p => ({ title: p.title, bgClass: p.bgClass, id: p.id })),
+    COLOR_BLOCKS: (() => {
+      let blocks = publishedPosts
+        .filter(p => p.categorySlug === 'highlight-updates')
+        .map(p => ({ title: p.title, bgClass: p.bgClass, id: p.id }));
+      
+      // If no highlight updates, show the 6 most recent posts from any category
+      if (blocks.length === 0) {
+        blocks = publishedPosts.slice(0, 6).map(p => ({
+          title: p.title,
+          bgClass: p.bgClass,
+          id: p.id
+        }));
+      }
+      return blocks;
+    })(),
     JOB_NOTIFICATIONS: publishedPosts
       .filter(p => p.categorySlug === 'job-notifications')
       .map(p => ({

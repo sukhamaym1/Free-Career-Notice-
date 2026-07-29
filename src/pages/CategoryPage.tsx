@@ -100,7 +100,7 @@ export default function CategoryPage() {
                             {item.tag || title}
                           </h3>
                           <p className="text-white/90 text-sm md:text-base font-medium drop-shadow-sm">
-                            {item.title.substring(0, 45)}...
+                            {(item.title || '').substring(0, 45)}...
                           </p>
                           <Link to={`/post/${item.id}`} className="mt-4 inline-block bg-yellow-400 text-yellow-900 font-bold px-4 py-1.5 rounded-full text-sm hover:bg-yellow-300 transition-colors">
                             Click Here!!!
@@ -142,7 +142,7 @@ export default function CategoryPage() {
                   <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-800 pt-4">
                     <span>{item.author || 'Sukhamay'}</span>
                     <span className="mx-2">/</span>
-                    <span>{item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'March 2026'}</span>
+                    <span>{item.date && !isNaN(new Date(item.date).getTime()) ? new Date(item.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''}</span>
                   </div>
                 </div>
               </div>

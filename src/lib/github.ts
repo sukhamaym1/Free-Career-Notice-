@@ -34,8 +34,10 @@ export class GitHubClient {
         headers
       });
       // If deployed as static site (Cloudflare Pages), /api/github/... will return 404 Not Found
-      if (!this.pat && res.status === 404) {
-        throw new Error('Proxy not found, fallback to direct API');
+      // or 200 with HTML (because of SPA fallback routing).
+      const contentType = res.headers.get('content-type') || '';
+      if (!this.pat && (res.status === 404 || contentType.includes('text/html'))) {
+        throw new Error('Proxy not found or returned HTML, fallback to direct API');
       }
     } catch (e) {
       if (!this.pat) {
