@@ -1,9 +1,11 @@
-import { GraduationCap, Facebook, Twitter, Instagram, Linkedin, Mail, MapPin, Phone, ChevronRight } from 'lucide-react';
+import { GraduationCap, Facebook, Twitter, Instagram, Linkedin, Mail, MapPin, Phone, ChevronRight, MessageCircle, Youtube, Github, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useData } from '../components/DataProvider';
 
 export default function Footer() {
   const { SITE_SETTINGS } = useData();
+  const settings = SITE_SETTINGS as any;
+
   return (
     <footer className="bg-slate-900 text-slate-300 pt-16 pb-8 border-t border-slate-800">
       <div className="container mx-auto px-4">
@@ -11,33 +13,61 @@ export default function Footer() {
           {/* Brand & About */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 mb-6">
-              {(SITE_SETTINGS as any).footerLogo ? (
-                <img src={(SITE_SETTINGS as any).footerLogo} alt="Logo" className="w-10 h-10 object-contain" />
+              {settings.footerLogo ? (
+                <img src={settings.footerLogo} alt="Logo" className="w-10 h-10 object-contain" />
               ) : (
                 <div className="bg-blue-600 p-2 rounded-lg text-white">
                   <GraduationCap className="w-6 h-6" />
                 </div>
               )}
               <div className="font-bold text-xl leading-none tracking-tight text-white">
-                {(SITE_SETTINGS as any).siteName || 'Free Career Notice'}
+                {settings.siteName || 'Free Career Notice'}
               </div>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed">
-              {(SITE_SETTINGS as any).footerDescription || 'Your trusted portal for the latest job notifications.'}
+              {settings.footerDescription || 'Your trusted portal for the latest job notifications.'}
             </p>
-            <div className="flex gap-4 pt-2">
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all text-slate-400">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-sky-500 hover:text-white transition-all text-slate-400">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-pink-600 hover:text-white transition-all text-slate-400">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-700 hover:text-white transition-all text-slate-400">
-                <Linkedin className="w-5 h-5" />
-              </a>
+            <div className="flex flex-wrap gap-4 pt-2">
+              {settings.socialFacebook && (
+                <a href={settings.socialFacebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all text-slate-400">
+                  <Facebook className="w-5 h-5" />
+                </a>
+              )}
+              {settings.socialXTwitter && (
+                <a href={settings.socialXTwitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-sky-500 hover:text-white transition-all text-slate-400">
+                  <Twitter className="w-5 h-5" />
+                </a>
+              )}
+              {settings.socialInstagram && (
+                <a href={settings.socialInstagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-pink-600 hover:text-white transition-all text-slate-400">
+                  <Instagram className="w-5 h-5" />
+                </a>
+              )}
+              {settings.socialLinkedIn && (
+                <a href={settings.socialLinkedIn} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-700 hover:text-white transition-all text-slate-400">
+                  <Linkedin className="w-5 h-5" />
+                </a>
+              )}
+              {settings.socialYouTube && (
+                <a href={settings.socialYouTube} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all text-slate-400">
+                  <Youtube className="w-5 h-5" />
+                </a>
+              )}
+              {settings.socialGitHub && (
+                <a href={settings.socialGitHub} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-gray-600 hover:text-white transition-all text-slate-400">
+                  <Github className="w-5 h-5" />
+                </a>
+              )}
+              {settings.socialWhatsAppChannel && (
+                <a href={settings.socialWhatsAppChannel} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-green-500 hover:text-white transition-all text-slate-400" title="WhatsApp Channel">
+                  <MessageCircle className="w-5 h-5" />
+                </a>
+              )}
+              {settings.socialTelegram && (
+                <a href={settings.socialTelegram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-sky-500 hover:text-white transition-all text-slate-400" title="Telegram Channel">
+                  <Send className="w-5 h-5" />
+                </a>
+              )}
             </div>
           </div>
 
