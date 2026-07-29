@@ -22,15 +22,33 @@ export class GitHubClient {
       headers['Authorization'] = `Bearer ${this.pat}`;
     }
 
-    const url = this.pat 
+    let url = this.pat 
       ? `https://api.github.com/repos/${this.owner}/${this.repo}${endpoint}`
       : `/api/github/repos/${this.owner}/${this.repo}${endpoint}`;
 
-    const res = await fetch(url, {
-      cache: 'no-store',
-      ...options,
-      headers
-    });
+    let res: Response;
+    try {
+      res = await fetch(url, {
+        cache: 'no-store',
+        ...options,
+        headers
+      });
+      // If deployed as static site (Cloudflare Pages), /api/github/... will return 404 Not Found
+      if (!this.pat && res.status === 404) {
+        throw new Error('Proxy not found, fallback to direct API');
+      }
+    } catch (e) {
+      if (!this.pat) {
+        url = `https://api.github.com/repos/${this.owner}/${this.repo}${endpoint}`;
+        res = await fetch(url, {
+          cache: 'no-store',
+          ...options,
+          headers
+        });
+      } else {
+        throw e;
+      }
+    }
 
     if (!res.ok) {
       const errBody = await res.text().catch(() => '');

@@ -82,13 +82,28 @@ export class GitHubProvider implements StorageProvider {
     for (let i = 0; i < files.length; i += chunkSize) {
       const chunk = files.slice(i, i + chunkSize);
       const postPromises = chunk.map(async (f: any) => {
-        const res = await this.client.getFile(f.path);
-        if (res && res.content) {
+        let fileStr = '';
+        if (f.download_url) {
           try {
-            const post = JSON.parse(res.content);
+            const res = await fetch(f.download_url + `?t=${Date.now()}`, { cache: 'no-store' });
+            if (res.ok) fileStr = await res.text();
+          } catch (e) { /* ignore and fallback */ }
+        }
+        
+        if (!fileStr) {
+          const res = await this.client.getFile(f.path);
+          if (res && res.content) {
+            fileStr = res.content;
+            f.sha = res.sha || f.sha;
+          }
+        }
+
+        if (fileStr) {
+          try {
+            const post = JSON.parse(fileStr);
             post._path = f.path;
-            post._sha = res.sha;
-            this.postShaMap.set(post.id, res.sha);
+            post._sha = f.sha;
+            this.postShaMap.set(post.id, f.sha);
             return post;
           } catch (e) {
             console.error("Failed to parse post JSON", e);
