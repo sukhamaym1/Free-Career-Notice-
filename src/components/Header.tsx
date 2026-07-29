@@ -64,8 +64,15 @@ export default function Header({ theme, toggleTheme }: HeaderProps) {
               <GraduationCap className="w-6 h-6" />
             </div>
           )}
-          <div className="font-bold text-xl leading-none tracking-tight text-gray-900 dark:text-white">
-            {SITE_SETTINGS.siteName || 'Free Career Notice'}
+          <div className="flex flex-col">
+            <div className="font-bold text-xl leading-none tracking-tight text-gray-900 dark:text-white">
+              {SITE_SETTINGS.siteName || 'Free Career Notice'}
+            </div>
+            {SITE_SETTINGS.siteTagline && (
+              <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider font-semibold hidden sm:block">
+                {SITE_SETTINGS.siteTagline}
+              </div>
+            )}
           </div>
         </Link>
 

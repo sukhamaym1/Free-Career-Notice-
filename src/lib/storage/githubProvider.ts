@@ -12,7 +12,15 @@ export class GitHubProvider implements StorageProvider {
   private contentRoot: string;
   private uploadsRoot: string;
 
+  private owner: string;
+  private repo: string;
+  private branch: string;
   constructor(pat: string, owner: string, repo: string, branch: string, contentRoot: string, uploadsRoot: string) {
+    this.owner = owner;
+    this.repo = repo;
+    this.branch = branch;
+    this.contentRoot = contentRoot;
+    this.uploadsRoot = uploadsRoot;
     this.client = new GitHubClient(pat, owner, repo, branch);
     this.contentRoot = contentRoot;
     this.uploadsRoot = uploadsRoot;

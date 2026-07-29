@@ -1,134 +1,115 @@
-import { GraduationCap, Facebook, Twitter, Instagram, Linkedin, Mail, MapPin, Phone, ChevronRight, MessageCircle, Youtube, Github, Send } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { useData } from '../components/DataProvider';
+import FooterBrand from './footer/FooterBrand';
+import FooterNewsletter from './footer/FooterNewsletter';
+import FooterSocial from './footer/FooterSocial';
+import FooterLinks from './footer/FooterLinks';
+import FooterContact from './footer/FooterContact';
+import FooterStats from './footer/FooterStats';
+import FooterBottom from './footer/FooterBottom';
+import { Link2, Folder, Bell, Wrench } from 'lucide-react';
 
 export default function Footer() {
   const { SITE_SETTINGS } = useData();
   const settings = SITE_SETTINGS as any;
 
+  const defaultQuickLinks = [
+    { label: 'Home', url: '/' },
+    { label: 'Latest Jobs', url: '/category/job-notifications' },
+    { label: 'Admit Card', url: '/category/admit-card' },
+    { label: 'Results', url: '/category/results' },
+    { label: 'Syllabus', url: '/category/syllabus' },
+    { label: 'Answer Key', url: '/category/answer-keys' },
+    { label: 'Contact Us', url: '/contact-us' }
+  ];
+
+  const defaultCategories = [
+    { label: 'Government Jobs', url: '/category/job-notifications' },
+    { label: 'Bank Jobs', url: '/category/banking' },
+    { label: 'Railway Jobs', url: '/category/railway' },
+    { label: 'Defence Jobs', url: '/category/defence' },
+    { label: 'Teaching Jobs', url: '/category/teaching' },
+    { label: 'Police Jobs', url: '/category/defence' },
+    { label: 'All Categories', url: '/category/job-notifications' }
+  ];
+
+  const defaultImportant = [
+    { label: 'About Us', url: '/about-us' },
+    { label: 'Privacy Policy', url: '/privacy-policy' },
+    { label: 'Disclaimer', url: '/disclaimer' },
+    { label: 'Terms & Conditions', url: '/terms-and-conditions' },
+    { label: 'Sitemap', url: '/sitemap' },
+    { label: 'Contact Us', url: '/contact-us' },
+    { label: 'DMCA Policy', url: '/dmca' }
+  ];
+
+  const defaultTools = [
+    { label: 'Daily Current Affairs', url: '/category/current-affairs' },
+    { label: 'Weekly Quiz', url: '/quiz' },
+    { label: 'GK & GS Notes', url: '/category/study-material' },
+    { label: 'Exam Preparation', url: '/category/syllabus' },
+    { label: 'Study Materials', url: '/category/study-material' },
+    { label: 'Online Tests', url: '/quiz' },
+    { label: 'Interview Tips', url: '/category/tips' }
+  ];
+
   return (
-    <footer className="bg-slate-900 text-slate-300 pt-16 pb-8 border-t border-slate-800">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-          {/* Brand & About */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 mb-6">
-              {settings.footerLogo ? (
-                <img src={settings.footerLogo} alt="Logo" className="w-10 h-10 object-contain" />
-              ) : (
-                <div className="bg-blue-600 p-2 rounded-lg text-white">
-                  <GraduationCap className="w-6 h-6" />
-                </div>
-              )}
-              <div className="font-bold text-xl leading-none tracking-tight text-white">
-                {settings.siteName || 'Free Career Notice'}
-              </div>
+    <footer className="bg-[#0b1120] border-t border-slate-800 text-slate-300 font-sans">
+      {/* Top Section: Brand & Newsletter */}
+      <div className="border-b border-slate-800">
+        <div className="container mx-auto px-4 py-12 md:py-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-start">
+            <div className="lg:col-span-4">
+              <FooterBrand settings={settings} />
             </div>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              {settings.footerDescription || 'Your trusted portal for the latest job notifications.'}
-            </p>
-            <div className="flex flex-wrap gap-4 pt-2">
-              {settings.socialFacebook && (
-                <a href={settings.socialFacebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all text-slate-400">
-                  <Facebook className="w-5 h-5" />
-                </a>
-              )}
-              {settings.socialXTwitter && (
-                <a href={settings.socialXTwitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-sky-500 hover:text-white transition-all text-slate-400">
-                  <Twitter className="w-5 h-5" />
-                </a>
-              )}
-              {settings.socialInstagram && (
-                <a href={settings.socialInstagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-pink-600 hover:text-white transition-all text-slate-400">
-                  <Instagram className="w-5 h-5" />
-                </a>
-              )}
-              {settings.socialLinkedIn && (
-                <a href={settings.socialLinkedIn} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-blue-700 hover:text-white transition-all text-slate-400">
-                  <Linkedin className="w-5 h-5" />
-                </a>
-              )}
-              {settings.socialYouTube && (
-                <a href={settings.socialYouTube} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-red-600 hover:text-white transition-all text-slate-400">
-                  <Youtube className="w-5 h-5" />
-                </a>
-              )}
-              {settings.socialGitHub && (
-                <a href={settings.socialGitHub} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-gray-600 hover:text-white transition-all text-slate-400">
-                  <Github className="w-5 h-5" />
-                </a>
-              )}
-              {settings.socialWhatsAppChannel && (
-                <a href={settings.socialWhatsAppChannel} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-green-500 hover:text-white transition-all text-slate-400" title="WhatsApp Channel">
-                  <MessageCircle className="w-5 h-5" />
-                </a>
-              )}
-              {settings.socialTelegram && (
-                <a href={settings.socialTelegram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-sky-500 hover:text-white transition-all text-slate-400" title="Telegram Channel">
-                  <Send className="w-5 h-5" />
-                </a>
+            
+            <div className="lg:col-span-5">
+              {settings.enableNewsletter !== false && (
+                <FooterNewsletter settings={settings} />
               )}
             </div>
-          </div>
-
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-white font-bold text-lg mb-6">Quick Links</h3>
-            <ul className="space-y-3">
-              <li><Link to="/" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Home</Link></li>
-              <li><Link to="/category/job-notifications" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Latest Job Notifications</Link></li>
-              <li><Link to="/category/admit-card" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Admit Cards Download</Link></li>
-              <li><Link to="/category/results" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Exam Results</Link></li>
-              <li><Link to="/category/answer-keys" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Answer Keys</Link></li>
-              <li><Link to="/category/syllabus" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Syllabus & Exam Pattern</Link></li>
-              <li><Link to="/admin" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Admin Panel</Link></li>
-            </ul>
-          </div>
-
-          {/* Top Categories */}
-          <div>
-            <h3 className="text-white font-bold text-lg mb-6">Top Categories</h3>
-            <ul className="space-y-3">
-              <li><Link to="/category/ssc-exams" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />SSC Exams</Link></li>
-              <li><Link to="/category/railway" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Railway (RRB)</Link></li>
-              <li><Link to="/category/banking" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Banking (IBPS/SBI)</Link></li>
-              <li><Link to="/category/upsc" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />UPSC / State PSC</Link></li>
-              <li><Link to="/category/defence" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Defence / Police Jobs</Link></li>
-              <li><Link to="/category/teaching" className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors group"><ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-blue-400 transition-colors" />Teaching Jobs</Link></li>
-            </ul>
-          </div>
-
-          {/* Contact Info */}
-          <div>
-            <h3 className="text-white font-bold text-lg mb-6">Contact Us</h3>
-            <ul className="space-y-4 text-sm text-slate-400">
-              <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-blue-500 shrink-0" />
-                <span>{(SITE_SETTINGS as any).contactAddress || '123 Career Avenue, New Delhi, India'}</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-green-500 shrink-0" />
-                <span>{(SITE_SETTINGS as any).contactPhone || '+91 98765 43210'}</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-rose-500 shrink-0" />
-                <a href="mailto:{(SITE_SETTINGS as any).contactEmail || '{(SITE_SETTINGS as any).contactEmail || 'support@freecareernotice.com'}'}" className="hover:text-white transition-colors">
-                  support@freecareernotice.com
-                </a>
-              </li>
-            </ul>
+            
+            <div className="lg:col-span-3">
+              <FooterSocial settings={settings} />
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* Main Links Section */}
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
+          <FooterLinks 
+            title="Quick Links" 
+            icon={<Link2 className="w-5 h-5" />} 
+            links={settings.quickLinks} 
+            defaultLinks={defaultQuickLinks} 
+          />
+          <FooterLinks 
+            title="Categories" 
+            icon={<Folder className="w-5 h-5" />} 
+            links={settings.footerCategories} 
+            defaultLinks={defaultCategories} 
+          />
+          <FooterLinks 
+            title="Important" 
+            icon={<Bell className="w-5 h-5" />} 
+            links={settings.importantPages} 
+            defaultLinks={defaultImportant} 
+          />
+          <FooterLinks 
+            title="Useful Tools" 
+            icon={<Wrench className="w-5 h-5" />} 
+            links={settings.usefulTools} 
+            defaultLinks={defaultTools} 
+          />
+          <FooterContact settings={settings} />
+        </div>
+
+        {/* Stats Section */}
+        <FooterStats settings={settings} />
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500">
-          <p>{(SITE_SETTINGS as any).footerCopyrightText || `© ${new Date().getFullYear()} Free Career Notice. All rights reserved.`}</p>
-          <div className="flex items-center gap-6">
-            <Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link to="/terms-and-conditions" className="hover:text-white transition-colors">Terms & Conditions</Link>
-            <Link to="/disclaimer" className="hover:text-white transition-colors">Disclaimer</Link>
-          </div>
-        </div>
+        <FooterBottom settings={settings} />
       </div>
     </footer>
   );

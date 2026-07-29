@@ -51,7 +51,8 @@ export default function RichTextEditor({ content, onChange, placeholder, isFocus
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const editor = useEditor({
-    extensions: [
+    extensions: [ // @ts-ignore
+
       CustomShortcuts,
       Focus.configure({
         className: 'has-focus',

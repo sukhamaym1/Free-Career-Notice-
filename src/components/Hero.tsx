@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTypingPlaceholder } from '../hooks/useTypingPlaceholder';
-import { SITE_SETTINGS } from '../data';
+import { useData } from '../components/DataProvider';
 
 const HERO_PLACEHOLDERS = [
   "Search SBI PO...",
@@ -13,6 +13,7 @@ const HERO_PLACEHOLDERS = [
 ];
 
 export default function Hero() {
+  const { SITE_SETTINGS } = useData();
   const [query, setQuery] = useState('');
   const navigate = useNavigate();
   const placeholder = useTypingPlaceholder(HERO_PLACEHOLDERS);
@@ -57,11 +58,25 @@ export default function Hero() {
           <Search className="w-5 h-5" />
         </button>
       </form>
+      
+      {(SITE_SETTINGS as any).heroButtonText && (SITE_SETTINGS as any).heroButtonLink && (
+        <a 
+          href={(SITE_SETTINGS as any).heroButtonLink} 
+          className="mb-8 px-6 py-3 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
+          target={((SITE_SETTINGS as any).heroButtonLink.startsWith('http') ? '_blank' : undefined)}
+          rel="noopener noreferrer"
+        >
+          {(SITE_SETTINGS as any).heroButtonText}
+        </a>
+      )}
 
       {/* Trending Tags */}
       <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-gray-600 dark:text-gray-400 font-medium">
         <span>Trending:</span>
-        {['SBI', 'SSC', 'Railway', 'IBPS'].map(tag => (
+        {((SITE_SETTINGS as any).featuredCategories 
+            ? ((SITE_SETTINGS as any).featuredCategories as string).split(',').map(s => s.trim()).filter(Boolean)
+            : ['SBI', 'SSC', 'Railway', 'IBPS']
+          ).map(tag => (
           <Link
             key={tag}
             to={`/search?q=${tag}`}

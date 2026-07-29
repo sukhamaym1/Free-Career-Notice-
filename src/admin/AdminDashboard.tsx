@@ -342,12 +342,12 @@ export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: Ad
     setSyncStatus('syncing');
     try {
       const updated = {
-        siteName: formData.get('siteName'),
-        description: formData.get('description'),
-        seoTitle: formData.get('seoTitle'),
-        keywords: formData.get('keywords'),
-        googleAnalyticsId: formData.get('googleAnalyticsId'),
-        publisherId: formData.get('publisherId')
+        siteName: String(formData.get('siteName') || ''),
+        description: String(formData.get('description') || ''),
+        seoTitle: String(formData.get('seoTitle') || ''),
+        keywords: String(formData.get('keywords') || ''),
+        googleAnalyticsId: String(formData.get('googleAnalyticsId') || ''),
+        publisherId: String(formData.get('publisherId') || '')
       };
       await contentService.saveSettings(updated);
       setSiteSettings(updated);
