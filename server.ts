@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
+import { CMS_CONFIG } from './src/config';
 
 async function startServer() {
   const app = express();
@@ -118,7 +119,11 @@ async function startServer() {
     }
   });
 
+
+  
+
   // Vite middleware for development
+
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
