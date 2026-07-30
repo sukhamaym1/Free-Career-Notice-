@@ -1,0 +1,18 @@
+{
+  "id": "post-001",
+  "title": "হ্যালো দিশেদা ডেমো পোস্ট",
+  "seoTitle": "",
+  "seoDescription": "",
+  "focusKeyword": "",
+  "featuredImage": "",
+  "categorySlug": "highlight-updates",
+  "content": "<p>তোমরা যারা আছো আমাদের সাথে দেখা করো তাড়াতাড়ি</p><a data-type=\"action-button\" class=\"inline-block px-6 py-3 rounded-lg font-bold text-center transition-colors shadow-sm my-4 no-underline bg-blue-600 text-white hover:bg-blue-700\" target=\"_blank\" rel=\"noopener noreferrer\" href=\"#\" text=\"Apply Now\" type=\"primary\">Apply Now</a><a data-type=\"action-button\" class=\"inline-block px-6 py-3 rounded-lg font-bold text-center transition-colors shadow-sm my-4 no-underline bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-600\" target=\"_blank\" rel=\"noopener noreferrer\" href=\"#\" text=\"Download PDF\" type=\"secondary\">Download PDF</a><div data-type=\"callout\" class=\"p-4 my-4 rounded-lg border-l-4 text-blue-900 dark:text-blue-200 bg-blue-50 dark:bg-blue-900/30 border-blue-500\" type=\"info\"><p>Hjbb</p></div><p style=\"text-align: left;\"></p>",
+  "author": "Admin",
+  "date": "2026-07-30T04:29:00.000Z",
+  "tags": [],
+  "tagColor": "bg-green-500",
+  "imgGradient": "from-blue-500 to-indigo-600",
+  "status": "published",
+  "_path": "content/posts/post-001.json",
+  "_sha": "29cf4d4a304422ecdc68bce2ce2f21aef48708fa"
+}

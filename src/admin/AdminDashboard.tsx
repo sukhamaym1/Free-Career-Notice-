@@ -407,6 +407,7 @@ export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: Ad
           parsedData={parsedData}
           rawPosts={rawPosts}
           setActiveTab={setActiveTab}
+          setEditingPost={setEditingPost}
         />
       );
     }

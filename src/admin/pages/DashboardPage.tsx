@@ -7,9 +7,10 @@ interface DashboardPageProps {
   setActiveTab: (tab: string) => void;
   parsedData: any;
   rawPosts: any[];
+  setEditingPost?: (post: any) => void;
 }
 
-export default function DashboardPage({ parsedData, rawPosts, setActiveTab }: DashboardPageProps) {
+export default function DashboardPage({ parsedData, rawPosts, setActiveTab, setEditingPost }: DashboardPageProps) {
   const publishedCount = rawPosts.filter(p => !p.draft).length;
   const draftCount = rawPosts.filter(p => p.draft).length;
   
@@ -30,10 +31,19 @@ export default function DashboardPage({ parsedData, rawPosts, setActiveTab }: Da
           <p className="text-slate-500 dark:text-slate-400 mt-1">Welcome back! Here's what's happening with your website.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors shadow-sm">
+          <button 
+            onClick={() => {
+              const event = new CustomEvent('show-toast', { detail: { message: 'Analytics coming soon!' } });
+              document.dispatchEvent(event);
+            }}
+            className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors shadow-sm"
+          >
             View Analytics
           </button>
-          <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm">
+          <button 
+            onClick={() => setActiveTab('Create Post')}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm"
+          >
             Create New Post
           </button>
         </div>
@@ -88,11 +98,20 @@ export default function DashboardPage({ parsedData, rawPosts, setActiveTab }: Da
         <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">Recent Posts</h3>
-            <button className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">View All</button>
+            <button onClick={() => setActiveTab('Posts')} className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">View All</button>
           </div>
           <div className="space-y-4">
             {recentPosts.length > 0 ? recentPosts.map((post: any) => (
-              <div key={post.id} className="flex items-start gap-4 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group cursor-pointer border border-transparent hover:border-slate-100 dark:hover:border-slate-800">
+              <div 
+                key={post.id} 
+                onClick={() => {
+                  if (setEditingPost) {
+                    setEditingPost(post);
+                    setActiveTab('Edit Post');
+                  }
+                }}
+                className="flex items-start gap-4 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group cursor-pointer border border-transparent hover:border-slate-100 dark:hover:border-slate-800"
+              >
                 <div className="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0 flex items-center justify-center">
                   {post.featuredImage ? (
                     <img src={post.featuredImage} alt="" className="w-full h-full object-cover" />
