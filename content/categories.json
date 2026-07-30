@@ -1,22 +1,27 @@
 [
   {
-    "id": "cat_1",
-    "name": "Job Notifications",
-    "slug": "job-notifications"
+    "id": "cat_1785304064694",
+    "name": "All Blogs",
+    "slug": "all-blogs"
   },
   {
-    "id": "cat_2",
-    "name": "Admit Cards",
-    "slug": "admit-cards"
+    "id": "cat_1785304516092",
+    "name": "Highlight Updates",
+    "slug": "highlight-updates"
   },
   {
-    "id": "cat_3",
+    "id": "cat_1785304550594",
     "name": "Results",
     "slug": "results"
   },
   {
-    "id": "cat_4",
-    "name": "Highlight Updates",
-    "slug": "highlight-updates"
+    "id": "cat_1785304556695",
+    "name": "Job Notifications",
+    "slug": "job-notifications"
+  },
+  {
+    "id": "cat_1785324654551",
+    "name": "Admit Card",
+    "slug": "admit-card"
   }
 ]

@@ -486,4 +486,20 @@ export class GitHubProvider implements StorageProvider {
       (newSha) => { this.pageShaMap.set(id, newSha); }
     );
   }
+
+  // --- System ---
+  async clearCache(): Promise<void> {
+    // Clear the memory cache
+    this.postShaMap.clear();
+    this.categoriesSha = undefined;
+    this.tagsSha = undefined;
+    this.settingsSha = undefined;
+    this.menuSha = undefined;
+    this.pageShaMap.clear();
+  }
+
+  async rebuildSite(): Promise<void> {
+    if (!this.client) throw new Error("Authentication required to rebuild site");
+    await this.client.triggerWorkflow('deploy.yml');
+  }
 }

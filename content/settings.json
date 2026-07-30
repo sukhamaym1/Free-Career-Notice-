@@ -1,5 +1,8 @@
 {
-  "siteName": "Free Career Notice",
-  "siteTagline": "Your Job Portal",
-  "footerText": "© 2024 Free Career Notice"
+  "socialWhatsAppChannel": "https://whatsapp.com/channel/0029Vb5zRopEFeXetLMbKn1L",
+  "socialTelegram": "https://t.me/FreeCareerNotice",
+  "faviconUrl": "https://raw.githubusercontent.com/sukhamaym1/free-career-content/main/public/uploads/1000008252.png",
+  "siteTagline": "Free Career Notice",
+  "phoneNumber": "7047727613",
+  "socialWebsite": "free-career-notice.pages.dev"
 }

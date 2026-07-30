@@ -145,4 +145,13 @@ export class GitHubClient {
       })
     });
   }
+
+  async triggerWorkflow(workflowId: string) {
+    return this.request(`/actions/workflows/${workflowId}/dispatches`, {
+      method: 'POST',
+      body: JSON.stringify({
+        ref: this.branch
+      })
+    });
+  }
 }

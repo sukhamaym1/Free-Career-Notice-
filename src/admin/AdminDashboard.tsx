@@ -508,7 +508,7 @@ export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: Ad
     if (activeTab === 'Advertisement') return <AdsPage />;
     if (['Theme Settings', 'Menus', 'Widgets'].includes(activeTab)) return <AppearancePage type={activeTab} />;
     if (activeTab === 'Users') return <UsersPage />;
-    if (activeTab === 'Tools') return <ToolsPage />;
+    if (activeTab === 'Tools') return <ToolsPage contentService={contentService} />;
 
     // Default to coming soon for other tabs
     return <ComingSoon title={activeTab} />;

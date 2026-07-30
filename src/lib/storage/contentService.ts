@@ -132,4 +132,26 @@ export class ContentService {
       throw error;
     }
   }
+
+  async clearCache(): Promise<void> {
+    try {
+      if (this.provider.clearCache) {
+        await this.provider.clearCache();
+      }
+    } catch (error) {
+      console.error('Failed to clear cache:', error);
+      throw error;
+    }
+  }
+
+  async rebuildSite(): Promise<void> {
+    try {
+      if (this.provider.rebuildSite) {
+        await this.provider.rebuildSite();
+      }
+    } catch (error) {
+      console.error('Failed to rebuild site:', error);
+      throw error;
+    }
+  }
 }

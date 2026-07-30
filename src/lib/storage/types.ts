@@ -73,4 +73,8 @@ export interface StorageProvider {
   deleteImage(path: string): Promise<void>;
   listImages(): Promise<MediaFile[]>;
   renameImage(oldPath: string, newPath: string): Promise<void>;
+
+  // System
+  clearCache(): Promise<void>;
+  rebuildSite(): Promise<void>;
 }

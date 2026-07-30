@@ -8,6 +8,16 @@ import fallbackSettings from '../../content/settings.json';
 const postsModules = import.meta.glob('../../content/posts/*.json', { eager: true });
 const fallbackRawPosts = Object.values(postsModules).map((mod: any) => mod.default || mod);
 
+const pagesModules = import.meta.glob('../../content/pages/*.json', { eager: true });
+const fallbackPages: Record<string, string> = {};
+for (const path in pagesModules) {
+  const mod: any = pagesModules[path];
+  const pageId = path.split('/').pop()?.replace('.json', '');
+  if (pageId) {
+    fallbackPages[pageId] = (mod.default || mod).content || '';
+  }
+}
+
 interface DataContextType {
   loading: boolean;
   error: Error | null;
@@ -96,7 +106,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<Omit<DataContextType, 'loading' | 'error'>>(() => {
     // Initialize with fallback
     const processed = processPosts(fallbackRawPosts as Post[]);
-    return { ...processed, SITE_SETTINGS: fallbackSettings as SiteSettings, STATIC_PAGES: {} };
+    return { ...processed, SITE_SETTINGS: fallbackSettings as SiteSettings, STATIC_PAGES: fallbackPages };
   });
   
   const [loading, setLoading] = useState(true);
@@ -137,7 +147,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
           const mergedPosts = Array.from(postsMap.values());
           const processed = processPosts(mergedPosts);
           
-          setData({ ...processed, SITE_SETTINGS: { ...(fallbackSettings as SiteSettings), ...(settings || {}) }, STATIC_PAGES: pages || {} });
+          setData({ ...processed, SITE_SETTINGS: { ...(fallbackSettings as SiteSettings), ...(settings || {}) }, STATIC_PAGES: { ...fallbackPages, ...(pages || {}) } });
         }
       } catch (err) {
         console.error("Failed to load CMS data from remote, falling back to local bundle.", err);
