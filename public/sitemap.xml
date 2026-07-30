@@ -41,39 +41,23 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://free-career-notice.pages.dev/post/hiii</loc>
-    <lastmod>2026-07-27T00:01:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://free-career-notice.pages.dev/about-us</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://free-career-notice.pages.dev/post/i-love-you</loc>
-    <lastmod>2026-07-28T06:59:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://free-career-notice.pages.dev/contact-us</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://free-career-notice.pages.dev/post/ngthxrhxthcng-gnhgdthdghtydbv-xthtdhg-vnht-chdht</loc>
-    <lastmod>2026-07-30T04:34:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://free-career-notice.pages.dev/privacy-policy</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://free-career-notice.pages.dev/post/post-001</loc>
-    <lastmod>2026-07-30T04:29:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://free-career-notice.pages.dev/post/rrb-group-d-admin-cards-download</loc>
-    <lastmod>2026-07-28T18:55:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://free-career-notice.pages.dev/post/rrb</loc>
-    <lastmod>2026-07-28T18:59:00.000Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <loc>https://free-career-notice.pages.dev/terms-and-conditions</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 </urlset>

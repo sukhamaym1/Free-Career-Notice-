@@ -196,8 +196,13 @@ export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: Ad
       
       // Clear draft after successful save
       localStorage.removeItem(isEdit ? `draftPost-${editingPost.id}` : 'draftPost-new');
+      if (isEdit) {
+        setRawPosts(prev => prev.map(p => p.id === newPost.id ? newPost : p));
+      } else {
+        setRawPosts(prev => [newPost, ...prev]);
+      }
       
-      await fetchData();
+      setSyncStatus("synced");
       setActiveTab('All Posts');
       setEditingPost(null);
     } catch (error) {
@@ -422,11 +427,14 @@ export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: Ad
           handleDeletePost={async (post) => {
             if (confirm('Delete this post?')) {
               setSyncStatus('syncing');
+              // Optimistically update UI
+              setRawPosts(prev => prev.filter(p => p.id !== post.id));
               try {
                 await contentService.deletePost(post.id);
-                fetchData();
+                setSyncStatus('synced');
               } catch (e) {
                 setSyncStatus('error');
+                fetchData(); // Rollback on error
               }
             }
           }}
