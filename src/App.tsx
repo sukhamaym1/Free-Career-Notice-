@@ -70,6 +70,17 @@ export default function App() {
         {(SITE_SETTINGS as any).seoDescription && <meta name="description" content={(SITE_SETTINGS as any).seoDescription} />}
         {(SITE_SETTINGS as any).seoKeywords && <meta name="keywords" content={(SITE_SETTINGS as any).seoKeywords} />}
         {(SITE_SETTINGS as any).faviconUrl && <link rel="icon" type="image/x-icon" href={(SITE_SETTINGS as any).faviconUrl} />}
+        <meta property="og:site_name" content={(SITE_SETTINGS as any).siteName || 'Free Career Notice'} />
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "${(SITE_SETTINGS as any).siteName || 'Free Career Notice'}",
+              "url": "https://${(SITE_SETTINGS as any).socialWebsite || 'free-career-notice.pages.dev'}/"
+            }
+          `}
+        </script>
       </Helmet>
       <ScrollToTop />
       {!isAdmin && <Header theme={theme} toggleTheme={toggleTheme} />}
