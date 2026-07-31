@@ -109,6 +109,11 @@ async function generateSitemap() {
     }
     fs.writeFileSync(path.join(publicPath, 'sitemap.xml'), xml);
     console.log('Sitemap generated successfully at public/sitemap.xml');
+ 
+    const robotsTxtPath = path.join(publicPath, 'robots.txt');
+    const robotsTxt = `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml\n`;
+    fs.writeFileSync(robotsTxtPath, robotsTxt);
+    console.log('robots.txt generated successfully');
 
     // --- Pull content locally for bundling ---
     const localContentPath = path.resolve(__dirname, '../content');
