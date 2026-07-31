@@ -1,3 +1,11 @@
+# robots.txt for Free Career Notice
+
 User-agent: *
 Allow: /
+
+# Block admin area (if applicable)
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap
 Sitemap: https://free-career-notice.pages.dev/sitemap.xml
