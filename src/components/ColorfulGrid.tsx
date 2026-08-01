@@ -15,7 +15,7 @@ export default function ColorfulGrid() {
           <Link
             key={idx}
             to={block.id ? `/post/${block.id}` : "/post/wbpsc-recruitment-2026"}
-            className="group relative flex items-center justify-between p-5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl hover:shadow-md hover:border-blue-200 dark:hover:border-slate-700 transition-all overflow-hidden"
+            className="group relative flex items-center justify-between p-5 bg-white dark:bg-slate-900  border border-gray-200 dark:border-slate-800 rounded-2xl hover:shadow-md hover:border-blue-200 dark:hover:border-slate-700 transition-all overflow-hidden"
           >
             {/* Subtle hover background */}
             <div className="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-transparent dark:from-blue-900/10 opacity-0 group-hover:opacity-100 transition-opacity" />

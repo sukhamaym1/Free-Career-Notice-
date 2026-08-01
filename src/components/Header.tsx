@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Moon, Sun, GraduationCap, ChevronDown, Search, Menu, X } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useData } from '../components/DataProvider';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useData } from './DataProvider';
 import { useTypingPlaceholder } from '../hooks/useTypingPlaceholder';
 import { AnimatePresence, motion } from 'motion/react';
 
@@ -53,7 +53,7 @@ export default function Header({ theme, toggleTheme }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-slate-950/80 ">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2" onClick={closeMobileMenu}>
@@ -69,7 +69,7 @@ export default function Header({ theme, toggleTheme }: HeaderProps) {
               {SITE_SETTINGS.siteName || 'Free Career Notice'}
             </div>
             {SITE_SETTINGS.siteTagline && (
-              <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider font-semibold hidden sm:block">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider font-semibold hidden sm:block">
                 {SITE_SETTINGS.siteTagline}
               </div>
             )}

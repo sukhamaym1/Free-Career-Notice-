@@ -16,9 +16,9 @@ interface ListSectionProps {
 
 export default function ListSection({ title, items, viewAllLink = "#" }: ListSectionProps) {
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm h-full flex flex-col">
-      <div className="bg-slate-800 dark:bg-slate-950 px-6 py-4 border-b border-gray-200 dark:border-gray-800">
-        <h2 className="text-xl font-bold text-white text-center">{title}</h2>
+    <div className="bg-white dark:bg-slate-900  rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm h-full flex flex-col">
+      <div className="bg-slate-50 dark:bg-slate-900/50 px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white text-center">{title}</h2>
       </div>
       <ul className="divide-y divide-gray-100 dark:divide-gray-800 flex-1">
         {items.length === 0 ? (
@@ -47,7 +47,7 @@ export default function ListSection({ title, items, viewAllLink = "#" }: ListSec
           })
         )}
       </ul>
-      <div className="p-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-100 dark:border-gray-800 text-center mt-auto">
+      <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border-t border-gray-100 dark:border-gray-800 text-center mt-auto">
         <Link to={viewAllLink} className="inline-flex items-center text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
           View All <ChevronRight className="w-4 h-4 ml-1" />
         </Link>

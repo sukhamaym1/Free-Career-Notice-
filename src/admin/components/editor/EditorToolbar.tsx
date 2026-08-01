@@ -15,6 +15,7 @@ const ToolbarButton = ({ onClick, isActive, disabled, children, title }: any) =>
   <button
     type="button"
     onClick={onClick}
+    onMouseDown={(e) => e.preventDefault()}
     disabled={disabled}
     title={title}
     className={cn(
