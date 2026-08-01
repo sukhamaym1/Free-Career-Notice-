@@ -12,7 +12,7 @@ import {
   TaskList, TaskItem, Youtube,
   Underline, Highlight, TextAlign,
   Superscript, Subscript, CharacterCount,
-  Dropcursor, Typography, Placeholder, Link
+  Dropcursor, Typography, Placeholder, Link, Color, TextStyle
 } from './editor/Extensions';
 import { EditorToolbar } from './editor/EditorToolbar';
 import { EditorBubbleMenu, EditorFloatingMenu } from './editor/FloatingAndBubbleMenus';
@@ -70,7 +70,9 @@ export default function RichTextEditor({ content, onChange, placeholder, isFocus
       Superscript, Subscript, 
       CharacterCount, Dropcursor, Typography, 
       Placeholder.configure({ placeholder: placeholder || 'Write something amazing...' }), 
-      Link.configure({ openOnClick: false, autolink: true })
+      Link.configure({ openOnClick: false, autolink: true }),
+      Color,
+      TextStyle
     ],
     content,
     onUpdate: ({ editor }) => {

@@ -44,6 +44,27 @@ export const EditorBubbleMenu = ({ editor }: { editor: any }) => {
         }}
         className={cn("p-2 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition-colors", editor.isActive('link') && "bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-blue-400")}
       ><LinkIcon className="w-4 h-4" /></button>
+      {editor.isActive("actionButton") && (
+        <>
+          <div className="w-px bg-slate-200 dark:bg-slate-700 my-1"></div>
+          <button
+            type="button"
+            onClick={() => {
+              const attrs = editor.getAttributes("actionButton");
+              const { from } = editor.state.selection;
+              const text = window.prompt("Button Text", attrs.text || "Apply Now");
+              if (text === null) return;
+              const href = window.prompt("Button Link", attrs.href || "https://");
+              if (href === null) return;
+              editor.chain().focus().setNodeSelection(from).updateAttributes("actionButton", { text, href }).run();
+            }}
+            className="p-2 flex items-center gap-1 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-800 text-blue-600 transition-colors"
+            title="Edit Button"
+          >
+            <LayoutTemplate className="w-4 h-4" /> Edit Button
+          </button>
+        </>
+      )}
     </BubbleMenu>
   );
 };

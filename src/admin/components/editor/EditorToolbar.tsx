@@ -122,9 +122,9 @@ export const EditorToolbar = ({ editor }: { editor: any }) => {
       <div className="relative flex items-center" title="Text Color">
         <input
           type="color"
-          onInput={(e: any) => editor.chain().focus().setColor(e.target.value).run()}
+          onChange={(e: any) => editor.chain().focus().setColor(e.target.value).run()}
           value={editor.getAttributes('textStyle').color || '#000000'}
-          className="w-7 h-7 p-0 border-0 rounded cursor-pointer absolute opacity-0"
+          className="w-8 h-8 p-0 border-0 rounded cursor-pointer absolute opacity-0" style={{ zIndex: 10 }}
         />
         <div className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 pointer-events-none flex flex-col items-center">
           <Type className="w-4 h-4 text-slate-700 dark:text-slate-300" />
@@ -135,8 +135,8 @@ export const EditorToolbar = ({ editor }: { editor: any }) => {
       <div className="relative flex items-center" title="Background Color">
         <input
           type="color"
-          onInput={(e: any) => editor.chain().focus().toggleHighlight({ color: e.target.value }).run()}
-          className="w-7 h-7 p-0 border-0 rounded cursor-pointer absolute opacity-0"
+          onChange={(e: any) => editor.chain().focus().toggleHighlight({ color: e.target.value }).run()}
+          className="w-8 h-8 p-0 border-0 rounded cursor-pointer absolute opacity-0" style={{ zIndex: 10 }}
         />
         <div className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 pointer-events-none">
           <Highlighter className="w-4 h-4 text-slate-700 dark:text-slate-300" />
@@ -201,10 +201,22 @@ export const EditorToolbar = ({ editor }: { editor: any }) => {
       <Divider />
       
       <div className="flex items-center gap-1">
-        <ToolbarButton onClick={() => editor.chain().focus().insertContent({ type: 'actionButton', attrs: { text: 'Apply Now', type: 'primary' } }).run()} title="Insert Primary Button">
+        <ToolbarButton onClick={() => {
+          const text = window.prompt("Button Text", "Apply Now");
+          if (!text) return;
+          const href = window.prompt("Button Link", "https://");
+          if (!href) return;
+          editor.chain().focus().insertContent({ type: "actionButton", attrs: { text, href, type: "primary" } }).run();
+        }} title="Insert Primary Button">
           <div className="px-2 py-0.5 bg-blue-600 text-white text-[10px] font-bold rounded uppercase">Apply</div>
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().insertContent({ type: 'actionButton', attrs: { text: 'Download PDF', type: 'secondary' } }).run()} title="Insert Download Button">
+        <ToolbarButton onClick={() => {
+          const text = window.prompt("Button Text", "Download PDF");
+          if (!text) return;
+          const href = window.prompt("Button Link", "https://");
+          if (!href) return;
+          editor.chain().focus().insertContent({ type: "actionButton", attrs: { text, href, type: "secondary" } }).run();
+        }} title="Insert Download Button">
           <FileDown className="w-4 h-4" />
         </ToolbarButton>
       </div>
