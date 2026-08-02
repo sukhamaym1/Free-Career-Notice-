@@ -11,6 +11,56 @@ async function startServer() {
   // Use JSON parser for API routes
   app.use(express.json({ limit: '50mb' }));
 
+  // Stats endpoints for study materials
+  const statsFile = path.join(process.cwd(), 'content', 'stats.json');
+  
+  app.get('/api/stats/:id', (req, res) => {
+    try {
+      if (!fs.existsSync(statsFile)) return res.json({ views: 0, downloads: 0 });
+      const stats = JSON.parse(fs.readFileSync(statsFile, 'utf-8'));
+      res.json({ 
+        views: stats.views?.[req.params.id] || 0,
+        downloads: stats.downloads?.[req.params.id] || 0 
+      });
+    } catch (e) {
+      res.json({ views: 0, downloads: 0 });
+    }
+  });
+
+  app.post('/api/stats/:id/view', (req, res) => {
+    try {
+      let stats = { views: {} as any, downloads: {} as any };
+      if (fs.existsSync(statsFile)) {
+        stats = JSON.parse(fs.readFileSync(statsFile, 'utf-8'));
+      }
+      if (!stats.views) stats.views = {};
+      stats.views[req.params.id] = (stats.views[req.params.id] || 0) + 1;
+      
+      fs.mkdirSync(path.dirname(statsFile), { recursive: true });
+      fs.writeFileSync(statsFile, JSON.stringify(stats));
+      res.json({ success: true, views: stats.views[req.params.id] });
+    } catch (e) {
+      res.status(500).json({ error: 'Failed to update stats' });
+    }
+  });
+
+  app.post('/api/stats/:id/download', (req, res) => {
+    try {
+      let stats = { views: {} as any, downloads: {} as any };
+      if (fs.existsSync(statsFile)) {
+        stats = JSON.parse(fs.readFileSync(statsFile, 'utf-8'));
+      }
+      if (!stats.downloads) stats.downloads = {};
+      stats.downloads[req.params.id] = (stats.downloads[req.params.id] || 0) + 1;
+      
+      fs.mkdirSync(path.dirname(statsFile), { recursive: true });
+      fs.writeFileSync(statsFile, JSON.stringify(stats));
+      res.json({ success: true, downloads: stats.downloads[req.params.id] });
+    } catch (e) {
+      res.status(500).json({ error: 'Failed to update stats' });
+    }
+  });
+
   // API route to write files locally
   app.post('/api/fs/write', (req, res) => {
     try {

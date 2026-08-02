@@ -45,9 +45,9 @@ export default function Footer() {
   const defaultTools = [
     { label: 'Daily Current Affairs', url: '/category/current-affairs' },
     { label: 'Weekly Quiz', url: '/quiz' },
-    { label: 'GK & GS Notes', url: '/category/study-material' },
+    { label: 'GK & GS Notes', url: '/study-material' },
     { label: 'Exam Preparation', url: '/category/syllabus' },
-    { label: 'Study Materials', url: '/category/study-material' },
+    { label: 'Study Materials', url: '/study-material' },
     { label: 'Online Tests', url: '/quiz' },
     { label: 'Interview Tips', url: '/category/tips' }
   ];

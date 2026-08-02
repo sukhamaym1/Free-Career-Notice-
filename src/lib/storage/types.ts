@@ -39,6 +39,21 @@ export interface MediaFile {
   size: number;
 }
 
+export interface StudyMaterial {
+  id: string;
+  title: string;
+  category: string;
+  fileSize: string;
+  pages: number;
+  downloads: string;
+  date: string;
+  color: string;
+  description: string;
+  author: string;
+  fileUrl?: string;
+  isUpdated?: boolean;
+}
+
 export interface StorageProvider {
   // Posts
   getPosts(): Promise<Post[]>;
@@ -46,6 +61,13 @@ export interface StorageProvider {
   createPost(post: Post): Promise<void>;
   updatePost(id: string, post: Post): Promise<void>;
   deletePost(id: string): Promise<void>;
+
+  // Study Materials
+  getStudyMaterials(): Promise<StudyMaterial[]>;
+  saveStudyMaterials(materials: StudyMaterial[]): Promise<void>;
+  
+  // Media File Upload (General)
+  uploadFile(file: File, fileName: string): Promise<string>;
 
   // Categories
   getCategories(): Promise<Category[]>;

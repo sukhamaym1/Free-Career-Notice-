@@ -1,5 +1,5 @@
 import { GitHubClient } from '../github';
-import { StorageProvider, Post, Category, Tag, SiteSettings, MediaFile } from './types';
+import { StorageProvider, Post, Category, Tag, SiteSettings, MediaFile, StudyMaterial } from './types';
 
 export class GitHubProvider implements StorageProvider {
   private client: GitHubClient;
@@ -341,6 +341,28 @@ export class GitHubProvider implements StorageProvider {
     );
   }
 
+  // --- Study Materials ---
+  async getStudyMaterials(): Promise<StudyMaterial[]> {
+    const data = await this.fetchPublicJson(`${this.contentRoot}/study-materials.json`);
+    return Array.isArray(data) ? data : [];
+  }
+
+  async saveStudyMaterials(materials: StudyMaterial[]): Promise<void> {
+    let sha = '';
+    try {
+      const existing = await this.client.getFile(`${this.contentRoot}/study-materials.json`);
+      if (existing && existing.sha) sha = existing.sha;
+    } catch(e) {}
+
+    await this.putWithRetry(
+      `${this.contentRoot}/study-materials.json`,
+      JSON.stringify(materials, null, 2),
+      'Update study materials',
+      sha,
+      (newSha) => { sha = newSha; }
+    );
+  }
+
   // --- Settings ---
   async getSettings(): Promise<SiteSettings> {
     const data = await this.fetchPublicJson(`${this.contentRoot}/settings.json`);
@@ -394,6 +416,28 @@ export class GitHubProvider implements StorageProvider {
       url: f.download_url,
       size: f.size
     }));
+  }
+
+  async uploadFile(file: File, fileName: string): Promise<string> {
+    const reader = new FileReader();
+    return new Promise((resolve, reject) => {
+      reader.onloadend = async () => {
+        try {
+          const base64Content = (reader.result as string).split(',')[1];
+          let sha: string | undefined;
+          const existing = await this.client.getFile(`${this.uploadsRoot}/${fileName}`);
+          if (existing && existing.sha) {
+            sha = existing.sha;
+          }
+          await this.client.putBinaryFile(`${this.uploadsRoot}/${fileName}`, base64Content, `Upload ${fileName}`, sha);
+          resolve(`https://raw.githubusercontent.com/${this.owner}/${this.repo}/${this.branch}/${this.uploadsRoot}/${fileName}`);
+        } catch (err) {
+          reject(err);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
   }
 
   async uploadImage(file: File, fileName: string): Promise<void> {

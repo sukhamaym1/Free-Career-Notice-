@@ -18,6 +18,7 @@ import PostsPage from './pages/PostsPage';
 import EditorPage from './pages/EditorPage';
 import CategoriesPage from './pages/CategoriesPage';
 import TagsPage from './pages/TagsPage';
+import StudyMaterialsPage from './pages/StudyMaterialsPage';
 import MediaLibraryPage from './pages/MediaLibraryPage';
 import SEOCalculator from './components/SEOCalculator';
 import ComingSoon from './components/ComingSoon';
@@ -48,6 +49,7 @@ export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: Ad
   const [rawPosts, setRawPosts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [tags, setTags] = useState<any[]>([]);
+  const [studyMaterials, setStudyMaterials] = useState<any[]>([]);
   const [mediaFiles, setMediaFiles] = useState<any[]>([]);
   const [selectedMedia, setSelectedMedia] = useState<string[]>([]);
   const [siteSettings, setSiteSettings] = useState<any>({});
@@ -124,6 +126,9 @@ export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: Ad
 
       const tgs = await contentService.getTags();
       setTags(tgs);
+
+      const materials = await contentService.getStudyMaterials();
+      setStudyMaterials(materials);
 
       const settings = await contentService.getSettings();
       setSiteSettings(settings);
@@ -461,6 +466,17 @@ export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: Ad
           handleDeleteTag={handleDeleteTag}
           newTagName={newTagName}
           setNewTagName={setNewTagName}
+        />
+      );
+    }
+
+    if (activeTab === 'Study Materials') {
+      return (
+        <StudyMaterialsPage 
+          materials={studyMaterials}
+          setMaterials={setStudyMaterials}
+          contentService={contentService}
+          mediaService={mediaService}
         />
       );
     }

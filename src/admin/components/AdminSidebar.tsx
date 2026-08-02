@@ -40,6 +40,7 @@ const MENU_ITEMS = [
   },
   { name: 'Categories', icon: Folder },
   { name: 'Tags', icon: Tags },
+  { name: 'Study Materials', icon: FileText },
   { name: 'Media Library', icon: ImageIcon },
   { name: 'Pages', icon: FileEdit },
   { name: 'Comments', icon: MessageSquare },

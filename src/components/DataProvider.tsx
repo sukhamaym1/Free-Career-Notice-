@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { createStorageProvider, ContentService } from '../lib/storage';
 import { Post, SiteSettings } from '../lib/storage/types';
+import { STUDY_MATERIALS as fallbackStudyMaterials } from '../data/studyMaterials';
 
 // Fallback data
 import fallbackSettings from '../../content/settings.json';
@@ -29,6 +30,7 @@ interface DataContextType {
   COLOR_BLOCKS: any[];
   SITE_SETTINGS: SiteSettings;
   STATIC_PAGES: Record<string, string>;
+  STUDY_MATERIALS: any[];
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -106,7 +108,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<Omit<DataContextType, 'loading' | 'error'>>(() => {
     // Initialize with fallback
     const processed = processPosts(fallbackRawPosts as Post[]);
-    return { ...processed, SITE_SETTINGS: fallbackSettings as SiteSettings, STATIC_PAGES: fallbackPages };
+    return { ...processed, SITE_SETTINGS: fallbackSettings as SiteSettings, STATIC_PAGES: fallbackPages, STUDY_MATERIALS: fallbackStudyMaterials };
   });
   
   const [loading, setLoading] = useState(true);
@@ -130,10 +132,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
         const storageProvider = createStorageProvider(pat);
         const contentService = new ContentService(storageProvider);
         
-        const [posts, settings, pages] = await Promise.all([
+        const [posts, settings, pages, studyMaterials] = await Promise.all([
           contentService.getPosts(),
           contentService.getSettings(),
-          contentService.getPages ? contentService.getPages() : Promise.resolve({})
+          contentService.getPages ? contentService.getPages() : Promise.resolve({}),
+          contentService.getStudyMaterials ? contentService.getStudyMaterials() : Promise.resolve([])
         ]);
 
         if (mounted) {
@@ -147,7 +150,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
           const mergedPosts = Array.from(postsMap.values());
           const processed = processPosts(mergedPosts);
           
-          setData({ ...processed, SITE_SETTINGS: { ...(fallbackSettings as SiteSettings), ...(settings || {}) }, STATIC_PAGES: { ...fallbackPages, ...(pages || {}) } });
+          // Merge fallback study materials
+          const smMap = new Map();
+          fallbackStudyMaterials.forEach(sm => smMap.set(sm.id, sm));
+          if (studyMaterials && Array.isArray(studyMaterials)) {
+            studyMaterials.forEach(sm => smMap.set(sm.id, sm));
+          }
+          const mergedStudyMaterials = Array.from(smMap.values());
+
+          setData({ 
+            ...processed, 
+            SITE_SETTINGS: { ...(fallbackSettings as SiteSettings), ...(settings || {}) }, 
+            STATIC_PAGES: { ...fallbackPages, ...(pages || {}) },
+            STUDY_MATERIALS: mergedStudyMaterials
+          });
         }
       } catch (err) {
         console.error("Failed to load CMS data from remote, falling back to local bundle.", err);

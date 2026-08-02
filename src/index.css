@@ -27,3 +27,14 @@
 .editor-fullscreen.title-scrolled-past .editor-title-sticky {
   /* We can hide it or let it scroll away, but standard position sticky works */
 }
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+

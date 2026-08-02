@@ -16,6 +16,15 @@ export class MediaService {
     }
   }
 
+  async uploadFile(file: File, fileName: string): Promise<string> {
+    try {
+      return await this.provider.uploadFile(file, fileName);
+    } catch (error) {
+      console.error('Failed to upload file:', error);
+      throw new Error('Failed to upload file. Please try again.');
+    }
+  }
+
   async uploadImage(file: File, fileName: string): Promise<void> {
     try {
       await this.provider.uploadImage(file, fileName);

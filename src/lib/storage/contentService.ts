@@ -48,6 +48,25 @@ export class ContentService {
     }
   }
 
+  // --- Study Materials ---
+  async getStudyMaterials() {
+    try {
+      return await this.provider.getStudyMaterials();
+    } catch (error) {
+      console.error('Failed to get study materials:', error);
+      throw new Error('Failed to load study materials.');
+    }
+  }
+
+  async saveStudyMaterials(materials: any[]) {
+    try {
+      await this.provider.saveStudyMaterials(materials);
+    } catch (error) {
+      console.error('Failed to save study materials:', error);
+      throw new Error('Failed to save study materials.');
+    }
+  }
+
   // --- Categories ---
   async getCategories(): Promise<Category[]> {
     try {

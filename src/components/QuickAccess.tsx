@@ -42,7 +42,7 @@ const CATEGORIES = [
     subtitle: 'Notes & PDFs',
     icon: <BookOpen className="w-8 h-8" />,
     color: 'bg-cyan-100 text-cyan-600 dark:bg-cyan-500/20 dark:text-cyan-400',
-    link: '/category/study-material'
+    link: '/study-material'
   }
 ];
 

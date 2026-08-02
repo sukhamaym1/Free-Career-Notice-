@@ -22,6 +22,9 @@ import PostPage from './pages/PostPage';
 import BackToTop from './components/BackToTop';
 import ScrollToTop from './components/ScrollToTop';
 
+import StudyMaterialPage from './pages/StudyMaterialPage';
+import StudyMaterialDetailPage from './pages/StudyMaterialDetailPage';
+
 export default function App() {
   const { SITE_SETTINGS, loading } = useData();
   const { theme, toggleTheme } = useTheme();
@@ -90,6 +93,8 @@ export default function App() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/quiz" element={<QuizPage />} />
         <Route path="/sitemap" element={<SitemapPage />} />
+        <Route path="/study-material" element={<StudyMaterialPage />} />
+        <Route path="/study-material/:id" element={<StudyMaterialDetailPage />} />
         <Route path="/admin" element={<AdminPage theme={theme} toggleTheme={toggleTheme} />} />
         <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route path="/post/:postId" element={<PostPage />} />
