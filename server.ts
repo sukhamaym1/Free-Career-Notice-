@@ -14,6 +14,16 @@ async function startServer() {
   // Stats endpoints for study materials
   const statsFile = path.join(process.cwd(), 'content', 'stats.json');
   
+  app.get('/api/stats', (req, res) => {
+    try {
+      if (!fs.existsSync(statsFile)) return res.json({ views: {}, downloads: {} });
+      const stats = JSON.parse(fs.readFileSync(statsFile, 'utf-8'));
+      res.json(stats);
+    } catch (e) {
+      res.json({ views: {}, downloads: {} });
+    }
+  });
+
   app.get('/api/stats/:id', (req, res) => {
     try {
       if (!fs.existsSync(statsFile)) return res.json({ views: 0, downloads: 0 });

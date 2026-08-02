@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BookOpen, FileText, Download, Filter, Search, TrendingUp, Eye, X, Sparkles, RefreshCw } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
@@ -41,7 +41,27 @@ export default function StudyMaterialPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [previewMaterial, setPreviewMaterial] = useState<any | null>(null);
+  const [stats, setStats] = useState<{views: Record<string, number>, downloads: Record<string, number>}>({ views: {}, downloads: {} });
   const placeholder = useTypingPlaceholder(SEARCH_PLACEHOLDERS);
+
+  useEffect(() => {
+    fetch('/api/stats')
+      .then(res => res.json())
+      .then(data => {
+        if (data.views || data.downloads) {
+          setStats({
+            views: data.views || {},
+            downloads: data.downloads || {}
+          });
+        }
+      })
+      .catch(err => console.error('Error fetching stats:', err));
+  }, []);
+
+  const getDownloads = (item: any) => {
+    const key = `material-${item.id}`;
+    return stats.downloads[key] > 0 ? stats.downloads[key].toLocaleString() : item.downloads;
+  };
 
   const filteredMaterials = STUDY_MATERIALS.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -50,7 +70,11 @@ export default function StudyMaterialPage() {
   });
 
   const topMaterials = [...STUDY_MATERIALS]
-    .sort((a, b) => parseDownloads(b.downloads) - parseDownloads(a.downloads))
+    .sort((a, b) => {
+      const aDownloads = stats.downloads[`material-${a.id}`] || parseDownloads(a.downloads);
+      const bDownloads = stats.downloads[`material-${b.id}`] || parseDownloads(b.downloads);
+      return bDownloads - aDownloads;
+    })
     .slice(0, 5);
 
 
@@ -149,7 +173,7 @@ export default function StudyMaterialPage() {
                         </div>
                         <div className="flex items-center gap-1.5 font-medium text-orange-600 dark:text-orange-400">
                           <Download className="w-3.5 h-3.5" />
-                          <span>{item.downloads}</span>
+                          <span>{getDownloads(item)}</span>
                         </div>
                       </div>
                     </div>
@@ -245,7 +269,7 @@ export default function StudyMaterialPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Download className="w-4 h-4" />
-                        <span>{item.downloads}</span>
+                        <span>{getDownloads(item)}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span>{new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
@@ -362,7 +386,7 @@ export default function StudyMaterialPage() {
                       </div>
                       <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
                         <div className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold mb-1">Downloads</div>
-                        <div className="font-bold text-slate-900 dark:text-white">{previewMaterial.downloads}</div>
+                        <div className="font-bold text-slate-900 dark:text-white">{getDownloads(previewMaterial)}</div>
                       </div>
                     </div>
                   </div>

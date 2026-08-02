@@ -2,15 +2,17 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useData } from '../components/DataProvider';
 import { 
-  Calendar, User, Eye, ChevronRight, ChevronDown, List, Twitter, Facebook, Linkedin, Share2, Copy, Check
+  Calendar, User, Eye, ChevronRight, ChevronDown, List, Twitter, Facebook, Linkedin, Share2, Copy, Check, Bookmark
 } from 'lucide-react';
 import { motion, useScroll, useSpring, AnimatePresence } from 'motion/react';
 import { Helmet } from 'react-helmet-async';
+import { useBookmarks } from '../hooks/useBookmarks';
 
 export default function PostPage() {
   const { PUBLISHED_POSTS, ALL_POSTS } = useData();
   const { postId } = useParams();
   const { scrollYProgress } = useScroll();
+  const { isBookmarked, toggleBookmark } = useBookmarks();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
@@ -349,6 +351,19 @@ export default function PostPage() {
                   
                   <div className="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
                   
+                  <button
+                    onClick={() => toggleBookmark(post.id)}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-full font-medium text-sm transition-colors ${
+                      isBookmarked(post.id)
+                        ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    }`}
+                    aria-label={isBookmarked(post.id) ? "Remove bookmark" : "Add bookmark"}
+                  >
+                    <Bookmark className="w-4 h-4" fill={isBookmarked(post.id) ? "currentColor" : "none"} />
+                    <span className="hidden sm:inline">{isBookmarked(post.id) ? "Saved" : "Save"}</span>
+                  </button>
+
                   <button
                     onClick={handleCopyLink}
                     className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-medium text-sm"
