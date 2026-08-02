@@ -82,6 +82,24 @@ export class GitHubProvider implements StorageProvider {
 
   // --- Posts ---
   async getPosts(): Promise<Post[]> {
+    if (this.client.hasToken()) {
+      try {
+        const apiRes = await this.client.getFile(`${this.contentRoot}/posts.json`);
+        if (apiRes && apiRes.content) {
+          const posts = JSON.parse(apiRes.content);
+          if (Array.isArray(posts)) {
+            posts.forEach(p => {
+              if (p.id && p._sha) this.postShaMap.set(p.id, p._sha);
+            });
+            posts.sort((a, b) => ((b.id || '') > (a.id || '') ? -1 : 1));
+            return posts;
+          }
+        }
+      } catch (e) {
+        console.warn("Failed to fetch posts.json from API, falling back to public URL", e);
+      }
+    }
+
     try {
       // 1. Try to fetch the pre-built index first (No rate limits, fast!)
       const indexRes = await fetch(`https://raw.githubusercontent.com/${this.owner}/${this.repo}/${this.branch}/${this.contentRoot}/posts.json?t=${Date.now()}`);
@@ -183,11 +201,12 @@ export class GitHubProvider implements StorageProvider {
       if (existing && existing.sha) indexSha = existing.sha;
     } catch(e) {}
 
-    await this.client.putFile(
+    await this.putWithRetry(
       `${this.contentRoot}/posts.json`,
       JSON.stringify(posts, null, 2),
       'Update posts index',
-      indexSha
+      indexSha,
+      () => {}
     );
   }
 
@@ -215,17 +234,17 @@ export class GitHubProvider implements StorageProvider {
         sha = existing.sha;
       }
     }
-    const res = await this.client.putFile(
+    await this.putWithRetry(
       `${this.contentRoot}/posts/${post.id}.json`,
       JSON.stringify(post, null, 2),
       `Create post ${post.id}`,
-      sha
+      sha,
+      (newSha) => { this.postShaMap.set(post.id, newSha); }
     );
-    if (res && res.content && res.content.sha) {
-      this.postShaMap.set(post.id, res.content.sha);
-    }
     // Update the index asynchronously so it doesn't block
-    this.rebuildPostsIndex().catch(e => console.error('Failed to rebuild posts index', e));
+    setTimeout(() => {
+      this.rebuildPostsIndex().catch(e => console.error('Failed to rebuild posts index', e));
+    }, 2000);
   }
 
   async updatePost(id: string, post: Post): Promise<void> {
@@ -247,18 +266,29 @@ export class GitHubProvider implements StorageProvider {
       (newSha) => { this.postShaMap.set(id, newSha); }
     );
     // Update the index asynchronously
-    this.rebuildPostsIndex().catch(e => console.error('Failed to rebuild posts index', e));
+    setTimeout(() => {
+      this.rebuildPostsIndex().catch(e => console.error('Failed to rebuild posts index', e));
+    }, 2000);
   }
 
   async deletePost(id: string): Promise<void> {
     await this.deleteWithRetry(`${this.contentRoot}/posts/${id}.json`, `Delete post ${id}`, this.postShaMap.get(id));
     this.postShaMap.delete(id);
     // Update the index asynchronously
-    this.rebuildPostsIndex().catch(e => console.error('Failed to rebuild posts index', e));
+    setTimeout(() => {
+      this.rebuildPostsIndex().catch(e => console.error('Failed to rebuild posts index', e));
+    }, 2000);
   }
 
   // --- Helper to fetch JSON directly without API rate limits ---
   private async fetchPublicJson(path: string): Promise<any> {
+    if (this.client.hasToken()) {
+      const apiRes = await this.client.getFile(path);
+      if (apiRes && apiRes.content) {
+        try { return JSON.parse(apiRes.content); } catch (e) {}
+      }
+    }
+
     try {
       const res = await fetch(`https://raw.githubusercontent.com/${this.owner}/${this.repo}/${this.branch}/${path}?t=${Date.now()}`);
       if (res.ok) {

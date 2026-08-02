@@ -126,6 +126,13 @@ export default function EditorPage({
     }
   };
 
+  const formatForDateTimeLocal = (date: Date) => {
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  };
+  const defaultDateStr = editingPost?.date 
+    ? formatForDateTimeLocal(new Date(editingPost.date)) 
+    : formatForDateTimeLocal(new Date());
+
   return (
     <div className={cn(
       isFullScreen 
@@ -244,7 +251,7 @@ export default function EditorPage({
                 <input 
                   type="datetime-local" 
                   name="date" 
-                  defaultValue={editingPost?.date ? new Date(editingPost.date).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16)} 
+                  defaultValue={defaultDateStr} 
                   required 
                   className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-md px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
                 />

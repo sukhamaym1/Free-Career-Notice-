@@ -11,6 +11,10 @@ export class GitHubClient {
     this.branch = branch;
   }
 
+  public hasToken(): boolean {
+    return !!this.pat;
+  }
+
   private async request(endpoint: string, options: RequestInit = {}) {
     const headers: any = {
       'Accept': 'application/vnd.github.v3+json',
