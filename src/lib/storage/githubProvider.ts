@@ -241,10 +241,8 @@ export class GitHubProvider implements StorageProvider {
       sha,
       (newSha) => { this.postShaMap.set(post.id, newSha); }
     );
-    // Update the index asynchronously so it doesn't block
-    setTimeout(() => {
-      this.rebuildPostsIndex().catch(e => console.error('Failed to rebuild posts index', e));
-    }, 2000);
+    // Update the index immediately so it reflects on the website
+    await this.rebuildPostsIndex();
   }
 
   async updatePost(id: string, post: Post): Promise<void> {
@@ -265,19 +263,15 @@ export class GitHubProvider implements StorageProvider {
       sha,
       (newSha) => { this.postShaMap.set(id, newSha); }
     );
-    // Update the index asynchronously
-    setTimeout(() => {
-      this.rebuildPostsIndex().catch(e => console.error('Failed to rebuild posts index', e));
-    }, 2000);
+    // Update the index immediately
+    await this.rebuildPostsIndex();
   }
 
   async deletePost(id: string): Promise<void> {
     await this.deleteWithRetry(`${this.contentRoot}/posts/${id}.json`, `Delete post ${id}`, this.postShaMap.get(id));
     this.postShaMap.delete(id);
-    // Update the index asynchronously
-    setTimeout(() => {
-      this.rebuildPostsIndex().catch(e => console.error('Failed to rebuild posts index', e));
-    }, 2000);
+    // Update the index immediately
+    await this.rebuildPostsIndex();
   }
 
   // --- Helper to fetch JSON directly without API rate limits ---

@@ -196,15 +196,11 @@ export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: Ad
       
       // Clear draft after successful save
       localStorage.removeItem(isEdit ? `draftPost-${editingPost.id}` : 'draftPost-new');
-      if (isEdit) {
-        setRawPosts(prev => prev.map(p => p.id === newPost.id ? newPost : p));
-      } else {
-        setRawPosts(prev => [newPost, ...prev]);
-      }
       
       setSyncStatus("synced");
       setActiveTab('All Posts');
       setEditingPost(null);
+      await fetchData();
     } catch (error) {
       console.error(error);
       setSyncStatus('error');
@@ -424,20 +420,7 @@ export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: Ad
           categories={categories}
           setActiveTab={setActiveTab}
           setEditingPost={setEditingPost}
-          handleDeletePost={async (post) => {
-            if (confirm('Delete this post?')) {
-              setSyncStatus('syncing');
-              // Optimistically update UI
-              setRawPosts(prev => prev.filter(p => p.id !== post.id));
-              try {
-                await contentService.deletePost(post.id);
-                setSyncStatus('synced');
-              } catch (e) {
-                setSyncStatus('error');
-                fetchData(); // Rollback on error
-              }
-            }
-          }}
+          handleDeletePost={handleDeletePost}
           currentFilter={activeTab as any}
         />
       );

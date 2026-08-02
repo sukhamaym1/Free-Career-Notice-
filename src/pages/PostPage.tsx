@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useData } from '../components/DataProvider';
 import { 
-  Calendar, User, Eye, ChevronRight, ChevronDown, List
+  Calendar, User, Eye, ChevronRight, ChevronDown, List, Twitter, Facebook, Linkedin, Share2, Copy, Check
 } from 'lucide-react';
 import { motion, useScroll, useSpring, AnimatePresence } from 'motion/react';
 import { Helmet } from 'react-helmet-async';
@@ -20,7 +20,12 @@ export default function PostPage() {
   const [headings, setHeadings] = useState<{id: string, text: string, level: number}[]>([]);
   const [activeHeading, setActiveHeading] = useState<string>('');
   const [isTocOpen, setIsTocOpen] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [postId]);
 
   useEffect(() => {
     if (contentRef.current) {
@@ -127,6 +132,16 @@ export default function PostPage() {
       "position": 3,
       "name": post.title
     }]
+  };
+
+  const relatedPosts = PUBLISHED_POSTS
+    .filter((p: any) => p.categorySlug === post.categorySlug && p.id !== post.id)
+    .slice(0, 3);
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.origin + '/post/' + post.id);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
   };
 
   return (
@@ -290,6 +305,114 @@ export default function PostPage() {
                       className="px-4 py-2 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 text-sm font-medium rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-800"
                     >
                       {tag}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Share Section */}
+            <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-2">
+                  <Share2 className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+                  <span className="font-semibold text-slate-900 dark:text-white">Share this post:</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <a
+                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.origin + '/post/' + post.id)}&text=${encodeURIComponent(post.title)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-full bg-[#1DA1F2]/10 text-[#1DA1F2] hover:bg-[#1DA1F2] hover:text-white transition-colors"
+                    aria-label="Share on Twitter"
+                  >
+                    <Twitter className="w-5 h-5" />
+                  </a>
+                  <a
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.origin + '/post/' + post.id)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-full bg-[#4267B2]/10 text-[#4267B2] hover:bg-[#4267B2] hover:text-white transition-colors"
+                    aria-label="Share on Facebook"
+                  >
+                    <Facebook className="w-5 h-5" />
+                  </a>
+                  <a
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin + '/post/' + post.id)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-full bg-[#0A66C2]/10 text-[#0A66C2] hover:bg-[#0A66C2] hover:text-white transition-colors"
+                    aria-label="Share on LinkedIn"
+                  >
+                    <Linkedin className="w-5 h-5" />
+                  </a>
+                  
+                  <div className="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+                  
+                  <button
+                    onClick={handleCopyLink}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-medium text-sm"
+                    aria-label="Copy link to clipboard"
+                  >
+                    {isCopied ? (
+                      <>
+                        <Check className="w-4 h-4 text-green-500" />
+                        <span className="text-green-600 dark:text-green-400">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4" />
+                        <span>Copy Link</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Related Posts Section */}
+            {relatedPosts.length > 0 && (
+              <div className="mt-16 pt-8 border-t border-slate-200 dark:border-slate-800">
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Related Posts</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  {relatedPosts.map((relatedPost: any) => (
+                    <Link
+                      key={relatedPost.id}
+                      to={`/post/${relatedPost.id}`}
+                      className="group flex flex-col bg-slate-50 dark:bg-slate-900/50 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-md transition-all"
+                    >
+                      {relatedPost.featuredImage ? (
+                        <div className="aspect-[16/9] w-full overflow-hidden bg-slate-200 dark:bg-slate-800 relative">
+                          <img
+                            src={relatedPost.featuredImage}
+                            alt={relatedPost.title}
+                            loading="lazy"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
+                      ) : (
+                        <div className={`aspect-[16/9] w-full overflow-hidden relative bg-gradient-to-br ${relatedPost.imgGradient || 'from-blue-500 to-indigo-600'} flex items-center justify-center p-6 text-center`}>
+                           <h4 className="text-white font-bold text-lg drop-shadow-md line-clamp-3">{relatedPost.title}</h4>
+                        </div>
+                      )}
+                      <div className="p-5 flex flex-col flex-1">
+                        <h4 className="font-bold text-slate-900 dark:text-white mb-3 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
+                          {relatedPost.title}
+                        </h4>
+                        <div className="mt-auto pt-4 flex items-center justify-between text-xs font-medium text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800">
+                           <div className="flex items-center gap-1.5">
+                             <Calendar className="w-3.5 h-3.5" />
+                             <span>
+                               {relatedPost.date && !isNaN(new Date(relatedPost.date).getTime())
+                                 ? new Date(relatedPost.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                                 : ''}
+                             </span>
+                           </div>
+                           <div className="flex items-center text-blue-600 dark:text-blue-400 font-semibold group-hover:translate-x-1 transition-transform">
+                             Read <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
+                           </div>
+                        </div>
+                      </div>
                     </Link>
                   ))}
                 </div>
