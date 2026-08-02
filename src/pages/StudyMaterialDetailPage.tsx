@@ -6,7 +6,7 @@ import { getCategoryBadgeStyle } from '../data/studyMaterials';
 import { useData } from '../components/DataProvider';
 
 export default function StudyMaterialDetailPage() {
-  const { STUDY_MATERIALS } = useData();
+  const { STUDY_MATERIALS, loading } = useData();
   const { id } = useParams();
   const material = STUDY_MATERIALS.find((m: any) => m.id === id);
   const [isCopied, setIsCopied] = useState(false);
@@ -52,6 +52,15 @@ export default function StudyMaterialDetailPage() {
         .catch(err => console.error('Error fetching stats:', err));
     }
   }, [material]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4">
+        <Loader2 className="w-10 h-10 text-blue-500 animate-spin mb-4" />
+        <p className="text-slate-500 dark:text-slate-400 font-medium">Loading material details...</p>
+      </div>
+    );
+  }
 
   if (!material) {
     return (
@@ -224,7 +233,7 @@ export default function StudyMaterialDetailPage() {
                       <span className="text-sm font-medium">Total Views</span>
                     </div>
                     <div className="text-2xl font-bold text-slate-900 dark:text-white">
-                      {stats.views > 0 ? stats.views.toLocaleString() : '---'}
+                      {stats.views != null ? stats.views.toLocaleString() : '0'}
                     </div>
                   </div>
                   
@@ -236,7 +245,7 @@ export default function StudyMaterialDetailPage() {
                       <span className="text-sm font-medium">Downloads</span>
                     </div>
                     <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                      {stats.downloads > 0 ? stats.downloads.toLocaleString() : material.downloads}
+                      {stats.downloads > 0 ? stats.downloads.toLocaleString() : (material.downloads || '0')}
                     </div>
                   </div>
                 </div>
