@@ -5,15 +5,21 @@ export default function FooterNewsletter({ settings }: { settings: any }) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     setStatus('loading');
-    setTimeout(() => {
+    
+    // Simulated API call
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
       setStatus('success');
       setEmail('');
       setTimeout(() => setStatus('idle'), 3000);
-    }, 1500);
+    } catch (error) {
+      console.error('Failed to subscribe:', error);
+      setStatus('idle');
+    }
   };
 
   return (
@@ -23,8 +29,8 @@ export default function FooterNewsletter({ settings }: { settings: any }) {
           <Mail className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="text-white font-bold text-lg">{settings.newsletterHeading || 'STAY UPDATED'}</h3>
-          <p className="text-sm text-slate-400">{settings.newsletterDescription || 'Subscribe to get the latest job alerts and updates.'}</p>
+          <h3 className="text-white font-bold text-lg">{settings.newsletterHeading || 'WEEKLY CAREER ALERTS'}</h3>
+          <p className="text-sm text-slate-400">{settings.newsletterDescription || 'Sign up for weekly career update alerts and never miss an opportunity.'}</p>
         </div>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 max-w-md">

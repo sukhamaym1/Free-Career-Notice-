@@ -104,6 +104,65 @@ function processPosts(rawPosts: Post[]) {
   };
 }
 
+function GlobalSkeleton() {
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 flex flex-col">
+      {/* Header Skeleton */}
+      <div className="h-16 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 flex items-center px-4 md:px-8 justify-between shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gray-200 dark:bg-slate-800 rounded-lg animate-pulse"></div>
+          <div className="w-32 h-6 bg-gray-200 dark:bg-slate-800 rounded animate-pulse hidden sm:block"></div>
+        </div>
+        <div className="hidden md:flex gap-6">
+          {[1,2,3,4,5].map(i => <div key={i} className="w-20 h-4 bg-gray-200 dark:bg-slate-800 rounded animate-pulse"></div>)}
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="w-8 h-8 bg-gray-200 dark:bg-slate-800 rounded-full animate-pulse"></div>
+          <div className="w-8 h-8 bg-gray-200 dark:bg-slate-800 rounded-full animate-pulse md:hidden"></div>
+        </div>
+      </div>
+      
+      {/* Content Skeleton */}
+      <div className="flex-1 max-w-7xl mx-auto w-full p-4 md:p-6 lg:p-8 space-y-8 mt-4">
+        {/* Top Blocks Skeleton */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          {[1,2,3,4,5,6].map(i => (
+            <div key={i} className="h-24 bg-gray-200 dark:bg-slate-800 rounded-xl animate-pulse"></div>
+          ))}
+        </div>
+        
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Main Content */}
+          <div className="flex-1 space-y-8">
+            {/* Search/Filter Bar */}
+            <div className="flex flex-col sm:flex-row gap-4">
+               <div className="flex-1 h-12 bg-gray-200 dark:bg-slate-800 rounded-xl animate-pulse"></div>
+               <div className="w-full sm:w-32 h-12 bg-gray-200 dark:bg-slate-800 rounded-xl animate-pulse"></div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[1,2,3,4,5,6].map(i => (
+                <div key={i} className="h-48 bg-gray-200 dark:bg-slate-800 rounded-2xl animate-pulse flex flex-col p-5 gap-4">
+                  <div className="w-24 h-6 bg-gray-300 dark:bg-slate-700 rounded-md"></div>
+                  <div className="flex-1"></div>
+                  <div className="w-full h-4 bg-gray-300 dark:bg-slate-700 rounded-md"></div>
+                  <div className="w-2/3 h-4 bg-gray-300 dark:bg-slate-700 rounded-md"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Sidebar */}
+          <div className="w-full lg:w-80 space-y-6">
+            <div className="h-96 bg-gray-200 dark:bg-slate-800 rounded-2xl animate-pulse"></div>
+            <div className="h-64 bg-gray-200 dark:bg-slate-800 rounded-2xl animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function DataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<Omit<DataContextType, 'loading' | 'error'>>(() => {
     // Initialize with fallback
@@ -216,7 +275,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   return (
     <DataContext.Provider value={{ ...data, loading, error }}>
-      {children}
+      {loading ? <GlobalSkeleton /> : children}
     </DataContext.Provider>
   );
 }
