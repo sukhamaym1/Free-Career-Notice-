@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowLeft, Download, FileText, Calendar, Eye, Share2, Check, Loader2, Star, Search } from 'lucide-react';
+import { ArrowLeft, Download, FileText, Calendar, Eye, Share2, Check, Loader2, Star, Search, Twitter, Linkedin, MessageCircle } from 'lucide-react';
 import { getCategoryBadgeStyle } from '../data/studyMaterials';
 import { useData } from '../components/DataProvider';
 
@@ -275,6 +275,40 @@ export default function StudyMaterialDetailPage() {
                   <span className="text-xs font-medium text-slate-500 dark:text-slate-400 text-center">
                     {hasRated ? 'Thanks for your feedback!' : 'How helpful is this material?'}
                   </span>
+                </div>
+              </div>
+
+              {/* Share Widget */}
+              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-6 border border-slate-100 dark:border-slate-800">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-4">Share</h3>
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  <a
+                    href={`https://wa.me/?text=${encodeURIComponent(material.title + ' ' + window.location.origin + '/study-material/' + material.id)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-full bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white transition-colors"
+                    aria-label="Share on WhatsApp"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                  </a>
+                  <a
+                    href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.origin + '/study-material/' + material.id)}&text=${encodeURIComponent(material.title)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-full bg-[#1DA1F2]/10 text-[#1DA1F2] hover:bg-[#1DA1F2] hover:text-white transition-colors"
+                    aria-label="Share on Twitter"
+                  >
+                    <Twitter className="w-5 h-5" />
+                  </a>
+                  <a
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.origin + '/study-material/' + material.id)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 rounded-full bg-[#0A66C2]/10 text-[#0A66C2] hover:bg-[#0A66C2] hover:text-white transition-colors"
+                    aria-label="Share on LinkedIn"
+                  >
+                    <Linkedin className="w-5 h-5" />
+                  </a>
                 </div>
               </div>
             </div>

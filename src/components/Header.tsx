@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Moon, Sun, GraduationCap, ChevronDown, Search, Menu, X, Bookmark } from 'lucide-react';
+import { Moon, Sun, GraduationCap, ChevronDown, Search, Menu, X } from 'lucide-react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useData } from './DataProvider';
 import { useTypingPlaceholder } from '../hooks/useTypingPlaceholder';
@@ -102,14 +102,6 @@ export default function Header({ theme, toggleTheme }: HeaderProps) {
         <div className="flex items-center gap-3 shrink-0">
           <HeaderSearch className="hidden lg:block w-48 xl:w-72" />
           
-          <Link 
-            to="/bookmarks"
-            className="p-2 shrink-0 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-            aria-label="Bookmarks"
-          >
-            <Bookmark className="w-5 h-5" />
-          </Link>
-
           <button
             onClick={toggleTheme}
             className="p-2 shrink-0 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
@@ -148,7 +140,6 @@ export default function Header({ theme, toggleTheme }: HeaderProps) {
                 <Link to="/study-material" onClick={closeMobileMenu} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2 border-b border-gray-100 dark:border-gray-800">Study Material</Link>
                 <Link to="/category/admit-card" onClick={closeMobileMenu} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2 border-b border-gray-100 dark:border-gray-800">Admit Card</Link>
                 <Link to="/category/results" onClick={closeMobileMenu} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2 border-b border-gray-100 dark:border-gray-800">Results</Link>
-                <Link to="/bookmarks" onClick={closeMobileMenu} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2"><Bookmark className="w-4 h-4" /> Bookmarks</Link>
               </nav>
             </div>
           </motion.div>

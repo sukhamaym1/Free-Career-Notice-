@@ -19,7 +19,6 @@ import SitemapPage from './pages/SitemapPage';
 import AdminPage from './admin/AdminPage';
 
 import PostPage from './pages/PostPage';
-import BookmarksPage from './pages/BookmarksPage';
 import BackToTop from './components/BackToTop';
 import ScrollToTop from './components/ScrollToTop';
 
@@ -90,7 +89,6 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/quiz" element={<QuizPage />} />
-        <Route path="/bookmarks" element={<BookmarksPage />} />
         <Route path="/sitemap" element={<SitemapPage />} />
         <Route path="/study-material" element={<StudyMaterialPage />} />
         <Route path="/study-material/:id" element={<StudyMaterialDetailPage />} />
