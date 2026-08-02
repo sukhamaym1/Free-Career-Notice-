@@ -153,8 +153,41 @@ export function DataProvider({ children }: { children: ReactNode }) {
           // Merge fallback study materials
           const smMap = new Map();
           fallbackStudyMaterials.forEach(sm => smMap.set(sm.id, sm));
-          if (studyMaterials && Array.isArray(studyMaterials)) {
+
+          // Apply local cache first (helpful during GitHub Pages CDN delays)
+          let cachedMaterials = null;
+          let useRemote = true;
+          try {
+            const cachedSm = localStorage.getItem('cached_study_materials');
+            const cachedTimestampStr = localStorage.getItem('cached_study_materials_timestamp');
+            
+            if (cachedSm) {
+              cachedMaterials = JSON.parse(cachedSm);
+              if (Array.isArray(cachedMaterials)) {
+                // Clear the map first so we only have cached materials
+                smMap.clear();
+                cachedMaterials.forEach(sm => smMap.set(sm.id, sm));
+              }
+              
+              if (cachedTimestampStr) {
+                const ts = parseInt(cachedTimestampStr, 10);
+                // Trust local cache completely for 5 minutes after a local edit to overcome GitHub Pages CDN caching
+                if (Date.now() - ts < 5 * 60 * 1000) {
+                  useRemote = false;
+                }
+              }
+            }
+          } catch(e) {}
+
+          if (useRemote && studyMaterials && Array.isArray(studyMaterials)) {
+            // We trust the remote data now
+            smMap.clear(); 
+            // Optional: fallbackStudyMaterials could be merged again if needed, but usually remote has everything
             studyMaterials.forEach(sm => smMap.set(sm.id, sm));
+            
+            try {
+              localStorage.setItem('cached_study_materials', JSON.stringify(Array.from(smMap.values())));
+            } catch(e) {}
           }
           const mergedStudyMaterials = Array.from(smMap.values());
 

@@ -58,7 +58,9 @@ export class GitHubClient {
 
     if (!res.ok) {
       const errBody = await res.text().catch(() => '');
-      if (res.status !== 404) {
+      if (res.status !== 404 && res.status !== 403) {
+        console.error('GitHub API Error body:', errBody);
+      } else if (res.status === 403 && this.pat) {
         console.error('GitHub API Error body:', errBody);
       }
       const error = new Error(`GitHub API Error: ${res.status} ${res.statusText}`);

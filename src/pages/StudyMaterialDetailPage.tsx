@@ -34,7 +34,7 @@ export default function StudyMaterialDetailPage() {
   };
 
   useEffect(() => {
-    if (material) {
+    if (material && db) {
       const statsRef = doc(db, 'stats', `material-${material.id}`);
 
       // Record a view when the page loads
@@ -89,12 +89,12 @@ export default function StudyMaterialDetailPage() {
     if (downloadingId) return;
     setDownloadingId(itemId);
 
-    const statsRef = doc(db, 'stats', `material-${itemId}`);
-    setDoc(statsRef, { downloads: increment(1) }, { merge: true })
-      .catch(err => console.error('Error tracking download:', err))
-      .finally(() => {
-        setTimeout(() => setDownloadingId(null), 1500);
-      });
+    if (db) {
+      const statsRef = doc(db, 'stats', `material-${itemId}`);
+      setDoc(statsRef, { downloads: increment(1) }, { merge: true })
+        .catch(err => console.error('Error tracking download:', err));
+    }
+    setTimeout(() => setDownloadingId(null), 1500);
 
     if (fileUrl) {
       window.open(fileUrl, '_blank');

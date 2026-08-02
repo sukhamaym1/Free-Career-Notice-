@@ -1,9 +1,10 @@
 import fs from 'fs';
+let content = fs.readFileSync('vite.config.ts', 'utf8');
+
+const pluginCode = `
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import tailwindcss from '@tailwindcss/vite';
-import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,19 +37,9 @@ function fallbackFirebaseConfig() {
     }
   };
 }
+`;
 
-export default defineConfig(() => {
-  return {
-    base: '/',
-    plugins: [react(), tailwindcss(), fallbackFirebaseConfig()],
-    resolve: {
-      alias: {
-        '@': path.resolve(__dirname, '.'),
-      },
-    },
-    server: {
-      hmr: process.env.DISABLE_HMR !== 'true',
-      watch: process.env.DISABLE_HMR === 'true' ? null : {},
-    },
-  };
-});
+content = content.replace(/function fallbackFirebaseConfig.*?return id;[^\}]*\}\},[^\}]*load.*?\}\n\}\n/s, '');
+content = pluginCode + '\n' + content;
+
+fs.writeFileSync('vite.config.ts', content);

@@ -68,6 +68,10 @@ export default function StudyMaterialsPage({
       
       await contentService.saveStudyMaterials(updatedMaterials);
       setMaterials(updatedMaterials);
+      try {
+        localStorage.setItem('cached_study_materials', JSON.stringify(updatedMaterials));
+        localStorage.setItem('cached_study_materials_timestamp', Date.now().toString());
+      } catch (e) {}
       setIsEditing(null);
     } catch (error) {
       alert("Failed to save material");
@@ -85,6 +89,10 @@ export default function StudyMaterialsPage({
       const updatedMaterials = materials.filter(m => m.id !== id);
       await contentService.saveStudyMaterials(updatedMaterials);
       setMaterials(updatedMaterials);
+      try {
+        localStorage.setItem('cached_study_materials', JSON.stringify(updatedMaterials));
+        localStorage.setItem('cached_study_materials_timestamp', Date.now().toString());
+      } catch (e) {}
     } catch (error) {
       alert("Failed to delete material");
       console.error(error);
