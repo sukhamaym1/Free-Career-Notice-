@@ -4,6 +4,8 @@ import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Download, FileText, Calendar, Eye, Share2, Check, Loader2, Star, Search, Twitter, Linkedin, MessageCircle } from 'lucide-react';
 import { getCategoryBadgeStyle } from '../data/studyMaterials';
 import { useData } from '../components/DataProvider';
+import { db } from '../lib/firebase';
+import { doc, setDoc, increment, onSnapshot } from 'firebase/firestore';
 
 export default function StudyMaterialDetailPage() {
   const { STUDY_MATERIALS, loading } = useData();
@@ -33,23 +35,23 @@ export default function StudyMaterialDetailPage() {
 
   useEffect(() => {
     if (material) {
+      const statsRef = doc(db, 'stats', `material-${material.id}`);
+
       // Record a view when the page loads
-      fetch(`/api/stats/material-${material.id}/view`, { method: 'POST' })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            setStats(prev => ({ ...prev, views: data.views }));
-          }
-        })
+      setDoc(statsRef, { views: increment(1) }, { merge: true })
         .catch(err => console.error('Error tracking view:', err));
         
-      // Fetch current stats to show
-      fetch(`/api/stats/material-${material.id}`)
-        .then(res => res.json())
-        .then(data => {
+      // Fetch and subscribe to real-time stats
+      const unsubscribe = onSnapshot(statsRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
           setStats({ views: data.views || 0, downloads: data.downloads || 0 });
-        })
-        .catch(err => console.error('Error fetching stats:', err));
+        }
+      }, (error) => {
+        console.error('Error fetching stats:', error);
+      });
+
+      return () => unsubscribe();
     }
   }, [material]);
 
@@ -87,13 +89,8 @@ export default function StudyMaterialDetailPage() {
     if (downloadingId) return;
     setDownloadingId(itemId);
 
-    fetch(`/api/stats/material-${itemId}/download`, { method: 'POST' })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && itemId === material.id) {
-          setStats(prev => ({ ...prev, downloads: data.downloads }));
-        }
-      })
+    const statsRef = doc(db, 'stats', `material-${itemId}`);
+    setDoc(statsRef, { downloads: increment(1) }, { merge: true })
       .catch(err => console.error('Error tracking download:', err))
       .finally(() => {
         setTimeout(() => setDownloadingId(null), 1500);

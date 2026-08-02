@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    // Stats collection for public views/downloads
+    match /stats/{statId} {
+      // Anyone can read stats
+      allow read: if true;
+      // Anyone can increment stats
+      allow write: if true;
+    }
+  }
+}
