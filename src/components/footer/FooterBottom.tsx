@@ -1,4 +1,4 @@
-import { Heart, ArrowUp } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
 
 export default function FooterBottom({ settings }: { settings: any }) {
   const scrollToTop = () => {
@@ -11,10 +11,8 @@ export default function FooterBottom({ settings }: { settings: any }) {
         <span>{settings.footerCopyrightText || `© ${new Date().getFullYear()} Free Career Notice. All Rights Reserved.`}</span>
       </div>
       
-      <div className="flex items-center gap-1.5">
-        <span>Or Made with</span>
-        <Heart className="w-4 h-4 text-red-500 fill-current" />
-        <span>for Job Seekers</span>
+      <div className="flex flex-wrap justify-center items-center gap-1.5 text-center">
+        <span>Created by <strong className="text-slate-300 font-medium">S Adhikary</strong></span>
         {settings.developerCredit && (
            <span className="hidden md:inline ml-2 pl-2 border-l border-slate-700">{settings.developerCredit}</span>
         )}

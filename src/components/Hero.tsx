@@ -31,7 +31,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative pt-24 pb-16 md:pt-32 md:pb-20 flex flex-col items-center text-center px-4 overflow-hidden rounded-3xl mb-8">
+    <section className="relative pt-12 pb-16 md:pt-24 md:pb-20 flex flex-col items-center text-center px-4 overflow-hidden rounded-3xl mb-8">
       <AnimatedBackground />
 
       {/* Content wrapper with higher z-index to appear above background */}
