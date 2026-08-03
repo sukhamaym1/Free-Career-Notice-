@@ -3,6 +3,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Focus from '@tiptap/extension-focus';
 import { Extension } from '@tiptap/core';
+import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Markdown } from 'tiptap-markdown';
 import { cn } from '../../lib/utils';
 import { FileCode2, Save } from 'lucide-react';
@@ -25,6 +26,42 @@ interface RichTextEditorProps {
   onChange: (content: string) => void;
   placeholder?: string;
 }
+
+const MarkdownPasteHandler = Extension.create({
+  name: 'markdownPasteHandler',
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        key: new PluginKey('markdownPasteHandler'),
+        props: {
+          handlePaste: (view, event) => {
+            const text = event.clipboardData?.getData('text/plain');
+            const html = event.clipboardData?.getData('text/html');
+
+            if (html && html.includes('<table') && !html.includes('data-pm-slice')) {
+               return false;
+            }
+
+            if (text) {
+               if (/\|.*\|\s*\n\s*\|[\s\-:]+\|/.test(text) || /^#+\s/m.test(text) || /^\d+\.\s/m.test(text) || /^\*\s/m.test(text) || /^\-\s/m.test(text) || /^```/m.test(text) || /^>\s/m.test(text)) {
+                   try {
+                       const parsedHTML = this.editor.storage.markdown.parser.parse(text);
+                       if (parsedHTML) {
+                           this.editor.commands.insertContentAt(this.editor.state.selection.from, parsedHTML);
+                           return true;
+                       }
+                   } catch (e) {
+                       console.error("Markdown parse error", e);
+                   }
+               }
+            }
+            return false;
+          }
+        }
+      })
+    ];
+  }
+});
 
 const CustomShortcuts = Extension.create({
   name: 'customShortcuts',
@@ -55,6 +92,7 @@ export default function RichTextEditor({ content, onChange, placeholder, isFocus
     extensions: [ // @ts-ignore
 
       CustomShortcuts,
+      MarkdownPasteHandler,
       Focus.configure({
         className: 'has-focus',
         mode: 'deepest',
@@ -64,7 +102,8 @@ export default function RichTextEditor({ content, onChange, placeholder, isFocus
         dropcursor: false,
       }),
       Markdown.configure({
-        transformPastedText: true,
+        transformPastedText: false,
+        transformCopiedText: true,
       }),
       CustomImage, Iframe, Details, Summary, Callout, ActionButton, Timeline, TimelineItem,
       Table.configure({ resizable: true }), TableRow, TableCell, TableHeader,
