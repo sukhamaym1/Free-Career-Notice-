@@ -45,6 +45,7 @@ const MarkdownPasteHandler = Extension.create({
             if (text) {
                if (/\|.*\|\s*\n\s*\|[\s\-:]+\|/.test(text) || /^#+\s/m.test(text) || /^\d+\.\s/m.test(text) || /^\*\s/m.test(text) || /^\-\s/m.test(text) || /^```/m.test(text) || /^>\s/m.test(text)) {
                    try {
+                       // @ts-ignore
                        const parsedHTML = this.editor.storage.markdown.parser.parse(text);
                        if (parsedHTML) {
                            this.editor.commands.insertContentAt(this.editor.state.selection.from, parsedHTML);
