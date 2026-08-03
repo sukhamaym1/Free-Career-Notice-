@@ -394,6 +394,7 @@ export default function WebsiteSettings({
                   <div>
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Google AdSense Publisher ID</label>
                     <input name="adsenseId" value={formData.adsenseId || ''} onChange={handleInputChange} className="w-full bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white" placeholder="ca-pub-XXXXXXXXXXXXXXXX" />
+                    <p className="text-xs text-slate-500 mt-1">This will automatically inject the AdSense verification code into the header and generate your ads.txt file.</p>
                   </div>
                   <div className="md:col-span-2">
                     <label className="block flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">

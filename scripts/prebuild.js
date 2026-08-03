@@ -115,6 +115,18 @@ async function generateSitemap() {
     fs.writeFileSync(robotsTxtPath, robotsTxt);
     console.log('robots.txt generated successfully');
 
+    if (settings && settings.adsenseId) {
+      let pubId = settings.adsenseId;
+      if (pubId.startsWith('ca-pub-')) {
+        pubId = pubId.replace('ca-', '');
+      } else if (!pubId.startsWith('pub-')) {
+        pubId = 'pub-' + pubId;
+      }
+      const adsTxt = `google.com, ${pubId}, DIRECT, f08c47fec0942fa0\n`;
+      fs.writeFileSync(path.join(publicPath, 'ads.txt'), adsTxt);
+      console.log('ads.txt generated successfully');
+    }
+
     // --- Pull content locally for bundling ---
     const localContentPath = path.resolve(__dirname, '../content');
     if (!fs.existsSync(localContentPath)) fs.mkdirSync(localContentPath, { recursive: true });

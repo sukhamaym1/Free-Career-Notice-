@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertTriangle, Monitor, Smartphone } from 'lucide-react';
+import { useData } from '../../components/DataProvider';
 
 export default function SEOCalculator() {
+  const { SITE_SETTINGS } = useData();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [content, setContent] = useState('');
   const [focusKeyword, setFocusKeyword] = useState('');
+  const [slug, setSlug] = useState('');
+  const [previewMode, setPreviewMode] = useState<'mobile' | 'desktop'>('mobile');
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -14,9 +18,11 @@ export default function SEOCalculator() {
       const descInput = document.querySelector('textarea[name="seoDescription"]') as HTMLTextAreaElement;
       const contentInput = document.getElementById('editor-content') as HTMLInputElement;
       const keywordInput = document.querySelector('input[name="focusKeyword"]') as HTMLInputElement;
+      const slugInput = document.querySelector('input[name="slug"]') as HTMLInputElement;
 
       setTitle(seoTitleInput?.value || mainTitleInput?.value || '');
       setDescription(descInput?.value || '');
+      setSlug(slugInput?.value || 'your-post-url');
       
       // Strip HTML tags from content
       const rawContent = contentInput?.value || '';
@@ -25,13 +31,13 @@ export default function SEOCalculator() {
       
       setFocusKeyword(keywordInput?.value || '');
     }, 1000);
+
     return () => clearInterval(interval);
   }, []);
 
   let checks = [];
   let passedChecks = 0;
   let totalChecks = 4;
-
   const keyword = focusKeyword.toLowerCase().trim();
   
   // Check 1: Title Length
@@ -79,7 +85,7 @@ export default function SEOCalculator() {
 
   if (keyword && wordCount > 0) {
     totalChecks++;
-    const regex = new RegExp(keyword.replace(/[.*+?^\${}()|[\]\\]/g, '\\$&'), 'gi');
+    const regex = new RegExp(keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
     const matches = content.match(regex);
     const count = matches ? matches.length : 0;
     const density = (count / wordCount) * 100;
@@ -102,26 +108,76 @@ export default function SEOCalculator() {
   if (score >= 80) scoreColor = 'text-green-500';
   else if (score >= 50) scoreColor = 'text-amber-500';
 
+  const siteName = (SITE_SETTINGS as any)?.siteName || 'Free Career Notice';
+  const siteUrl = (SITE_SETTINGS as any)?.socialWebsite || 'free-career-notice.pages.dev';
+
   return (
-    <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700 space-y-4">
-      <div className="flex items-center justify-between">
-        <h4 className="font-semibold text-slate-900 dark:text-white">SEO Score</h4>
-        <span className={`text-2xl font-bold ${scoreColor}`}>{score}/100</span>
-      </div>
-      
-      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-        <div className={`h-2 rounded-full ${score >= 80 ? 'bg-green-500' : score >= 50 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${score}%` }}></div>
+    <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700 space-y-6">
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="font-semibold text-slate-900 dark:text-white">SEO Score</h4>
+          <span className={`text-2xl font-bold ${scoreColor}`}>{score}/100</span>
+        </div>
+        
+        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mb-4">
+          <div className={`h-2 rounded-full ${score >= 80 ? 'bg-green-500' : score >= 50 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${score}%` }}></div>
+        </div>
+
+        <div className="space-y-2">
+          {checks.map((check, idx) => (
+            <div key={idx} className="flex items-start gap-2 text-sm">
+              {check.type === 'success' && <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />}
+              {check.type === 'warning' && <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />}
+              {check.type === 'error' && <XCircle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />}
+              <span className="text-slate-700 dark:text-slate-300">{check.text}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="space-y-2 mt-4">
-        {checks.map((check, idx) => (
-          <div key={idx} className="flex items-start gap-2 text-sm">
-            {check.type === 'success' && <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />}
-            {check.type === 'warning' && <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />}
-            {check.type === 'error' && <XCircle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />}
-            <span className="text-slate-700 dark:text-slate-300">{check.text}</span>
+      <div className="border-t border-slate-200 dark:border-slate-700 pt-6">
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="font-semibold text-slate-900 dark:text-white">Google Search Preview</h4>
+          <div className="flex bg-slate-200 dark:bg-slate-700 rounded-lg p-1">
+            <button 
+              onClick={(e) => { e.preventDefault(); setPreviewMode('mobile'); }}
+              className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${previewMode === 'mobile' ? 'bg-white dark:bg-slate-600 shadow-sm text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'}`}
+              title="Mobile Preview"
+            >
+              <Smartphone className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={(e) => { e.preventDefault(); setPreviewMode('desktop'); }}
+              className={`p-1.5 rounded-md flex items-center justify-center transition-colors ${previewMode === 'desktop' ? 'bg-white dark:bg-slate-600 shadow-sm text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'}`}
+              title="Desktop Preview"
+            >
+              <Monitor className="w-4 h-4" />
+            </button>
           </div>
-        ))}
+        </div>
+
+        <div className={`bg-white dark:bg-[#202124] rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 font-sans overflow-hidden ${previewMode === 'desktop' ? 'p-5' : 'max-w-[375px] mx-auto p-4'}`}>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-7 h-7 bg-slate-100 dark:bg-slate-800 rounded-full flex-shrink-0 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-slate-700">
+              <span className="text-xs font-bold text-slate-500">{siteName.charAt(0)}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm text-[#202124] dark:text-[#dadce0] leading-tight">{siteName}</span>
+              <div className="text-xs text-[#4d5156] dark:text-[#bdc1c6] leading-tight flex items-center">
+                https://{siteUrl} <span className="mx-1.5 text-xs">›</span> {slug}
+              </div>
+            </div>
+          </div>
+          
+          <div className="text-[20px] leading-[1.3] text-[#1a0dab] dark:text-[#8ab4f8] cursor-pointer hover:underline mb-1 whitespace-nowrap overflow-hidden text-ellipsis">
+            {title || 'Your Post Title Here'}
+          </div>
+          
+          <div className="text-sm text-[#4d5156] dark:text-[#bdc1c6] leading-[1.58] line-clamp-2">
+            {description || 'Provide a meta description to see how it will appear in search results. A good description is concise and contains your focus keyword.'}
+          </div>
+        </div>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 text-center">Preview is approximate and may vary based on Google's actual rendering.</p>
       </div>
     </div>
   );

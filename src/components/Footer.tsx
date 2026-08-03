@@ -37,6 +37,7 @@ export default function Footer() {
     { label: 'Privacy Policy', url: '/privacy-policy' },
     { label: 'Disclaimer', url: '/disclaimer' },
     { label: 'Terms & Conditions', url: '/terms-and-conditions' },
+    { label: 'Cookie Policy', url: '/cookie-policy' },
     { label: 'Sitemap', url: '/sitemap' },
     { label: 'Contact Us', url: '/contact-us' },
     { label: 'DMCA Policy', url: '/dmca' }

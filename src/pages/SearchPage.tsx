@@ -100,7 +100,7 @@ export default function SearchPage() {
                   </Link>
                   
                   <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-800 pt-4">
-                    <span>{item.author || 'Sukhamay'}</span>
+                    <Link to={`/author/${encodeURIComponent(item.author || 'Sukhamay')}`} className="hover:text-blue-500 transition-colors">{item.author || 'Sukhamay'}</Link>
                     <span className="mx-2">/</span>
                     <span>{item.date ? new Date(item.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'March 2026'}</span>
                   </div>

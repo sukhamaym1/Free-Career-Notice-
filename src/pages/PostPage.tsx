@@ -200,10 +200,10 @@ export default function PostPage() {
             </h1>
             
             <div className="border-t border-slate-800 pt-6 flex flex-wrap items-center gap-6 text-slate-400 text-sm font-medium">
-              <div className="flex items-center gap-2">
+              <Link to={`/author/${encodeURIComponent(post.author || 'Editor')}`} className="flex items-center gap-2 hover:text-blue-400 transition-colors">
                 <User className="w-4 h-4" />
-                <span className="text-slate-200">{post.author}</span>
-              </div>
+                <span className="text-slate-200 hover:text-blue-400">{post.author}</span>
+              </Link>
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
                 <span>{post.date && !isNaN(new Date(post.date).getTime()) ? new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''}</span>
@@ -310,6 +310,26 @@ export default function PostPage() {
                 </div>
               </div>
             )}
+
+            {/* About the Author Section for E-E-A-T */}
+            <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">
+              <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center bg-slate-50 dark:bg-slate-900/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center shrink-0 border border-blue-200 dark:border-blue-800/50">
+                  <User className="w-10 h-10" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                    About <Link to={`/author/${encodeURIComponent(post.author || 'Editor')}`} className="hover:text-blue-500 hover:underline transition-colors">{post.author || 'the Editor'}</Link>
+                    <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs px-2 py-0.5 rounded-full font-medium border border-blue-200 dark:border-blue-800/50 flex items-center gap-1">
+                      <Check className="w-3 h-3" /> Verified Expert
+                    </span>
+                  </h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                    {post.author || 'Our Career Notice editorial team'} brings years of expertise in career counseling and government job notifications. We are committed to providing highly accurate, official-source-verified information to empower job seekers in their career journey.
+                  </p>
+                </div>
+              </div>
+            </div>
 
             {/* Share Section */}
             <div className="mt-12 pt-8 border-t border-slate-200 dark:border-slate-800">

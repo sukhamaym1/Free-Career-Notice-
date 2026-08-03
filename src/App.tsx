@@ -25,6 +25,8 @@ import ScrollToTop from './components/ScrollToTop';
 import StudyMaterialPage from './pages/StudyMaterialPage';
 import StudyMaterialDetailPage from './pages/StudyMaterialDetailPage';
 
+import AuthorPage from './pages/AuthorPage';
+
 export default function App() {
   const { SITE_SETTINGS, loading } = useData();
   const { theme, toggleTheme } = useTheme();
@@ -71,6 +73,9 @@ export default function App() {
         {(SITE_SETTINGS as any).seoKeywords && <meta name="keywords" content={(SITE_SETTINGS as any).seoKeywords} />}
         {(SITE_SETTINGS as any).faviconUrl && <link rel="icon" type="image/x-icon" href={(SITE_SETTINGS as any).faviconUrl} />}
         <meta property="og:site_name" content={(SITE_SETTINGS as any).siteName || 'Free Career Notice'} />
+        {(SITE_SETTINGS as any).adsenseId && (
+          <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${(SITE_SETTINGS as any).adsenseId}`} crossOrigin="anonymous"></script>
+        )}
         <script type="application/ld+json">
           {`
             {
@@ -95,6 +100,7 @@ export default function App() {
         <Route path="/admin" element={<AdminPage theme={theme} toggleTheme={toggleTheme} />} />
         <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route path="/post/:postId" element={<PostPage />} />
+        <Route path="/author/:authorName" element={<AuthorPage />} />
         <Route path="/:pageId" element={<TextPage />} />
       </Routes>
 
