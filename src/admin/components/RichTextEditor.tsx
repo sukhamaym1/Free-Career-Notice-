@@ -3,6 +3,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Focus from '@tiptap/extension-focus';
 import { Extension } from '@tiptap/core';
+import { Markdown } from 'tiptap-markdown';
 import { cn } from '../../lib/utils';
 import { FileCode2, Save } from 'lucide-react';
 
@@ -61,6 +62,9 @@ export default function RichTextEditor({ content, onChange, placeholder, isFocus
       StarterKit.configure({
         heading: { levels: [1, 2, 3, 4, 5, 6] },
         dropcursor: false,
+      }),
+      Markdown.configure({
+        transformPastedText: true,
       }),
       CustomImage, Iframe, Details, Summary, Callout, ActionButton, Timeline, TimelineItem,
       Table.configure({ resizable: true }), TableRow, TableCell, TableHeader,
