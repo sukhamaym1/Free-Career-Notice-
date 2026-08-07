@@ -1,0 +1,26 @@
+      const y = element.getBoundingClientRect().top + window.scrollY - 100;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
+
+  const foundPost = ALL_POSTS.find((p: any) => p.id === postId);
+  
+  const post: any = foundPost || {
+    title: "Post Not Found",
+    category: "Unknown",
+    categorySlug: "unknown",
+    date: new Date().toISOString(),
+    author: "Admin",
+    readTime: "0 min read",
+    imgGradient: "from-gray-100 to-gray-200 dark:from-slate-800 dark:to-slate-900",
+    tags: [],
+    content: "<p>The requested post could not be found.</p>"
+  };
+  
+  const categoryName = post.categorySlug ? post.categorySlug.split('-').map((s:string) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ') : post.category || '';
+  post.category = categoryName;
+  
+  const displayTitle = post.seoTitle || `${post.title} - Career Notice`;
+  const displayDescription = post.seoDescription || post.title;
+  const displayImage = post.featuredImage || (window.location.origin + '/default-og.jpg');
+  const postUrl = window.location.href;

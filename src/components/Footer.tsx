@@ -28,7 +28,7 @@ export default function Footer() {
     { label: 'Railway Jobs', url: '/category/railway' },
     { label: 'Defence Jobs', url: '/category/defence' },
     { label: 'Teaching Jobs', url: '/category/teaching' },
-    { label: 'Police Jobs', url: '/category/defence' },
+    { label: 'Police Jobs', url: '/category/police' },
     { label: 'All Categories', url: '/category/job-notifications' }
   ];
 

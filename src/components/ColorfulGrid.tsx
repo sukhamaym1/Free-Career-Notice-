@@ -14,7 +14,7 @@ export default function ColorfulGrid() {
         {COLOR_BLOCKS.map((block, idx) => (
           <Link
             key={idx}
-            to={block.id ? `/post/${block.id}` : "/post/wbpsc-recruitment-2026"}
+            to={block.id ? `/post/${block.id}` : "#"}
             className="group relative flex items-center justify-between p-5 bg-white dark:bg-slate-900  border border-gray-200 dark:border-slate-800 rounded-2xl hover:shadow-md hover:border-blue-200 dark:hover:border-slate-700 transition-all overflow-hidden"
           >
             {/* Subtle hover background */}

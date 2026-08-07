@@ -19,9 +19,26 @@ export default function PostPage() {
 
   const [headings, setHeadings] = useState<{id: string, text: string, level: number}[]>([]);
   const [activeHeading, setActiveHeading] = useState<string>('');
-  const [isTocOpen, setIsTocOpen] = useState(false);
+  const [isTocOpen, setIsTocOpen] = useState(true);
   const [isCopied, setIsCopied] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  const foundPost = ALL_POSTS.find((p: any) => p.id === postId);
+  
+  const post: any = foundPost || {
+    title: "Post Not Found",
+    category: "Unknown",
+    categorySlug: "unknown",
+    date: new Date().toISOString(),
+    author: "Admin",
+    readTime: "0 min read",
+    imgGradient: "from-gray-100 to-gray-200 dark:from-slate-800 dark:to-slate-900",
+    tags: [],
+    content: "<p>The requested post could not be found.</p>"
+  };
+  
+  const categoryName = post.categorySlug ? post.categorySlug.split('-').map((s:string) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ') : post.category || '';
+  post.category = categoryName;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -42,7 +59,7 @@ export default function PostPage() {
       });
       setHeadings(parsedHeadings);
     }
-  }, [postId]);
+  }, [postId, post?.content]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,22 +85,6 @@ export default function PostPage() {
     }
   };
 
-  const foundPost = ALL_POSTS.find((p: any) => p.id === postId);
-  
-  const post: any = foundPost || {
-    title: "Post Not Found",
-    category: "Unknown",
-    categorySlug: "unknown",
-    date: new Date().toISOString(),
-    author: "Admin",
-    readTime: "0 min read",
-    imgGradient: "from-gray-100 to-gray-200 dark:from-slate-800 dark:to-slate-900",
-    tags: [],
-    content: "<p>The requested post could not be found.</p>"
-  };
-  
-  const categoryName = post.categorySlug ? post.categorySlug.split('-').map((s:string) => s.charAt(0).toUpperCase() + s.slice(1)).join(' ') : post.category || '';
-  post.category = categoryName;
   
   const displayTitle = post.seoTitle || `${post.title} - Career Notice`;
   const displayDescription = post.seoDescription || post.title;
@@ -135,7 +136,7 @@ export default function PostPage() {
   };
 
   const relatedPosts = PUBLISHED_POSTS
-    .filter((p: any) => p.categorySlug === post.categorySlug && p.id !== post.id)
+    .filter((p: any) => (p.categorySlug === post.categorySlug || (post.tags && Array.isArray(post.tags) && p.tags && Array.isArray(p.tags) && post.tags.some((tag: string) => p.tags.includes(tag)))) && p.id !== post.id)
     .slice(0, 3);
 
   const handleCopyLink = () => {

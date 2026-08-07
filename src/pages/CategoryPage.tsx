@@ -20,7 +20,7 @@ export default function CategoryPage() {
   // Map category slugs to titles and data
   
   title = categoryId ? categoryId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Category';
-  let baseItems = PUBLISHED_POSTS.filter(p => p.categorySlug === categoryId);
+  let baseItems = PUBLISHED_POSTS.filter(p => p.categorySlug === categoryId || (p.tags && Array.isArray(p.tags) && p.tags.includes(categoryId)));
   
   if (categoryId === 'job-notifications') {
     items = baseItems.filter((job) => {

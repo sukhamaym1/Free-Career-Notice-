@@ -1,7 +1,13 @@
 import settingsData from '../content/settings.json';
 
 const postsModules = import.meta.glob('../content/posts/*.json', { eager: true });
-const rawPosts = Object.values(postsModules).map((mod: any) => mod.default || mod);
+const rawPosts = Object.values(postsModules).map((mod: any) => {
+  const data = mod.default || mod;
+  if (!data.id && data._path) {
+    data.id = data._path.split('/').pop()?.replace('.json', '');
+  }
+  return data;
+});
 const publishedPosts = rawPosts.filter((p: any) => {
   if (p.status === 'draft') return false;
   if (p.date) {
@@ -16,11 +22,11 @@ const publishedPosts = rawPosts.filter((p: any) => {
 
 
 export const COLOR_BLOCKS = publishedPosts
-  .filter(p => p.categorySlug === 'highlight-updates')
+  .filter(p => p.categorySlug === 'highlight-updates' || (p.tags && Array.isArray(p.tags) && p.tags.includes('highlight-updates')))
   .map(p => ({ title: p.title, bgClass: p.bgClass, id: p.id }));
 
 export const JOB_NOTIFICATIONS = publishedPosts
-  .filter(p => p.categorySlug === 'job-notifications')
+  .filter(p => p.categorySlug === 'job-notifications' || (p.tags && Array.isArray(p.tags) && p.tags.includes('job-notifications')))
   .map(p => ({
     id: p.id,
     title: p.title,
@@ -35,7 +41,7 @@ export const JOB_NOTIFICATIONS = publishedPosts
   }));
 
 export const ADMIT_CARDS = publishedPosts
-  .filter(p => p.categorySlug === 'admit-card')
+  .filter(p => p.categorySlug === 'admit-card' || (p.tags && Array.isArray(p.tags) && p.tags.includes('admit-card')))
   .map(p => ({
     id: p.id,
     title: p.title,
@@ -47,7 +53,7 @@ export const ADMIT_CARDS = publishedPosts
   }));
 
 export const RESULTS = publishedPosts
-  .filter(p => p.categorySlug === 'results')
+  .filter(p => p.categorySlug === 'results' || (p.tags && Array.isArray(p.tags) && p.tags.includes('results')))
   .map(p => ({
     id: p.id,
     title: p.title,

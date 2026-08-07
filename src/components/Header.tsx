@@ -83,7 +83,7 @@ export default function Header({ theme, toggleTheme }: HeaderProps) {
           <Link to="/category/admit-card" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap">Admit Card</Link>
           <Link to="/category/results" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Results</Link>
           <Link to="/study-material" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap">Study Materials</Link>
-          <Link to="/mock-tests" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap">Mock Tests</Link>
+          <Link to="/quiz" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap">Quiz</Link>
         </nav>
 
         {/* Actions */}
@@ -128,7 +128,7 @@ export default function Header({ theme, toggleTheme }: HeaderProps) {
                 <Link to="/category/admit-card" onClick={closeMobileMenu} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2 border-b border-gray-100 dark:border-gray-800">Admit Card</Link>
                 <Link to="/category/results" onClick={closeMobileMenu} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2 border-b border-gray-100 dark:border-gray-800">Results</Link>
                 <Link to="/study-material" onClick={closeMobileMenu} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2 border-b border-gray-100 dark:border-gray-800">Study Materials</Link>
-                <Link to="/mock-tests" onClick={closeMobileMenu} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2 border-b border-gray-100 dark:border-gray-800">Mock Tests</Link>
+                <Link to="/quiz" onClick={closeMobileMenu} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-2 border-b border-gray-100 dark:border-gray-800">Quiz</Link>
               </nav>
             </div>
           </motion.div>

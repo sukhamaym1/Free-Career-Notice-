@@ -4,19 +4,14 @@ import { useData } from '../components/DataProvider';
 import { Search } from 'lucide-react';
 
 export default function SearchPage() {
-  const { JOB_NOTIFICATIONS, ADMIT_CARDS, RESULTS } = useData();
+  const { PUBLISHED_POSTS } = useData();
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
 
-  const allItems = [
-    ...JOB_NOTIFICATIONS.map(i => ({ ...i, category: 'Job Notifications' })),
-    ...ADMIT_CARDS.map(i => ({ ...i, category: 'Admit Card' })),
-    ...RESULTS.map(i => ({ ...i, category: 'Results' }))
-  ];
-
-  const searchResults = allItems.filter(item => 
+  const searchResults = PUBLISHED_POSTS.filter(item => 
     item.title.toLowerCase().includes(query.toLowerCase()) || 
-    (item.tag && item.tag.toLowerCase().includes(query.toLowerCase()))
+    (item.tags && Array.isArray(item.tags) && item.tags.some((tag: string) => tag.toLowerCase().includes(query.toLowerCase()))) ||
+    (item.categorySlug && item.categorySlug.toLowerCase().includes(query.toLowerCase()))
   );
 
   return (
@@ -63,9 +58,9 @@ export default function SearchPage() {
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500"></div>
                 
                 {/* Tag */}
-                {item.tag && (
+                {item.tags && item.tags.length > 0 && (
                   <div className={`absolute top-4 right-4 ${item.tagColor || 'bg-green-500'} text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide z-10 shadow-sm`}>
-                    {item.tag}
+                    {item.tags[0]}
                   </div>
                 )}
                 
@@ -76,7 +71,7 @@ export default function SearchPage() {
                 {/* Mock content for the thumbnail */}
                 <div className="relative z-10 max-w-[80%]">
                   <h3 className="text-white font-bold text-xl md:text-2xl drop-shadow-md leading-tight mb-2 uppercase">
-                    {item.tag || item.category}
+                    {(item.tags && item.tags[0]) || (item.categorySlug ? item.categorySlug.replace(/-/g, ' ') : '')}
                   </h3>
                   <p className="text-white/90 text-sm md:text-base font-medium drop-shadow-sm">
                     {item.title.substring(0, 45)}...
@@ -89,13 +84,13 @@ export default function SearchPage() {
 
               {/* Content */}
               <div className="p-6 flex-1 flex flex-col">
-                <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-2 uppercase tracking-wider">{item.category}</div>
+                <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-2 uppercase tracking-wider">{item.categorySlug ? item.categorySlug.replace(/-/g, ' ') : ''}</div>
                 <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white leading-snug mb-4 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                  <Link to="/post/wbpsc-recruitment-2026">{item.title}</Link>
+                  <Link to={`/post/${item.id}`}>{item.title}</Link>
                 </h2>
                 
                 <div className="mt-auto">
-                  <Link to="/post/wbpsc-recruitment-2026" className="inline-block text-green-600 dark:text-green-500 font-semibold text-sm uppercase tracking-wider mb-4 hover:text-green-700 dark:hover:text-green-400">
+                  <Link to={`/post/${item.id}`} className="inline-block text-green-600 dark:text-green-500 font-semibold text-sm uppercase tracking-wider mb-4 hover:text-green-700 dark:hover:text-green-400">
                     READ MORE »
                   </Link>
                   

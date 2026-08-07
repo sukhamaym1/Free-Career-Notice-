@@ -64,11 +64,11 @@ export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: Ad
   const [newTagName, setNewTagName] = useState('');
 
   const parsedData = {
-    NEW_UPDATES: rawPosts.filter(p => p.categorySlug === 'new-updates'),
-    COLOR_BLOCKS: rawPosts.filter(p => p.categorySlug === 'highlight-updates'),
-    JOB_NOTIFICATIONS: rawPosts.filter(p => p.categorySlug === 'job-notifications'),
-    ADMIT_CARDS: rawPosts.filter(p => p.categorySlug === 'admit-card'),
-    RESULTS: rawPosts.filter(p => p.categorySlug === 'results'),
+    NEW_UPDATES: rawPosts.filter(p => p.categorySlug === 'new-updates' || (p.tags && Array.isArray(p.tags) && p.tags.includes('new-updates'))),
+    COLOR_BLOCKS: rawPosts.filter(p => p.categorySlug === 'highlight-updates' || (p.tags && Array.isArray(p.tags) && p.tags.includes('highlight-updates'))),
+    JOB_NOTIFICATIONS: rawPosts.filter(p => p.categorySlug === 'job-notifications' || (p.tags && Array.isArray(p.tags) && p.tags.includes('job-notifications'))),
+    ADMIT_CARDS: rawPosts.filter(p => p.categorySlug === 'admit-card' || (p.tags && Array.isArray(p.tags) && p.tags.includes('admit-card'))),
+    RESULTS: rawPosts.filter(p => p.categorySlug === 'results' || (p.tags && Array.isArray(p.tags) && p.tags.includes('results'))),
   };
 
   
@@ -393,7 +393,7 @@ export default function AdminDashboard({ onLogout, pat, theme, toggleTheme }: Ad
 
   const filteredPosts = rawPosts.filter(p => {
     const matchesSearch = p.title?.toLowerCase().includes(searchQuery.toLowerCase()) || p.categorySlug?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter ? p.categorySlug === categoryFilter : true;
+    const matchesCategory = categoryFilter ? (p.categorySlug === categoryFilter || (p.tags && Array.isArray(p.tags) && p.tags.includes(categoryFilter))) : true;
     return matchesSearch && matchesCategory;
   });
 

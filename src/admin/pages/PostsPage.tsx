@@ -48,7 +48,7 @@ export default function PostsPage({
 
   // Apply category filter
   if (categoryFilter) {
-    filteredPosts = filteredPosts.filter(p => p.categorySlug === categoryFilter);
+    filteredPosts = filteredPosts.filter(p => p.categorySlug === categoryFilter || (p.tags && Array.isArray(p.tags) && p.tags.includes(categoryFilter)));
   }
 
   const getStatusBadge = (post: any) => {

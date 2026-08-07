@@ -23,5 +23,10 @@
     "id": "cat_1785324654551",
     "name": "Admit Card",
     "slug": "admit-card"
+  },
+  {
+    "id": "cat_1785908931075",
+    "name": "Syllabus",
+    "slug": "syllabus"
   }
 ]

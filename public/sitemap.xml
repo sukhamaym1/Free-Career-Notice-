@@ -41,8 +41,13 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://free-career-notice.pages.dev/category/syllabus</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://free-career-notice.pages.dev/post/income-tax-canteen-attendant-recruitment-2026-apply-online-for-7-posts</loc>
-    <lastmod>2026-08-03T17:55:11.339Z</lastmod>
+    <lastmod>2026-08-03T17:55:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -51,25 +56,5 @@
     <lastmod>2026-08-03T16:51:00.000Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://free-career-notice.pages.dev/about-us</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://free-career-notice.pages.dev/contact-us</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://free-career-notice.pages.dev/privacy-policy</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://free-career-notice.pages.dev/terms-and-conditions</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
   </url>
 </urlset>
