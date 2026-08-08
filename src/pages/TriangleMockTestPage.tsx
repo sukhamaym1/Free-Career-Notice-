@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { triangleQuestions } from '../data/triangleQuiz';
 import { Helmet } from 'react-helmet-async';
 import { CheckCircle2, Clock, Award, AlertCircle } from 'lucide-react';
-import GoogleTranslate from '../components/GoogleTranslate';
+import LanguageSelector from '../components/LanguageSelector';
 import MockTestSummary from '../components/MockTestSummary';
 
 const TOTAL_SECONDS = 30 * 60; // 30 minutes
@@ -88,8 +88,8 @@ export default function TriangleMockTestPage() {
         <Helmet>
           <title>Triangle Formula Mock Test | Free Career Notice</title>
         </Helmet>
-        <GoogleTranslate />
-        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-800">
+        <div className="flex justify-end mb-4 notranslate"><LanguageSelector /></div>
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-800 notranslate">
           <div className="bg-gradient-to-r from-blue-600 to-cyan-500 p-8 text-white text-center">
             <h1 className="text-3xl font-bold mb-2">Triangle Formula</h1>
             <p className="text-blue-100 opacity-90">Professional Mock Test</p>
@@ -168,7 +168,7 @@ export default function TriangleMockTestPage() {
 
     return (
       <div className="container mx-auto px-4 py-8 max-w-5xl animate-in fade-in">
-        <GoogleTranslate />
+        <div className="flex justify-end mb-4 notranslate"><LanguageSelector /></div>
         <MockTestSummary
           percentage={percentage}
           scoreMessage={scoreMessage(percentage)}
@@ -181,7 +181,7 @@ export default function TriangleMockTestPage() {
         />
 
         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-6 md:p-8">
-          <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-6">Answer Review</h3>
+          <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-6 notranslate">Answer Review</h3>
           <div className="space-y-6">
             {order.map((qi, pos) => {
               const item = triangleQuestions[qi];
@@ -191,12 +191,18 @@ export default function TriangleMockTestPage() {
 
               return (
                 <div key={pos} className={`p-5 rounded-xl border-l-4 border-y border-r ${isCorrect ? 'border-l-green-500 bg-green-50/50 dark:bg-green-900/10 border-y-slate-200 border-r-slate-200 dark:border-y-slate-800 dark:border-r-slate-800' : 'border-l-red-500 bg-red-50/50 dark:bg-red-900/10 border-y-slate-200 border-r-slate-200 dark:border-y-slate-800 dark:border-r-slate-800'}`}>
-                  <h4 className="font-bold text-slate-900 dark:text-white mb-3 text-lg">{pos + 1}. {item.q}</h4>
+                  <h4 className="font-bold text-slate-900 dark:text-white mb-3 text-lg"><span className="notranslate">{pos + 1}.</span> {item.q}</h4>
                   <div className="text-sm text-slate-600 dark:text-slate-400 mb-2">
-                    Your answer: {userAns === undefined ? 'Not answered' : <span className={`font-semibold ${isCorrect ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{letters[userAns]}. {item.o[userAns]}</span>}
+                    <span className="notranslate">Your answer: {userAns === undefined ? 'Not answered' : ''}</span>
+                    {userAns !== undefined && (
+                      <span className={`font-semibold ${isCorrect ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        <span className="notranslate">{letters[userAns]}. </span>
+                        {item.o[userAns]}
+                      </span>
+                    )}
                   </div>
                   <div className="text-sm text-slate-800 dark:text-slate-200">
-                    <span className="font-semibold text-green-600 dark:text-green-400">Correct answer:</span> {letters[item.a]}. {item.o[item.a]}
+                    <span className="font-semibold text-green-600 dark:text-green-400 notranslate">Correct answer:</span> <span className="notranslate">{letters[item.a]}.</span> {item.o[item.a]}
                   </div>
                 </div>
               );
@@ -218,14 +224,14 @@ export default function TriangleMockTestPage() {
         <title>Triangle Formula Mock Test - Running</title>
       </Helmet>
 
-      <GoogleTranslate />
+      <div className="flex justify-end mb-4 notranslate"><LanguageSelector /></div>
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Main Test Area */}
         <div className="flex-1 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 md:p-8 flex flex-col">
           {/* Progress */}
           <div className="mb-8">
-            <div className="flex justify-between text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">
+            <div className="flex justify-between text-sm font-medium text-slate-500 dark:text-slate-400 mb-2 notranslate">
               <span>Question {current + 1} of {triangleQuestions.length}</span>
               <span>Answered: {Object.keys(answers).length}/{triangleQuestions.length}</span>
             </div>
@@ -240,7 +246,7 @@ export default function TriangleMockTestPage() {
           {/* Question */}
           <div className="flex-1">
             <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-white mb-6 leading-relaxed">
-              {current + 1}. {question.q}
+              <span className="notranslate">{current + 1}.</span> {question.q}
             </h2>
             <div className="space-y-3">
               {question.o.map((opt, idx) => (
@@ -260,7 +266,7 @@ export default function TriangleMockTestPage() {
                     onChange={() => handleOptionSelect(idx)}
                   />
                   <div className="flex gap-2">
-                    <span className="font-bold text-slate-700 dark:text-slate-300 shrink-0">{letters[idx]}.</span>
+                    <span className="font-bold text-slate-700 dark:text-slate-300 shrink-0 notranslate">{letters[idx]}.</span>
                     <span className="text-slate-800 dark:text-slate-200">{opt}</span>
                   </div>
                 </label>
@@ -297,7 +303,7 @@ export default function TriangleMockTestPage() {
         </div>
 
         {/* Sidebar */}
-        <div className="w-full lg:w-80 flex flex-col gap-6">
+        <div className="w-full lg:w-80 flex flex-col gap-6 notranslate">
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 sticky top-24">
             <div className="text-center mb-6">
               <div className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-center gap-2">
@@ -348,7 +354,7 @@ export default function TriangleMockTestPage() {
       </div>
 
       {showConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm notranslate">
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-6 md:p-8 max-w-md w-full animate-in zoom-in-95 duration-200">
             <div className="flex items-center gap-4 mb-4 text-orange-600 dark:text-orange-400">
               <AlertCircle className="w-8 h-8" />

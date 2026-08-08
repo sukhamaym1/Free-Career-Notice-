@@ -29,7 +29,7 @@ export default function MockTestSummary({
   onRestart
 }: MockTestSummaryProps) {
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-800 mb-8 p-8 text-center">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-800 mb-8 p-8 text-center notranslate">
       <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-6 border-[8px] border-blue-100 dark:border-blue-900/50">
         <Award className="w-12 h-12" />
       </div>
