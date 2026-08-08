@@ -13,6 +13,14 @@ export default function LanguageSelector() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Check initial language from cookie
+    const match = document.cookie.match(/googtrans=\/bn\/([a-z]{2})/);
+    if (match && match[1]) {
+      setCurrentLang(match[1]);
+    } else {
+      setCurrentLang('bn');
+    }
+
     // Add the callback function globally for the hidden widget
     (window as any).googleTranslateElementInit = () => {
       new (window as any).google.translate.TranslateElement(
@@ -54,13 +62,24 @@ export default function LanguageSelector() {
     setCurrentLang(langCode);
     setIsOpen(false);
     
-    // Find the Google Translate select element and trigger change
     const select = document.querySelector('.goog-te-combo') as HTMLSelectElement;
     if (select) {
-      select.value = langCode;
-      select.dispatchEvent(new Event('change'));
+      const optionExists = Array.from(select.options).some(opt => opt.value === langCode);
+      if (optionExists) {
+        select.value = langCode;
+      } else if (langCode === 'bn') {
+        select.value = ''; // Google Translate uses '' for original language
+      }
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    
+    // Also set the cookie to be safe
+    if (langCode === 'bn') {
+      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname}`;
     } else {
-      console.warn('Google Translate select not found');
+      document.cookie = `googtrans=/bn/${langCode}; path=/;`;
+      document.cookie = `googtrans=/bn/${langCode}; path=/; domain=${window.location.hostname}`;
     }
   };
 
