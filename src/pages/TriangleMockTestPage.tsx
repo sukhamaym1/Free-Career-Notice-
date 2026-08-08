@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { triangleQuestions } from '../data/triangleQuiz';
 import { Helmet } from 'react-helmet-async';
-import { CheckCircle2, XCircle, Clock, Award, AlertCircle } from 'lucide-react';
+import { CheckCircle2, Clock, Award, AlertCircle } from 'lucide-react';
+import GoogleTranslate from '../components/GoogleTranslate';
+import MockTestSummary from '../components/MockTestSummary';
 
 const TOTAL_SECONDS = 30 * 60; // 30 minutes
 
@@ -22,12 +24,15 @@ export default function TriangleMockTestPage() {
   const [secondsLeft, setSecondsLeft] = useState(TOTAL_SECONDS);
   const [isStarted, setIsStarted] = useState(false);
 
+  const [showConfirm, setShowConfirm] = useState(false);
+
   // Initialize
   const startTest = useCallback(() => {
     setOrder(shuffleArray(Array.from(Array(triangleQuestions.length).keys())));
     setCurrent(0);
     setAnswers({});
     setSubmitted(false);
+    setShowConfirm(false);
     setSecondsLeft(TOTAL_SECONDS);
     setIsStarted(true);
     window.scrollTo(0, 0);
@@ -40,7 +45,7 @@ export default function TriangleMockTestPage() {
       timerId = setInterval(() => {
         setSecondsLeft((prev) => {
           if (prev <= 1) {
-            submitTest(true);
+            confirmSubmit();
             return 0;
           }
           return prev - 1;
@@ -50,16 +55,20 @@ export default function TriangleMockTestPage() {
     return () => clearInterval(timerId);
   }, [isStarted, submitted, secondsLeft]);
 
+  const confirmSubmit = () => {
+    setSubmitted(true);
+    setShowConfirm(false);
+    window.scrollTo(0, 0);
+  };
+
   const submitTest = (auto = false) => {
     if (submitted) return;
     const unanswered = triangleQuestions.length - Object.keys(answers).length;
     if (!auto && unanswered > 0) {
-      if (!window.confirm(`${unanswered}টি প্রশ্নের উত্তর দেওয়া হয়নি। আপনি কি এখনই Submit করতে চান?`)) {
-        return;
-      }
+      setShowConfirm(true);
+      return;
     }
-    setSubmitted(true);
-    window.scrollTo(0, 0);
+    confirmSubmit();
   };
 
   const handleOptionSelect = (optionIndex: number) => {
@@ -79,6 +88,7 @@ export default function TriangleMockTestPage() {
         <Helmet>
           <title>Triangle Formula Mock Test | Free Career Notice</title>
         </Helmet>
+        <GoogleTranslate />
         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-800">
           <div className="bg-gradient-to-r from-blue-600 to-cyan-500 p-8 text-white text-center">
             <h1 className="text-3xl font-bold mb-2">Triangle Formula</h1>
@@ -117,9 +127,33 @@ export default function TriangleMockTestPage() {
 
   if (submitted) {
     let correct = 0;
-    order.forEach((qi, pos) => {
-      if (answers[pos] === triangleQuestions[qi].a) correct++;
+    
+    // Topic breakdown calculation
+    const topicsBreakdown: Record<string, { total: number; correct: number; wrong: number; skipped: number }> = {};
+    
+    triangleQuestions.forEach((q) => {
+      const topic = (q as any).topic || 'General';
+      if (!topicsBreakdown[topic]) {
+        topicsBreakdown[topic] = { total: 0, correct: 0, wrong: 0, skipped: 0 };
+      }
+      topicsBreakdown[topic].total++;
     });
+
+    order.forEach((qi, pos) => {
+      const q = triangleQuestions[qi];
+      const topic = (q as any).topic || 'General';
+      const userAns = answers[pos];
+      
+      if (userAns === undefined) {
+        topicsBreakdown[topic].skipped++;
+      } else if (userAns === q.a) {
+        correct++;
+        topicsBreakdown[topic].correct++;
+      } else {
+        topicsBreakdown[topic].wrong++;
+      }
+    });
+
     const wrong = Object.keys(answers).filter(k => answers[parseInt(k)] !== triangleQuestions[order[parseInt(k)]].a).length;
     const skipped = triangleQuestions.length - Object.keys(answers).length;
     const usedTime = TOTAL_SECONDS - secondsLeft;
@@ -134,37 +168,17 @@ export default function TriangleMockTestPage() {
 
     return (
       <div className="container mx-auto px-4 py-8 max-w-5xl animate-in fade-in">
-        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-800 mb-8 p-8 text-center">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-6 border-[8px] border-blue-100 dark:border-blue-900/50">
-            <Award className="w-12 h-12" />
-          </div>
-          <h2 className="text-2xl font-bold text-slate-600 dark:text-slate-400 mb-2">Your Final Score</h2>
-          <div className="text-6xl font-extrabold text-blue-600 dark:text-blue-400 mb-4">{percentage}%</div>
-          <p className="text-lg font-medium text-slate-800 dark:text-white mb-8">{scoreMessage(percentage)}</p>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl border border-green-100 dark:border-green-900/30">
-              <div className="text-3xl font-bold text-green-600 dark:text-green-400">{correct}</div>
-              <div className="text-sm text-green-700 dark:text-green-500 font-medium mt-1">Correct</div>
-            </div>
-            <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-100 dark:border-red-900/30">
-              <div className="text-3xl font-bold text-red-600 dark:text-red-400">{wrong}</div>
-              <div className="text-sm text-red-700 dark:text-red-500 font-medium mt-1">Wrong</div>
-            </div>
-            <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
-              <div className="text-3xl font-bold text-slate-700 dark:text-slate-300">{skipped}</div>
-              <div className="text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">Skipped</div>
-            </div>
-            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-900/30">
-              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">{formatTime(usedTime)}</div>
-              <div className="text-sm text-blue-700 dark:text-blue-500 font-medium mt-1">Time Used</div>
-            </div>
-          </div>
-
-          <button onClick={startTest} className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors">
-            Restart Test
-          </button>
-        </div>
+        <GoogleTranslate />
+        <MockTestSummary
+          percentage={percentage}
+          scoreMessage={scoreMessage(percentage)}
+          correct={correct}
+          wrong={wrong}
+          skipped={skipped}
+          usedTimeFormatted={formatTime(usedTime)}
+          topicsBreakdown={topicsBreakdown}
+          onRestart={startTest}
+        />
 
         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-6 md:p-8">
           <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-6">Answer Review</h3>
@@ -203,6 +217,8 @@ export default function TriangleMockTestPage() {
       <Helmet>
         <title>Triangle Formula Mock Test - Running</title>
       </Helmet>
+
+      <GoogleTranslate />
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Main Test Area */}
@@ -330,6 +346,34 @@ export default function TriangleMockTestPage() {
           </div>
         </div>
       </div>
+
+      {showConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-6 md:p-8 max-w-md w-full animate-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-4 mb-4 text-orange-600 dark:text-orange-400">
+              <AlertCircle className="w-8 h-8" />
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">Submit Test?</h3>
+            </div>
+            <p className="text-slate-600 dark:text-slate-400 mb-8">
+              {triangleQuestions.length - Object.keys(answers).length}টি প্রশ্নের উত্তর দেওয়া হয়নি। আপনি কি এখনই Submit করতে চান?
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowConfirm(false)}
+                className="flex-1 py-3 px-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmSubmit}
+                className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors"
+              >
+                Yes, Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

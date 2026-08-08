@@ -1,5 +1,6 @@
 import { FileQuestion, CheckCircle2, Trophy, Clock, Users, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import GoogleTranslate from '../components/GoogleTranslate';
 
 const MOCK_QUIZZES = [
   {
@@ -84,6 +85,9 @@ const MOCK_QUIZZES = [
 export default function QuizPage() {
   return (
     <main className="container mx-auto px-4 py-8 pb-20 animate-in fade-in duration-500 max-w-6xl">
+      <div className="flex justify-end">
+        <GoogleTranslate />
+      </div>
       {/* Header Section */}
       <div className="mb-12 text-center max-w-3xl mx-auto">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 text-sm font-semibold uppercase tracking-wider mb-4">
