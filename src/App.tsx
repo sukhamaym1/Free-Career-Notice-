@@ -15,6 +15,7 @@ import CategoryPage from './pages/CategoryPage';
 import TextPage from './pages/TextPage';
 import SearchPage from './pages/SearchPage';
 import QuizPage from './pages/QuizPage';
+import TriangleMockTestPage from './pages/TriangleMockTestPage';
 import SitemapPage from './pages/SitemapPage';
 import AdminPage from './admin/AdminPage';
 
@@ -94,6 +95,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/quiz" element={<QuizPage />} />
+        <Route path="/quiz/triangle-formula" element={<TriangleMockTestPage />} />
         <Route path="/sitemap" element={<SitemapPage />} />
         <Route path="/study-material" element={<StudyMaterialPage />} />
         <Route path="/study-material/:id" element={<StudyMaterialDetailPage />} />

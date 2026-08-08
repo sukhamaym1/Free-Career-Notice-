@@ -1,6 +1,18 @@
 import { FileQuestion, CheckCircle2, Trophy, Clock, Users, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const MOCK_QUIZZES = [
+  {
+    id: 0,
+    title: 'Triangle Formula Mock Test',
+    category: 'Mathematics',
+    questions: 52,
+    duration: '30 mins',
+    participants: 'New',
+    difficulty: 'Medium',
+    color: 'bg-cyan-500',
+    path: '/quiz/triangle-formula'
+  },
   {
     id: 1,
     title: 'SSC CGL Tier 1 Mock Test 2026',
@@ -10,6 +22,7 @@ const MOCK_QUIZZES = [
     participants: '15.2k',
     difficulty: 'Medium',
     color: 'bg-blue-500',
+    path: '#'
   },
   {
     id: 2,
@@ -20,6 +33,7 @@ const MOCK_QUIZZES = [
     participants: '22.1k',
     difficulty: 'Medium-Hard',
     color: 'bg-green-500',
+    path: '#'
   },
   {
     id: 3,
@@ -30,6 +44,7 @@ const MOCK_QUIZZES = [
     participants: '18.5k',
     difficulty: 'Hard',
     color: 'bg-indigo-500',
+    path: '#'
   },
   {
     id: 4,
@@ -40,6 +55,7 @@ const MOCK_QUIZZES = [
     participants: '45.8k',
     difficulty: 'Easy',
     color: 'bg-purple-500',
+    path: '#'
   },
   {
     id: 5,
@@ -50,6 +66,7 @@ const MOCK_QUIZZES = [
     participants: '12.4k',
     difficulty: 'Medium',
     color: 'bg-pink-500',
+    path: '#'
   },
   {
     id: 6,
@@ -60,6 +77,7 @@ const MOCK_QUIZZES = [
     participants: '8.9k',
     difficulty: 'Hard',
     color: 'bg-orange-500',
+    path: '#'
   }
 ];
 
@@ -159,9 +177,9 @@ export default function QuizPage() {
                   </div>
                 </div>
                 
-                <a href="#" className={`inline-flex items-center justify-center w-full sm:w-auto gap-2 px-6 py-2.5 rounded-xl text-white font-medium transition-transform active:scale-95 ${quiz.color} hover:brightness-110`}>
+                <Link to={quiz.path} className={`inline-flex items-center justify-center w-full sm:w-auto gap-2 px-6 py-2.5 rounded-xl text-white font-medium transition-transform active:scale-95 ${quiz.color} hover:brightness-110`}>
                   Start Quiz <ArrowRight className="w-4 h-4" />
-                </a>
+                </Link>
               </div>
             </div>
           </div>
